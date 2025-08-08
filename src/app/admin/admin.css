@@ -1,0 +1,142 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Font and base style */
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #f4f6f8;
+  color: #2c3e50;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Layout grid */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 60px 1fr;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  height: 100vh;
+}
+
+/* Header */
+.admin-header {
+  grid-area: header;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  grid-area: sidebar;
+  background: #1e272e;
+  color: #fff;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  z-index: 1;
+}
+
+.admin-sidebar h2 {
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.admin-sidebar a {
+  color: #dcdde1;
+  padding: 12px 24px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s;
+}
+
+.admin-sidebar a:hover,
+.admin-sidebar a.active {
+  background: #485460;
+  color: #ffffff;
+}
+
+/* Main */
+.admin-main {
+  grid-area: main;
+  padding: 30px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+/* Buttons */
+.btn {
+  background: #1abc9c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #16a085;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.table th, .table td {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f0f2f5;
+  color: #555;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px auto 1fr;
+    grid-template-areas:
+      "header"
+      "sidebar"
+      "main";
+  }
+
+  .admin-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .admin-sidebar a {
+    flex: 1 0 auto;
+    text-align: center;
+  }
+}
+
