@@ -3,6 +3,7 @@
 import { Apartment } from "@/types/Apartment";
 import { useEffect, useState } from "react";
 import "./admin-apartments.css";
+import axios from "axios";
 
 export default function AdminApartmentsPage() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
@@ -11,9 +12,8 @@ export default function AdminApartmentsPage() {
 
   useEffect(() => {
     async function fetchApartments() {
-      const res = await fetch("/api/apartments");
-      const data = await res.json();
-      setApartments(data);
+      const data = await axios.get("/api/apartments");
+      setApartments(data.data);
     }
 
     fetchApartments();
@@ -45,6 +45,7 @@ export default function AdminApartmentsPage() {
               <th>Ospiti</th>
               <th>Letti</th>
               <th>Indirizzo</th>
+              <th>Immagine</th> {/* ستونی برای نمایش تصویر */}
               <th>Azioni</th>
             </tr>
           </thead>
@@ -55,6 +56,18 @@ export default function AdminApartmentsPage() {
                 <td>{apt.guests}</td>
                 <td>{apt.beds}</td>
                 <td>{apt.address}</td>
+                <td>
+                  {apt.image ? (
+                    <img
+                      src={apt.image} // نمایش تصویر
+                      alt={apt.title}
+                      className="apartment-image"
+                      style={{ width: "50px", height: "auto" }} // تنظیم ابعاد تصویر
+                    />
+                  ) : (
+                    <span>No Image</span> // در صورتی که تصویر موجود نباشد
+                  )}
+                </td>
                 <td>
                   <div className="actions">
                     <a href={`/admin/apartments/${apt._id}/edit`} className="btn-outline">

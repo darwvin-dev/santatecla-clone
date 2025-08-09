@@ -5,12 +5,11 @@ import path from "path";
 import fs from "fs/promises";
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  req: NextRequest
 ) {
   try {
     await dbConnect();
-    const apartment = await Apartment.findById(params.id);
+    const apartment = await Apartment.find();
     
     if (!apartment) {
       return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     // Generate unique filename
     const fileExtension = path.extname(file.name);
-    const filename = `${"86546853485664"}${fileExtension}`;
+    const filename = `${new Date().getTime()}${fileExtension}`;
     const newPath = path.join(uploadDir, filename);
 
     // Convert file to buffer and save
