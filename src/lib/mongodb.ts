@@ -29,7 +29,7 @@ if (!globalWithMongoose._mongoose) {
   };
 }
 
-async function dbConnect() {
+async function dbConnect(): Promise<typeof mongoose> {
   if (globalWithMongoose._mongoose!.conn) {
     return globalWithMongoose._mongoose!.conn;
   }
@@ -37,6 +37,7 @@ async function dbConnect() {
   if (!globalWithMongoose._mongoose!.promise) {
     globalWithMongoose._mongoose!.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
+    
     });
   }
 
