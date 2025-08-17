@@ -1,29 +1,54 @@
-import React from "react";
-import Link from "next/link";
+"use client";
 
-export default function NavMenu() {
+import React, { Ref } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+type NavMenuProps = {
+  isMenuOpen: boolean;
+  menuRef: React.RefObject<HTMLElement> | null;
+};
+
+export default function NavMenu({ isMenuOpen, menuRef }: NavMenuProps) {
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/apartments", label: "Appartamenti", id: "menu-item-4600" },
+    { href: "/gestione", label: "Gestione", id: "menu-item-4604" },
+  ];
+
   return (
-    <nav className="site-navigation is-open" id="siteNavigation">
+    <nav
+      className={`site-navigation ${isMenuOpen ? "is-open" : ""}`}
+      id="siteNavigation"
+      ref={menuRef}
+    >
       <div id="container_id" className="container-class">
         <ul id="siteMenu" className="navbar-nav">
-          <li
-            id="menu-item-4600"
-            className="menu-item menu-item-type-post_type_archive menu-item-object-apartment current-menu-item active menu-item-4600 nav-item"
-          >
-            <Link href="/apartments/" className="nav-link" aria-current="page">
-              <span>Appartamenti</span>
-            </Link>
-          </li>
-          <li
-            id="menu-item-4604"
-            className="menu-item menu-item-type-post_type menu-item-object-page menu-item-4604 nav-item"
-          >
-            <Link href="/gestione/" className="nav-link">
-              <span>Gestione</span>
-            </Link>
-          </li>
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <li
+                key={link.id}
+                id={link.id}
+                className={`menu-item nav-item ${
+                  isActive ? "current-menu-item active" : ""
+                }`}
+              >
+                <Link
+                  href={link.href}
+                  className="nav-link"
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <span>{link.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
+
+      {/* زبان */}
       <div className="nav-icn-lang d-md-none" id="langSwitchMobile">
         <div id="langSwitch">
           <div className="wpml-ls-statics-shortcode_actions wpml-ls wpml-ls-legacy-dropdown-click js-wpml-ls-legacy-dropdown-click">
@@ -35,7 +60,6 @@ export default function NavMenu() {
                 >
                   <span className="wpml-ls-native">IT</span>
                 </a>
-
                 <ul className="js-wpml-ls-sub-menu wpml-ls-sub-menu">
                   <li className="wpml-ls-slot-shortcode_actions wpml-ls-item wpml-ls-item-en wpml-ls-last-item">
                     <a
@@ -52,7 +76,7 @@ export default function NavMenu() {
             </ul>
           </div>
         </div>
-      </div>{" "}
+      </div>
     </nav>
   );
 }

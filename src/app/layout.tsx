@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"
         />
       </head>
-      <body className="antialiased">
+      <body className="archive post-type-archive post-type-archive-apartment">
         {children}
       </body>
     </html>

@@ -1570,8 +1570,7 @@ pre code {
 .container-xl,
 .container-xxl {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  
   margin-right: auto;
   margin-left: auto;
 }
@@ -1626,8 +1625,6 @@ pre code {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
 }
 
 .no-gutters {
@@ -1727,8 +1724,6 @@ pre code {
 .col-xxl-auto {
   position: relative;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
 }
 
 .col {
@@ -19224,8 +19219,7 @@ select.custom-select:focus-visible {
 .main {
   position: relative;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding: 0;
 }
 
 @media (min-width: 768px) {
@@ -22782,4 +22776,83 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 .rtl .wpml-ls-legacy-dropdown-click .wpml-ls-flag + span {
   margin-left: 0;
   margin-right: 0.4em;
+}
+
+.living-banner-book .collapse.show {
+    width: 100%;
+    background-color: #fff;
+}
+
+.site-navigation {
+  position: relative;
+}
+
+.nav-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #333;
+  position: relative;
+  transition: background 0.3s;
+}
+.hamburger::before,
+.hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: #333;
+  transition: transform 0.3s, top 0.3s, opacity 0.3s;
+}
+.hamburger::before {
+  top: -6px;
+}
+.hamburger::after {
+  top: 6px;
+}
+.hamburger.is-active {
+  background: transparent;
+}
+.hamburger.is-active::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+.hamburger.is-active::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.nav-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.nav-list.open {
+  max-height: 500px; /* یا هر ارتفاعی که لازمه */
+}
+
+.nav-item {
+  margin: 0.5rem 0;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+}
+
+.lang-switch {
+  margin-top: 1rem;
+}
+.lang-switch ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }

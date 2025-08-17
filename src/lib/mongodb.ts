@@ -6,7 +6,6 @@ if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
 
-// declare global for TypeScript
 declare global {
   var _mongoose: {
     conn: typeof mongoose | null;
