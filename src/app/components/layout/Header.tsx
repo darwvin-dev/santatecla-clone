@@ -20,7 +20,9 @@ export default function Header({ setIsMenuOpen, isMenuOpen }) {
                 type="button"
                 aria-label="Toggle navigation"
                 className={isMenuOpen ? "is-open" : ""}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => {
+                  if (!isMenuOpen) setIsMenuOpen(true);
+                }}
               >
                 <span></span>
                 <span></span>
@@ -34,9 +36,7 @@ export default function Header({ setIsMenuOpen, isMenuOpen }) {
               href="/"
               aria-label="Santa Tecla Living"
             >
-              <i
-                className="main-brand webfont icon-wf-st_logo-ponte fz-40 color-black color-black-hover"
-              ></i>
+              <i className="main-brand webfont icon-wf-st_logo-ponte fz-40 color-black color-black-hover"></i>
               <i
                 className="sub-brand webfont icon-wf-st_logo-ST-living fz-150 color-black color-black-hover"
                 style={{

@@ -30,18 +30,18 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
   }, [isMenuOpen]);
 
   return (
-    <div className={isMenuOpen ? "is-open" : ""}>
+    <>
       <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
       {<NavMenu isMenuOpen={isMenuOpen} menuRef={menuRef} />}
       <div className="wrap container-fluid">
         <div className="content row">
           <main className="main col-12">
             {children}
+          <BannerBook />
           </main>
         </div>
       </div>
-      <BannerBook />
       <Footer />
-    </div>
+    </>
   );
 }

@@ -1,4 +1,7 @@
 @charset "UTF-8";
+html{
+  --vh: 6.67px
+}
 .jssocials-shares {
   margin: 0.2em 0;
 }
@@ -1570,7 +1573,8 @@ pre code {
 .container-xl,
 .container-xxl {
   width: 100%;
-  
+  padding-right: 15px;
+  padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
@@ -1625,6 +1629,8 @@ pre code {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
 }
 
 .no-gutters {
@@ -1724,6 +1730,8 @@ pre code {
 .col-xxl-auto {
   position: relative;
   width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .col {
@@ -19219,7 +19227,8 @@ select.custom-select:focus-visible {
 .main {
   position: relative;
   width: 100%;
-  padding: 0;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 @media (min-width: 768px) {
@@ -19873,7 +19882,7 @@ select.custom-select:focus-visible {
   margin-block-start: var(--swiper-centered-offset-before);
 }
 
-.swiper-centered.swiper-vertical>.swiper-wrapper:before {
+.swiper-centered.swiper-vertical > .swiper-wrapper:before {
   width: 100%;
   min-width: 1px;
   height: var(--swiper-centered-offset-after);
@@ -21945,7 +21954,7 @@ footer.site-footer {
 
 @media (max-width: 767.98px) {
   .single-property-archive .property-archive-img img {
-    width: calc(100% - 30px) !important;
+    width: calc(120% - 30px) !important;
   }
 }
 
@@ -22779,8 +22788,8 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 }
 
 .living-banner-book .collapse.show {
-    width: 100%;
-    background-color: #fff;
+  width: 100%;
+  background-color: #fff;
 }
 
 .site-navigation {
@@ -22855,4 +22864,14 @@ div.ui-datepicker#ui-datepicker-div-octorate {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.prop-about-img-wrap {
+  min-height: auto;
+}
+
+@media (min-width: 992px) {
+  .prop-about-img-wrap {
+    min-height: 660px; 
+  }
 }

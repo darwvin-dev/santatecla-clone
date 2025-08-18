@@ -25,9 +25,7 @@ export default function Home() {
         <ApartmentsHeader />
 
         {apartments?.map((apartment, index) => (
-          <div className="col-12" key={index}>
-            <ApartmentCard {...apartment} reversed={index % 2 === 1} />
-          </div>
+          <ApartmentCard {...apartment} reversed={index % 2 === 1} key={"APARTMENT_INDEX_" + index} />
         ))}
       </section>
     </ClientLayoutWrapper>

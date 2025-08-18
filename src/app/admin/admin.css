@@ -1,4 +1,4 @@
-/* Reset */
+Reset
 * {
   box-sizing: border-box;
   margin: 0;
@@ -140,3 +140,278 @@ body {
   }
 }
 
+/* ========= Variables & Reset ========= */
+:root{
+  --bg:#0b0c0d;
+  --card:#111315;
+  --muted:#8b949e;
+  --text:#e6edf3;
+  --text-dim:#c9d1d9;
+
+  --accent:#23c483;
+  --accent-600:#1ba66e;
+  --danger:#ef4444;
+  --danger-600:#dc2626;
+  --outline:#2a3137;
+  --outline-2:#21262d;
+
+  --shadow: 0 8px 30px rgba(0,0,0,.35);
+  --radius:16px;
+  --radius-sm:12px;
+}
+
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f7f8fa;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --text:#0f172a;
+    --text-dim:#1f2937;
+    --accent:#0ea5e9;
+    --accent-600:#0284c7;
+    --danger:#ef4444;
+    --danger-600:#dc2626;
+    --outline:#e5e7eb;
+    --outline-2:#eef2f7;
+    --shadow: 0 8px 24px rgba(15,23,42,.08);
+  }
+}
+
+*{box-sizing:border-box}
+img{display:block;max-width:100%;}
+
+/* ========= Page ========= */
+.admin-apartments-page{
+  min-height:100dvh;
+  padding:24px clamp(16px, 2vw, 32px);
+  background:var(--bg);
+  color:var(--text);
+  font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+}
+
+/* ========= Header ========= */
+.admin-apartments-page .header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 20px;
+}
+.admin-apartments-page .header h2{
+  font-weight:700;
+  font-size:clamp(20px, 2vw, 28px);
+  letter-spacing:-.02em;
+  margin:0;
+}
+.btn-primary{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  background:linear-gradient(180deg, color-mix(in oklab, var(--accent) 18%, transparent), var(--accent));
+  color:white;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 8px 20px color-mix(in oklab, var(--accent) 35%, transparent);
+  transition:.18s ease;
+}
+.btn-primary:hover{ transform:translateY(-1px); filter:saturate(1.05) brightness(1.03); }
+.btn-primary:active{ transform:translateY(0); }
+
+/* ========= Table Wrapper ========= */
+.table-wrapper{
+  background:var(--card);
+  border:1px solid var(--outline);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* ========= Table ========= */
+.admin-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.admin-table thead th{
+  position:sticky;
+  top:0;
+  background:linear-gradient(180deg, color-mix(in oklab, var(--card) 80%, transparent), var(--card));
+  color:var(--text-dim);
+  font-weight:700;
+  text-align:left;
+  padding:14px 16px;
+  border-bottom:1px solid var(--outline);
+  z-index:2;
+  letter-spacing:.01em;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.admin-table tbody td{
+  padding:14px 16px;
+  border-bottom:1px solid var(--outline);
+  vertical-align:middle;
+}
+.admin-table tbody tr{
+  transition: background .15s ease, transform .15s ease;
+}
+.admin-table tbody tr:hover{
+  background:color-mix(in oklab, var(--card) 60%, black 6%);
+}
+.admin-table tbody tr:last-child td{
+  border-bottom:0;
+}
+
+/* Zebra (light mode فقط) */
+@media (prefers-color-scheme: light){
+  .admin-table tbody tr:nth-child(even){
+    background: color-mix(in oklab, var(--card) 96%, var(--outline-2));
+  }
+  .admin-table tbody tr:hover{
+    background: color-mix(in oklab, var(--card) 86%, var(--outline-2));
+  }
+}
+
+/* ========= Image cell ========= */
+.apartment-image{
+  width:56px;
+  height:56px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid var(--outline);
+  background:var(--outline-2);
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* ========= Actions ========= */
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.btn-outline,
+.btn-danger{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:600;
+  transition:.16s ease;
+}
+.btn-outline{
+  border:1px solid var(--outline);
+  background:transparent;
+  color:var(--text);
+}
+.btn-outline:hover{
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--outline));
+  color: var(--accent);
+  transform:translateY(-1px);
+}
+.btn-danger{
+  border:1px solid color-mix(in oklab, var(--danger) 55%, transparent);
+  background:linear-gradient(180deg, color-mix(in oklab, var(--danger) 18%, transparent), var(--danger));
+  color:#fff;
+  box-shadow:0 8px 16px color-mix(in oklab, var(--danger) 30%, transparent);
+}
+.btn-danger:hover{
+  filter: brightness(1.05);
+  transform:translateY(-1px);
+}
+
+/* ========= Empty State ========= */
+.no-data{
+  margin:0;
+  padding:32px;
+  text-align:center;
+  color:var(--muted);
+}
+
+/* ========= Modal ========= */
+.modal-backdrop{
+  position:fixed; inset:0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  display:grid; place-items:center;
+  z-index:50;
+  animation: fadeIn .18s ease;
+}
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+.modal{
+  width:min(560px, calc(100vw - 32px));
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--outline);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:20px;
+  transform: translateY(6px);
+  animation: pop .18s ease forwards;
+}
+@keyframes pop{ to{ transform: translateY(0) } }
+.modal h3{ margin:0 0 6px; font-size:18px; }
+.modal p{ margin:0 0 16px; color:var(--muted); }
+.modal-actions{
+  display:flex; gap:10px; justify-content:flex-end;
+}
+
+/* ========= Responsive (Cards on Mobile) ========= */
+@media (max-width: 860px){
+  .admin-table thead{ display:none; }
+  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td{
+    display:block; width:100%;
+  }
+  .admin-table tbody tr{
+    background:var(--card);
+    border:1px solid var(--outline);
+    border-radius:16px;
+    padding:14px;
+    margin:12px;
+    box-shadow: var(--shadow);
+  }
+  .admin-table tbody td{
+    border:0;
+    padding:8px 0;
+    display:grid;
+    grid-template-columns: 120px 1fr;
+    gap:10px;
+  }
+  .admin-table tbody td::before{
+    content: attr(data-th);
+    color:var(--muted);
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:12px;
+  }
+  /* تأمین data-th با CSS در صورت نبودن attr: */
+  .admin-table tbody tr td:nth-child(1)::before{ content:"Titolo"; }
+  .admin-table tbody tr td:nth-child(2)::before{ content:"Ospiti"; }
+  .admin-table tbody tr td:nth-child(3)::before{ content:"Letti"; }
+  .admin-table tbody tr td:nth-child(4)::before{ content:"Indirizzo"; }
+  .admin-table tbody tr td:nth-child(5)::before{ content:"Immagine"; }
+  .admin-table tbody tr td:nth-child(6)::before{ content:"Azioni"; }
+
+  .actions{ justify-content:flex-end; }
+}
+
+/* ========= Subtle Focus (Accessibility) ========= */
+.btn-primary:focus,
+.btn-outline:focus,
+.btn-danger:focus,
+a:focus,
+button:focus{
+  outline:2px solid color-mix(in oklab, var(--accent) 50%, transparent);
+  outline-offset:2px;
+  box-shadow:0 0 0 6px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+/* ========= Row Hover Lift (Desktop) ========= */
+@media (hover:hover){
+  .admin-table tbody tr:hover{
+    transform: translateY(-1px);
+  }
+}

@@ -70,7 +70,7 @@ export default function AdminApartmentsPage() {
                 </td>
                 <td>
                   <div className="actions">
-                    <a href={`/admin/apartments/${apt._id}/edit`} className="btn-outline">
+                    <a href={`/admin/apartments/${apt._id}`} className="btn-outline">
                       Modifica
                     </a>
                     <button
