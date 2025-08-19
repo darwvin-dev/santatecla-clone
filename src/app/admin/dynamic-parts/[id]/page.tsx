@@ -22,12 +22,12 @@ type DP = {
 
 type RouteParams = { id: string };
 
-export default async function Page({
+export default function Page({
   params,
 }: {
-  params: Promise<RouteParams>;
+  params: RouteParams;
 }) {
-  const { id } = await params;
+  const { id } = params;
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);

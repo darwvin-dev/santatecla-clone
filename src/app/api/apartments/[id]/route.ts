@@ -9,7 +9,11 @@ import fs from "fs/promises";
 
 function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   if (typeof value !== "string") return undefined;
-  try { return JSON.parse(value) as T; } catch { return undefined; }
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return undefined;
+  }
 }
 
 async function ensureDir(p: string) {
@@ -17,10 +21,18 @@ async function ensureDir(p: string) {
 }
 
 async function deleteIfExists(absPath: string) {
-  try { await fs.unlink(absPath); } catch { /* ignore */ }
+  try {
+    await fs.unlink(absPath);
+  } catch {
+    /* ignore */
+  }
 }
 
-async function saveImageFile(file: File, folder: string, suffix = ""): Promise<string> {
+async function saveImageFile(
+  file: File,
+  folder: string,
+  suffix = ""
+): Promise<string> {
   if (!file.type?.startsWith("image/")) {
     throw new Error("Invalid file type. Only images are allowed");
   }
@@ -28,7 +40,9 @@ async function saveImageFile(file: File, folder: string, suffix = ""): Promise<s
   await ensureDir(uploadDir);
 
   const ext = path.extname(file.name) || ".jpg";
-  const filename = `${Date.now()}_${Math.random().toString(36).slice(2)}${suffix}${ext}`;
+  const filename = `${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2)}${suffix}${ext}`;
   const destPath = path.join(uploadDir, filename);
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -37,26 +51,32 @@ async function saveImageFile(file: File, folder: string, suffix = ""): Promise<s
   return `/uploads/${folder}/${filename}`;
 }
 
-type Ctx = { params: Promise<{ title: string }> };
-export async function GET(_req: NextRequest, { params }: Ctx) {
+type IdCtx = { params: Promise<{ id: string }> };
+
+export async function GET(_req: NextRequest, { params }: IdCtx) {
   try {
     await dbConnect();
 
-    const { title } = await params;         
+    const { id } = await params;
 
-    const apartment = await Apartment.findOne({title});
+    const apartment = await Apartment.findOne({ title: id });
     if (!apartment) {
-      return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Apartment not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(apartment);
   } catch (e: any) {
     console.error("GET /api/apartments/[id] error:", e);
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
 
-type IdCtx = { params: Promise<{ id: string }> };
 export async function PUT(req: NextRequest, { params }: IdCtx) {
   try {
     await dbConnect();
@@ -68,19 +88,30 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
-      return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Apartment not found" },
+        { status: 404 }
+      );
     }
 
     const formData = await req.formData();
 
     const title = (formData.get("title") as string) ?? apartment.title;
-    const guests = formData.get("guests") ? Number(formData.get("guests")) : apartment.guests;
-    const sizeSqm = formData.get("sizeSqm") ? Number(formData.get("sizeSqm")) : apartment.sizeSqm;
-    const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : apartment.bathrooms;
+    const guests = formData.get("guests")
+      ? Number(formData.get("guests"))
+      : apartment.guests;
+    const sizeSqm = formData.get("sizeSqm")
+      ? Number(formData.get("sizeSqm"))
+      : apartment.sizeSqm;
+    const bathrooms = formData.get("bathrooms")
+      ? Number(formData.get("bathrooms"))
+      : apartment.bathrooms;
     const floor = (formData.get("floor") as string) ?? apartment.floor;
     const address = (formData.get("address") as string) ?? apartment.address;
-    const addressDetail = (formData.get("addressDetail") as string) ?? apartment.addressDetail;
-    const description = (formData.get("description") as string) ?? apartment.description;
+    const addressDetail =
+      (formData.get("addressDetail") as string) ?? apartment.addressDetail;
+    const description =
+      (formData.get("description") as string) ?? apartment.description;
     const details = (formData.get("details") as string) ?? apartment.details;
 
     apartment.title = title;
@@ -95,40 +126,71 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
 
     const lat = formData.get("lat") ? Number(formData.get("lat")) : undefined;
     const lng = formData.get("lng") ? Number(formData.get("lng")) : undefined;
-    if (typeof lat === "number" && !Number.isNaN(lat) && typeof lng === "number" && !Number.isNaN(lng)) {
+    if (
+      typeof lat === "number" &&
+      !Number.isNaN(lat) &&
+      typeof lng === "number" &&
+      !Number.isNaN(lng)
+    ) {
       apartment.location = { type: "Point", coordinates: [lng, lat] } as any;
       apartment.lat = lat;
       apartment.lng = lng;
     }
 
     type Amenity =
-      | "macchina_caffe" | "aria_condizionata" | "bollitore" | "tostapane" | "lavastoviglie"
-      | "self_check_in" | "tv" | "lavatrice" | "set_di_cortesia" | "microonde" | "biancheria"
-      | "culla_su_richiesta" | "wifi" | "parcheggio_esterno" | "animali_ammessi" | "asciugacapelli" | "balcone";
+      | "macchina_caffe"
+      | "aria_condizionata"
+      | "bollitore"
+      | "tostapane"
+      | "lavastoviglie"
+      | "self_check_in"
+      | "tv"
+      | "lavatrice"
+      | "set_di_cortesia"
+      | "microonde"
+      | "biancheria"
+      | "culla_su_richiesta"
+      | "wifi"
+      | "parcheggio_esterno"
+      | "animali_ammessi"
+      | "asciugacapelli"
+      | "balcone";
 
     const amenities = safeJson<Amenity[]>(formData.get("amenities"));
     if (amenities) apartment.amenities = amenities;
 
-    const rules = safeJson<{ checkInFrom: string; checkInTo: string; checkOutBy: string }>(formData.get("rules"));
+    const rules = safeJson<{
+      checkInFrom: string;
+      checkInTo: string;
+      checkOutBy: string;
+    }>(formData.get("rules"));
     if (rules) apartment.rules = rules;
 
-    const cancellation = safeJson<{ policy: "free_until_5_days" | "flexible" | "strict"; note?: string }>(
-      formData.get("cancellation")
-    );
+    const cancellation = safeJson<{
+      policy: "free_until_5_days" | "flexible" | "strict";
+      note?: string;
+    }>(formData.get("cancellation"));
     if (cancellation) apartment.cancellation = cancellation;
 
-    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(/[/\\?%*:|"<>]/g, "_");
+    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(
+      /[/\\?%*:|"<>]/g,
+      "_"
+    );
 
     const coverFile = formData.get("image") as File | null;
     if (coverFile && typeof coverFile === "object" && coverFile.size > 0) {
       if (apartment.image) {
-        await deleteIfExists(path.join(process.cwd(), "public", apartment.image));
+        await deleteIfExists(
+          path.join(process.cwd(), "public", apartment.image)
+        );
       }
       apartment.image = await saveImageFile(coverFile, folder, "_cover");
     }
 
     const keepGallery = safeJson<string[]>(formData.get("keepGallery")) ?? [];
-    const currentGallery: string[] = Array.isArray(apartment.gallery) ? apartment.gallery : [];
+    const currentGallery: string[] = Array.isArray(apartment.gallery)
+      ? apartment.gallery
+      : [];
 
     const toDelete = currentGallery.filter((url) => !keepGallery.includes(url));
     for (const url of toDelete) {
@@ -139,7 +201,12 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
 
     const galleryNew = formData.getAll("galleryNew[]") as File[];
     for (const gf of galleryNew) {
-      if (gf && typeof gf === "object" && "type" in gf && gf.type.startsWith("image/")) {
+      if (
+        gf &&
+        typeof gf === "object" &&
+        "type" in gf &&
+        gf.type.startsWith("image/")
+      ) {
         const p = await saveImageFile(gf, folder, "_gallery");
         nextGallery.push(p);
       }
@@ -153,9 +220,16 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
       await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
       apartment.plan = undefined as any;
     }
-    if (!removePlan && planFile && typeof planFile === "object" && planFile.size > 0) {
+    if (
+      !removePlan &&
+      planFile &&
+      typeof planFile === "object" &&
+      planFile.size > 0
+    ) {
       if (apartment.plan) {
-        await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
+        await deleteIfExists(
+          path.join(process.cwd(), "public", apartment.plan)
+        );
       }
       apartment.plan = await saveImageFile(planFile, folder, "_plan");
     }
@@ -164,7 +238,10 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     return NextResponse.json(apartment, { status: 200 });
   } catch (e: any) {
     console.error("PUT /api/apartments/[id] error:", e);
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -184,7 +261,10 @@ export async function DELETE(_req: NextRequest, { params }: IdCtx) {
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
-      return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Apartment not found" },
+        { status: 404 }
+      );
     }
 
     // حذف کاور
@@ -206,6 +286,9 @@ export async function DELETE(_req: NextRequest, { params }: IdCtx) {
     return NextResponse.json({ success: true });
   } catch (e: any) {
     console.error("DELETE /api/apartments/[id] error:", e);
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }

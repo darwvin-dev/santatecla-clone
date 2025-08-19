@@ -183,7 +183,7 @@ export default function AdminDashboard() {
                         <td>{a.title}</td>
                         <td>{a.updatedAt ? new Date(a.updatedAt).toLocaleString("it-IT") : "—"}</td>
                         <td style={{ textAlign: "right" }}>
-                          <Link href={`/admin/apartments/${a._id}`} className="adminap-btn-ghost">Apri</Link>
+                          <Link href={`/admin/apartments/${a.title}`} className="adminap-btn-ghost">Apri</Link>
                         </td>
                       </tr>
                     ))}
