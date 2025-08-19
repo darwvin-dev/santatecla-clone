@@ -1,34 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
 import { Apartment } from "@/types/Apartment";
 import HeroSection from "./components/Home/HeroSection";
 import HomeAbout from "./components/Home/HomeAbout";
 import ApartmentsSection from "./components/Home/ApartmentsSection";
 import ServicesSection from "./components/Home/ServicesSection";
+import { DynamicPart } from "@/types/DynamicPart";
 
 export default function Home() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
+  const [homeParts, setHomeParts] = useState<DynamicPart[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchApartments() {
-      const res = await fetch("/api/apartments");
-      const data = await res.json();
-      setApartments(data);
-    }
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    fetchApartments();
+        // فِچ موازی
+        const [aRes, dRes] = await Promise.all([
+          fetch("/api/apartments", { cache: "no-store" }),
+          fetch("/api/dynamic-parts?page=Home", { cache: "no-store" }),
+        ]);
+
+        if (!aRes.ok) throw new Error("Errore nel caricamento degli appartamenti.");
+        if (!dRes.ok) throw new Error("Errore nel caricamento dei contenuti Home.");
+
+        const [aData, dData] = await Promise.all([aRes.json(), dRes.json()]);
+
+        setApartments(aData ?? []);
+        setHomeParts(dData ?? []);
+      } catch (e: any) {
+        setError(e?.message || "Errore di rete.");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
+
+  const hero = useMemo(
+    () => homeParts.find((h) => h.key === "hero"),
+    [homeParts]
+  );
+
+  const about = useMemo(
+    () => homeParts.find((h) => h.key === "About"),
+    [homeParts]
+  );
 
   return (
     <ClientLayoutWrapper>
-      <HeroSection />
-      <HomeAbout />
+      {loading && <div className="container py-4">Caricamento…</div>}
+      {error && <div className="container py-4 text-danger">{error}</div>}
+      <HeroSection hero={hero} />
+
+      <HomeAbout about={about} />
       <ApartmentsSection apartments={apartments} />
       <ServicesSection />
-
-      <section
+          <section
         id="slider-invertito"
         className="row padding-y-90-120 overflow-hidden design-team-wrapper"
       >

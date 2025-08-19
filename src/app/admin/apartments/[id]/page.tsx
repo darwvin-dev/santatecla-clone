@@ -68,6 +68,7 @@ export default function EditApartmentPage() {
 
   // base form
   const [form, setForm] = useState({
+    id: "",
     title: "",
     guests: "1",
     sizeSqm: "",
@@ -116,6 +117,7 @@ export default function EditApartmentPage() {
         const a = res.data;
 
         setForm({
+          id: a._id,
           title: a.title ?? "",
           guests: String(a.guests ?? "1"),
           sizeSqm: String(a.sizeSqm ?? a.size ?? ""),
@@ -222,7 +224,7 @@ export default function EditApartmentPage() {
     if (planImage) fd.append("plan", planImage);
 
     try {
-      const res = await axios.post(`/api/apartments/${id}`, fd, {
+      const res = await axios.post(`/api/apartments/${form.id}`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.status === 200) {
