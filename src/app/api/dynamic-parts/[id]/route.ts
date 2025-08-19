@@ -4,9 +4,14 @@ import dbConnect from "@/lib/mongodb";
 import path from "path";
 import fs from "fs/promises";
 
-type Params = { params: { id: string } };
+type Params = { id: string };
+type RouteCtx = { params: Promise<Params> };
 
-async function saveImageFile(file: File, folder: string, subPrefix = ""): Promise<string> {
+async function saveImageFile(
+  file: File,
+  folder: string,
+  subPrefix = ""
+): Promise<string> {
   if (!file.type || !file.type.startsWith("image/")) {
     throw new Error("Invalid file type. Only images are allowed");
   }
@@ -14,7 +19,9 @@ async function saveImageFile(file: File, folder: string, subPrefix = ""): Promis
   await fs.mkdir(uploadDir, { recursive: true });
 
   const ext = path.extname(file.name) || ".jpg";
-  const unique = `${Date.now()}_${Math.random().toString(36).slice(2)}${subPrefix}`;
+  const unique = `${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2)}${subPrefix}`;
   const filename = `${unique}${ext}`;
   const destPath = path.join(uploadDir, filename);
 
@@ -40,24 +47,29 @@ function getBoolU(form: FormData, key: string) {
   return v === "true" || v === "1" || v === "on";
 }
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(_req: NextRequest, { params }: RouteCtx) {
   await dbConnect();
-  const doc = await DynamicPart.findById(params.id).lean();
+  const { id } = await params;
+  const doc = await DynamicPart.findById(id).lean();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(doc);
 }
 
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, { params }: RouteCtx) {
   try {
     await dbConnect();
-    const existing = await DynamicPart.findById(params.id);
-    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const { id } = await params;
+    const existing = await DynamicPart.findById(id);
+    if (!existing)
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const form = await req.formData();
 
     const keyVal = getStringU(form, "key") ?? existing.key;
     const pageVal = getStringU(form, "page") ?? existing.page;
-    const folder = path.join("DYNAMIC_PARTS", pageVal, keyVal).replaceAll(path.sep, "/");
+    const folder = path
+      .join("DYNAMIC_PARTS", pageVal, keyVal)
+      .replaceAll(path.sep, "/");
 
     async function pickUrlOrUploadUpdate(field: string, suffix: string) {
       const entry = form.get(field);
@@ -87,29 +99,42 @@ export async function POST(req: NextRequest, { params }: Params) {
       mobileImage3: await pickUrlOrUploadUpdate("mobileImage3", "_mobile3"),
     };
 
-    Object.keys(patch).forEach((k) => patch[k] === undefined && delete patch[k]);
+    Object.keys(patch).forEach(
+      (k) => patch[k] === undefined && delete patch[k]
+    );
 
-    const updated = await DynamicPart.findByIdAndUpdate(params.id, patch, { new: true });
+    const updated = await DynamicPart.findByIdAndUpdate(id, patch, {
+      new: true,
+    });
     return NextResponse.json(updated);
   } catch (error: any) {
     console.error("POST /api/dynamic-parts/:id (update) error:", error);
-    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(_req: NextRequest, { params }: RouteCtx) {
   try {
+    const { id } = await params;
     await dbConnect();
 
-    const existing = await DynamicPart.findById(params.id).lean();
+    const existing = await DynamicPart.findById(id).lean();
     if (!existing) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const childrenCount = await DynamicPart.countDocuments({ parentId: (existing as any)._id });
+    const childrenCount = await DynamicPart.countDocuments({
+      parentId: (existing as any)._id,
+    });
     if (childrenCount > 0) {
       return NextResponse.json(
-        { error: "این آیتم زیرمجموعه دارد. ابتدا پست‌های وابسته را حذف یا منتقل کنید." },
+        {
+          error:
+            "این آیتم زیرمجموعه دارد. ابتدا پست‌های وابسته را حذف یا منتقل کنید.",
+        },
         { status: 409 }
       );
     }
@@ -132,7 +157,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
       }
     }
 
-    await DynamicPart.findByIdAndDelete(params.id);
+    await DynamicPart.findByIdAndDelete(id);
     await Promise.allSettled(filePaths.map((p) => fs.unlink(p)));
 
     return NextResponse.json({ ok: true });

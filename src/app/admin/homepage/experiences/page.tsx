@@ -35,14 +35,23 @@ export default function ExperiencesAdminPage() {
     try {
       setLoading(true);
       setErr(null);
-      const res = await fetch("/api/dynamic-parts?page=Home&parentId=all&key=experiences", {
-        cache: "no-store",
-      });
+      const res = await fetch(
+        "/api/dynamic-parts?page=Home&parentId=all&key=experiences",
+        {
+          cache: "no-store",
+        }
+      );
       if (!res.ok) throw new Error("Errore nel caricamento.");
       const data: DynamicPart[] = await res.json();
-      setParts(data.filter(p=> p.parentId) || []);
-      const tp = data.find((p) => p.key === "experiences" && !p.parentId);
-      setDpData(tp)
+      setParts(data.filter((p) => p.parentId) || []);
+      const tp: DynamicPart | undefined = data.find(
+        (p) => p.key === "experiences" && !p.parentId
+      );
+
+      if (!tp) {
+        return null;
+      }
+      setDpData(tp);
       setSectionTitle(tp?.title || "Esperienze a Milano");
     } catch (e: any) {
       setErr(e?.message || "Errore di rete.");
@@ -100,7 +109,7 @@ export default function ExperiencesAdminPage() {
       fd.append("page", "Home");
       fd.append("key", "experiences");
       fd.append("title", newTitle);
-      fd.append("parentId", dpData?._id);
+      if (dpData?._id) fd.append("parentId", dpData?._id);
       fd.append("description", newDesc);
       fd.append("order", String(newOrder || 0));
       fd.append("image", newFile);

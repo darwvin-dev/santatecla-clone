@@ -164,7 +164,7 @@ export default function PropertyIntro() {
       />
 
       {hasCoords && (
-        <PropertyMapClient lat={lat as number} lng={lng as number} title={data.title} />
+        <PropertyMapClient lat={lat as number} lng={lng as number} addressLabel={data.title} />
       )}
 
       <ApartmentRules
