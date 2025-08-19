@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type DP = {
@@ -22,12 +22,8 @@ type DP = {
 
 type RouteParams = { id: string };
 
-export default function Page({
-  params,
-}: {
-  params: RouteParams;
-}) {
-  const { id } = params;
+export default function Page({ params }: { params: Promise<RouteParams> }) {
+  const { id } = use(params);
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
