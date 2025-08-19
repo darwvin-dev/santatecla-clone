@@ -3,6 +3,7 @@ import { EffectFade, Controller } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import { useState } from "react";
+import type { Swiper as SwiperType } from "swiper";
 
 const experiences = [
   {
@@ -23,8 +24,8 @@ const experiences = [
 ];
 
 export default function ExperiencesSection() {
-  const [textSwiper, setTextSwiper] = useState(null);
-  const [imageSwiper, setImageSwiper] = useState(null);
+  const [textSwiper, setTextSwiper]   = useState<SwiperType | null>(null);
+  const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
 
   return (
     <section id="slider-invertito" className="row padding-y-90-120 overflow-hidden design-team-wrapper">
@@ -35,8 +36,8 @@ export default function ExperiencesSection() {
               <Swiper
                 modules={[Controller]}
                 loop
-                controller={{ control: textSwiper }}
-                onSwiper={setImageSwiper}
+                controller={{ control: textSwiper ?? undefined }}   
+                onSwiper={(s) => setImageSwiper(s)}                 
                 className="team-swiper-images"
                 dir="rtl"
               >

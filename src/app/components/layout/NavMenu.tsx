@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 type NavMenuProps = {
   isMenuOpen: boolean;
-  menuRef: React.RefObject<HTMLElement> | null;
+  menuRef: React.RefObject<HTMLElement | null>; 
 };
 
 export default function NavMenu({ isMenuOpen, menuRef }: NavMenuProps) {
