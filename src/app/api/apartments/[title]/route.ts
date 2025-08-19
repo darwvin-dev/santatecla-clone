@@ -37,16 +37,14 @@ async function saveImageFile(file: File, folder: string, suffix = ""): Promise<s
   return `/uploads/${folder}/${filename}`;
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { name: string } }
-) {
+type Ctx = { params: Promise<{ title: string }> };
+export async function GET(_req: NextRequest, { params }: Ctx) {
   try {
     await dbConnect();
 
-    const { name } = params;
+    const { title } = await params;         
 
-    const apartment = await Apartment.findOne({name});
+    const apartment = await Apartment.findOne({title});
     if (!apartment) {
       return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
     }
@@ -58,14 +56,12 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type IdCtx = { params: Promise<{ id: string }> };
+export async function PUT(req: NextRequest, { params }: IdCtx) {
   try {
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     if (!Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -172,19 +168,16 @@ export async function PUT(
   }
 }
 
-export async function POST(req: NextRequest, ctx: { params: { id: string } }) {
+export async function POST(req: NextRequest, ctx: IdCtx) {
   return PUT(req, ctx);
 }
 
 /* ---------- DELETE ---------- */
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, { params }: IdCtx) {
   try {
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     if (!Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }

@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L, { LatLngLiteral, Map as LeafletMap } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -9,7 +15,8 @@ type LatLng = { lat: number; lng: number };
 
 const markerIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
   iconAnchor: [12, 41],
 });
@@ -41,7 +48,13 @@ const THEMES = {
 } as const;
 type ThemeKey = keyof typeof THEMES;
 
-function ClickHandler({ onPick, readOnly }: { onPick: (lat: number, lng: number) => void; readOnly?: boolean }) {
+function ClickHandler({
+  onPick,
+  readOnly,
+}: {
+  onPick: (lat: number, lng: number) => void;
+  readOnly?: boolean;
+}) {
   useMapEvents({
     click(e) {
       if (!readOnly) onPick(e.latlng.lat, e.latlng.lng);
@@ -73,7 +86,9 @@ export default function MapPicker({
   // ----- Search (Nominatim) -----
   const [query, setQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [results, setResults] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]);
+  const [results, setResults] = useState<
+    Array<{ display_name: string; lat: string; lon: string }>
+  >([]);
   const [activeIdx, setActiveIdx] = useState<number>(-1);
 
   useEffect(() => {
@@ -93,7 +108,11 @@ export default function MapPicker({
           headers: { "Accept-Language": "it" },
           signal: controller.signal,
         });
-        const data = (await res.json()) as Array<{ display_name: string; lat: string; lon: string }>;
+        const data = (await res.json()) as Array<{
+          display_name: string;
+          lat: string;
+          lon: string;
+        }>;
         setResults(data);
       } catch {
         // ignore
@@ -145,7 +164,8 @@ export default function MapPicker({
         const { latitude, longitude } = p.coords;
         setPos({ lat: latitude, lng: longitude });
         onPick(latitude, longitude);
-        if (mapRef.current) mapRef.current.flyTo([latitude, longitude], Math.max(16, zoom));
+        if (mapRef.current)
+          mapRef.current.flyTo([latitude, longitude], Math.max(16, zoom));
       },
       () => {},
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
@@ -170,7 +190,9 @@ export default function MapPicker({
 
   // center by initialAddress? اختیاریت می‌گذاریم؛ اگر لازم داشتی می‌تونی geocode کنی
 
-  const containerClass = `stl-map-picker ${isFullscreen ? "stl-map-picker--fullscreen" : ""} ${className ?? ""}`;
+  const containerClass = `stl-map-picker ${
+    isFullscreen ? "stl-map-picker--fullscreen" : ""
+  } ${className ?? ""}`;
 
   return (
     <div className={containerClass}>
@@ -186,7 +208,9 @@ export default function MapPicker({
             placeholder="Cerca un indirizzo…"
             aria-label="Cerca un indirizzo"
           />
-          {isSearching && <span className="stl-map-picker__spinner" aria-hidden />}
+          {isSearching && (
+            <span className="stl-map-picker__spinner" aria-hidden />
+          )}
           {!!results.length && (
             <ul className="stl-map-picker__results" role="listbox">
               {results.map((r, i) => (
@@ -228,10 +252,19 @@ export default function MapPicker({
 
         {/* Actions */}
         <div className="stl-map-picker__actions">
-          <button type="button" className="stl-btn stl-btn--ghost" onClick={geolocate} title="Usa la mia posizione">
+          <button
+            type="button"
+            className="stl-btn stl-btn--ghost"
+            onClick={geolocate}
+            title="Usa la mia posizione"
+          >
             Usa la mia posizione
           </button>
-          <button type="button" className="stl-btn stl-btn--primary" onClick={toggleFullscreen}>
+          <button
+            type="button"
+            className="stl-btn stl-btn--primary"
+            onClick={toggleFullscreen}
+          >
             {isFullscreen ? "Esci da schermo intero" : "Schermo intero"}
           </button>
         </div>
@@ -244,9 +277,15 @@ export default function MapPicker({
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
           scrollWheelZoom
-          whenCreated={(map) => (mapRef.current = map)}
+          ref={(m) => {
+            mapRef.current = m;
+          }}
         >
-          <TileLayer key={theme} url={THEMES[theme].url} attribution={THEMES[theme].attribution} />
+          <TileLayer
+            key={theme}
+            url={THEMES[theme].url}
+            attribution={THEMES[theme].attribution}
+          />
           <ClickHandler onPick={handlePick} />
           <Marker
             position={pos}
@@ -271,7 +310,9 @@ export default function MapPicker({
             type="number"
             step="0.000001"
             value={pos.lat}
-            onChange={(e) => handlePick(parseFloat(e.target.value || "0") || pos.lat, pos.lng)}
+            onChange={(e) =>
+              handlePick(parseFloat(e.target.value || "0") || pos.lat, pos.lng)
+            }
           />
         </div>
         <div className="stl-field">
@@ -280,7 +321,9 @@ export default function MapPicker({
             type="number"
             step="0.000001"
             value={pos.lng}
-            onChange={(e) => handlePick(pos.lat, parseFloat(e.target.value || "0") || pos.lng)}
+            onChange={(e) =>
+              handlePick(pos.lat, parseFloat(e.target.value || "0") || pos.lng)
+            }
           />
         </div>
       </div>

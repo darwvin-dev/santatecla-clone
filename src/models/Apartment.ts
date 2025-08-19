@@ -93,7 +93,7 @@ const CancellationSchema = new Schema<Cancellation>(
 
 const ApartmentSchema = new Schema<IApartment>(
   {
-    title: { type: String, required: true, trim: true },
+    title: { type: String, required: true, trim: true, unique: true, index: true },
 
     image: { type: String, required: true, trim: true },
     gallery: { type: [String], default: [] },

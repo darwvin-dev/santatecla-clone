@@ -23,7 +23,7 @@ export default function AdminApartmentsPage() {
     if (!selectedId) return;
 
     await fetch(`/api/apartments/${selectedId}`, { method: "DELETE" });
-    setApartments((prev) => prev.filter((apt) => apt._id !== selectedId));
+    setApartments((prev) => prev.filter((apt) => apt.title !== selectedId));
     setShowModal(false);
     setSelectedId(null);
   };
@@ -51,7 +51,7 @@ export default function AdminApartmentsPage() {
           </thead>
           <tbody>
             {apartments.map((apt) => (
-              <tr key={apt._id}>
+              <tr key={apt.title}>
                 <td>{apt.title}</td>
                 <td>{apt.guests}</td>
                 <td>{apt.beds}</td>
@@ -70,13 +70,13 @@ export default function AdminApartmentsPage() {
                 </td>
                 <td>
                   <div className="actions">
-                    <a href={`/admin/apartments/${apt._id}`} className="btn-outline">
+                    <a href={`/admin/apartments/${apt.title}`} className="btn-outline">
                       Modifica
                     </a>
                     <button
                       className="btn-danger"
                       onClick={() => {
-                        setSelectedId(apt._id);
+                        setSelectedId(apt.title);
                         setShowModal(true);
                       }}
                     >
