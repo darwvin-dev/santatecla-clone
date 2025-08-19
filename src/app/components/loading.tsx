@@ -1,42 +1,144 @@
-export default function Loading() {
-  return (
-    <section className="container mx-auto px-6 py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100">
-            <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-neutral-100 via-neutral-200 to-neutral-100" />
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="aspect-[4/3] rounded-xl bg-neutral-100 overflow-hidden"
-              >
-                <div className="h-full w-full animate-pulse bg-gradient-to-r from-neutral-100 via-neutral-200 to-neutral-100" />
-              </div>
-            ))}
-          </div>
-        </div>
+"use client";
 
-        <div className="space-y-4">
-          <div className="h-8 w-3/4 rounded bg-neutral-100 animate-pulse" />
-          <div className="h-4 w-full rounded bg-neutral-100 animate-pulse" />
-          <div className="h-4 w-11/12 rounded bg-neutral-100 animate-pulse" />
-          <div className="h-4 w-10/12 rounded bg-neutral-100 animate-pulse" />
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            {[...Array(4)].map((_, idx) => (
-              <div key={idx} className="space-y-2">
-                <div className="h-4 w-24 rounded bg-neutral-100 animate-pulse" />
-                <div className="h-5 w-14 rounded bg-neutral-100 animate-pulse" />
-              </div>
-            ))}
-          </div>
-          <div className="pt-6 flex gap-3">
-            <div className="h-11 w-36 rounded-xl bg-neutral-100 animate-pulse" />
-            <div className="h-11 w-36 rounded-xl bg-neutral-100 animate-pulse" />
-          </div>
-        </div>
+import React from "react";
+
+type LoadingProps = {
+  variant?: "ring" | "dots";
+  size?: number;
+  thickness?: number;
+  color?: string;
+  trackColor?: string;
+  speed?: number;
+  label?: string;
+  fullscreen?: boolean;
+  backdrop?: boolean;
+  show?: boolean;
+  style?: React.CSSProperties;
+  className?: string;
+};
+
+const Loading: React.FC<LoadingProps> = ({
+  variant = "ring",
+  size = 28,
+  thickness = 3,
+  color = "currentColor",
+  trackColor = "rgba(0,0,0,0.12)",
+  speed = 900,
+  label = "Caricamento…",
+  fullscreen = false,
+  backdrop = true,
+  show = true,
+  style,
+  className,
+}) => {
+  if (!show) return null;
+
+  const vars: React.CSSProperties = {
+    ["--size" as any]: `${size}px`,
+    ["--thickness" as any]: `${thickness}px`,
+    ["--color" as any]: color,
+    ["--track" as any]: trackColor,
+    ["--speed" as any]: `${speed}ms`,
+  };
+
+  const LoaderEl =
+    variant === "dots" ? (
+      <div className="dots" aria-hidden="true">
+        <i /><i /><i />
       </div>
-    </section>
+    ) : (
+      <div className="ring" aria-hidden="true" />
+    );
+
+  const content = (
+    <div
+      className={`spin-root ${className || ""}`}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      style={{ ...vars, ...style, color }}
+    >
+      {LoaderEl}
+      {label ? <span className="sr-only">{label}</span> : null}
+
+      <style jsx>{`
+        .spin-root {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          line-height: 1;
+        }
+        .sr-only {
+          position: absolute !important;
+          width: 1px; height: 1px;
+          padding: 0; margin: -1px;
+          overflow: hidden; clip: rect(0,0,0,0);
+          white-space: nowrap; border: 0;
+        }
+
+        /* ===== Ring Variant ===== */
+        .ring {
+          width: var(--size);
+          height: var(--size);
+          border-radius: 999px;
+          border: var(--thickness) solid var(--track);
+          border-top-color: var(--color);
+          animation: spin var(--speed) linear infinite;
+          will-change: transform;
+        }
+
+        /* ===== Dots Variant ===== */
+        .dots {
+          width: calc(var(--size) * 2);
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: calc(var(--size) * 0.15);
+        }
+        .dots i {
+          width: calc(var(--size) * 0.28);
+          height: calc(var(--size) * 0.28);
+          border-radius: 50%;
+          background: var(--color);
+          opacity: .8;
+          animation: bounce var(--speed) ease-in-out infinite;
+        }
+        .dots i:nth-child(2) { animation-delay: calc(var(--speed) * .15); }
+        .dots i:nth-child(3) { animation-delay: calc(var(--speed) * .30); }
+
+        /* Motion reduce */
+        @media (prefers-reduced-motion: reduce) {
+          .ring { animation-duration: calc(var(--speed) * 2); }
+          .dots i { animation-duration: calc(var(--speed) * 2); }
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: .4; }
+          40% { transform: translateY(-30%); opacity: 1; }
+        }
+      `}</style>
+    </div>
   );
-}
+
+  if (!fullscreen) return content;
+
+  return (
+    <div className="spin-overlay" aria-hidden="false">
+      {content}
+      <style jsx>{`
+        .spin-overlay {
+          position: fixed; inset: 0;
+          display: grid; place-items: center;
+          z-index: 9999;
+          ${backdrop ? "background: rgba(15,15,20,.45); backdrop-filter: blur(2px);" : ""}
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default Loading;

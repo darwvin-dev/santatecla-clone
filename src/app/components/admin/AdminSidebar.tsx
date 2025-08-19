@@ -5,6 +5,7 @@
       <nav>
         <a href="/admin">Dashboard</a>
         <a href="/admin/homepage">HomePage</a>
+        <a href="/admin/homepage/experiences">experiences</a>
         <a href="/admin/apartments">Appartamenti</a>
         <a href="/">Torna al sito</a>
       </nav>

@@ -96,3 +96,51 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  try {
+    await dbConnect();
+
+    const existing = await DynamicPart.findById(params.id).lean();
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const childrenCount = await DynamicPart.countDocuments({ parentId: (existing as any)._id });
+    if (childrenCount > 0) {
+      return NextResponse.json(
+        { error: "این آیتم زیرمجموعه دارد. ابتدا پست‌های وابسته را حذف یا منتقل کنید." },
+        { status: 409 }
+      );
+    }
+
+    const fields = [
+      "image",
+      "mobileImage",
+      "image2",
+      "mobileImage2",
+      "image3",
+      "mobileImage3",
+    ] as const;
+
+    const filePaths: string[] = [];
+    for (const f of fields) {
+      const url = (existing as any)[f] as string | undefined;
+      if (url && typeof url === "string" && url.startsWith("/uploads/")) {
+        const abs = path.join(process.cwd(), "public", url.replace(/^\//, ""));
+        filePaths.push(abs);
+      }
+    }
+
+    await DynamicPart.findByIdAndDelete(params.id);
+    await Promise.allSettled(filePaths.map((p) => fs.unlink(p)));
+
+    return NextResponse.json({ ok: true });
+  } catch (error: any) {
+    console.error("DELETE /api/dynamic-parts/:id error:", error);
+    return NextResponse.json(
+      { error: error?.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

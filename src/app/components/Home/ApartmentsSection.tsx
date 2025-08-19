@@ -1,54 +1,114 @@
 "use client";
 
-import type { FC } from "react";
-import { useState } from "react";
+import type { FC, CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
-import { Controller, EffectFade, Navigation } from "swiper/modules";
+import { Controller, EffectFade } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/effect-fade";
-import "swiper/css/navigation";
+
 import { Apartment } from "@/types/Apartment";
 
 type Props = { apartments: Apartment[] };
+
+const slugify = (s?: string) =>
+  (s || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "apartment";
+
+const imgMainStyle: CSSProperties = {
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  borderRadius: 12,
+  overflow: "hidden",
+  position: "relative",
+  aspectRatio: "16 / 9",
+};
+
+const imgOverlayStyle: CSSProperties = {
+  position: "absolute",
+  inset: 12,
+  borderRadius: 10,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+};
 
 const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [textSwiper, setTextSwiper] = useState<SwiperType | null>(null);
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
 
-  if (!apartments?.length) return null;
+  const items = useMemo(() => apartments || [], [apartments]);
+  if (!items.length) return null;
+
+  useEffect(() => {
+    if (textSwiper && imageSwiper) {
+      textSwiper.controller.control = imageSwiper;
+      imageSwiper.controller.control = textSwiper;
+    }
+  }, [textSwiper, imageSwiper]);
+
+  const canSlide = items.length > 1;
+
+  const handlePrev = () => {
+    if (canSlide) textSwiper?.slidePrev();
+  };
+  const handleNext = () => {
+    if (canSlide) textSwiper?.slideNext();
+  };
+  const keyActivate =
+    (fn: () => void) =>
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fn();
+      }
+    };
 
   return (
     <section className="row padding-y-90-90 overflow-hidden prop-section-immobile">
       <div className="container">
         <div className="row">
+          {/* ستون متن + ناوبری */}
           <div className="d-flex flex-column justify-content-between slider-col-txt">
             <div>
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
                 I nostri appartamenti
               </h2>
 
-              {/* دکمه‌های ناوبری */}
-              <div className="swiper-button-wrap pos-nav-change-first-slider">
+              <div id="propertySlideImagesMobile" />
+
+              <div className="swiper-button-wrap pos-nav-change-first-slider" style={{ display: "flex", gap: 8 }}>
                 <button
                   type="button"
-                  className="swiper-button-prev btn-only-arrow only-arrow-black js-apts-prev"
+                  className="swiper-button-prev btn-only-arrow only-arrow-black"
                   aria-label="Previous slide"
+                  onClick={handlePrev}
+                  onKeyDown={keyActivate(handlePrev)}
+                  disabled={!canSlide}
+                  style={{ cursor: canSlide ? "pointer" : "not-allowed", opacity: canSlide ? 1 : 0.5 }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover btn-right d-flex align-items-center">
-                    <svg viewBox="0 0 27 27" width="27" height="27">
+                    <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden="true">
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
                 </button>
+
                 <button
                   type="button"
-                  className="swiper-button-next btn-only-arrow only-arrow-black js-apts-next"
+                  className="swiper-button-next btn-only-arrow only-arrow-black"
                   aria-label="Next slide"
+                  onClick={handleNext}
+                  onKeyDown={keyActivate(handleNext)}
+                  disabled={!canSlide}
+                  style={{ cursor: canSlide ? "pointer" : "not-allowed", opacity: canSlide ? 1 : 0.5 }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
-                    <svg viewBox="0 0 27 27" width="27" height="27">
+                    <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden="true">
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
@@ -57,20 +117,19 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
 
               {/* اسلایدر متن */}
               <Swiper
-                modules={[EffectFade, Controller, Navigation]}
+                modules={[EffectFade, Controller]}
+                className="property-swiper"
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                loop
+                loop={canSlide}
                 onSwiper={setTextSwiper}
                 controller={{ control: imageSwiper as any }}
-                navigation={{ prevEl: ".js-apts-prev", nextEl: ".js-apts-next" }}
-                className="property-swiper"
               >
-                {apartments.map((ap) => (
-                  <SwiperSlide key={ap._id}>
+                {items.map((ap) => (
+                  <SwiperSlide key={ap._id} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <a
-                        href={`/apartments/${ap.title}`}
+                        href={`/apartments/${slugify(ap.title)}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
                         {ap.title}
@@ -96,59 +155,37 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
             </div>
           </div>
 
-          {/* ستون تصاویر: هر اسلاید = تصویر فعلی + تصویر آپارتمان قبلی کنار هم */}
+          {/* ستون تصاویر */}
           <div className="col-12 col-md-5 col-lg-4 offset-md-1">
-            <div className="row position-relative">
+            <div className="row position-relative" id="propertySlideImagesDesktop">
               <Swiper
+                id="propertySlideImages"
                 modules={[Controller]}
-                loop
+                className="property-swiper-images"
+                loop={canSlide}
+                spaceBetween={15}
                 onSwiper={setImageSwiper}
                 controller={{ control: textSwiper as any }}
-                className="property-swiper-images"
               >
-                {apartments.map((ap, idx) => {
-                  const prevIdx = (idx - 1 + apartments.length) % apartments.length;
-                  const prev = apartments[prevIdx];
+                {items.map((ap) => {
+                  const href = `/apartments/${slugify(ap.title)}`;
+                  const mainUrl = ap.image;
+                  const overlayUrl =
+                    (Array.isArray((ap as any).gallery) && (ap as any).gallery[0]) || ap.image;
 
                   return (
                     <SwiperSlide key={ap._id}>
                       <div
-                        className="d-flex"
-                        style={{ gap: 12, width: "100%" }}
+                        className="switch-img-wrap swiper-switch-main-img set-background-img"
+                        style={{ ...imgMainStyle, backgroundImage: `url(${mainUrl})` }}
                       >
-                        {/* قبلی */}
-                        <a
-                          href={`/apartments/${prev.title}`}
-                          className="property-hidden-link"
-                          aria-label={`Previous: ${prev.title}`}
-                          style={{
-                            display: "block",
-                            width: "50%",
-                            position: "relative",
-                            borderRadius: 12,
-                            overflow: "hidden",
-                            backgroundImage: `url(${prev.image})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            aspectRatio: "4 / 3",
-                          }}
-                        />
-                        {/* فعلی */}
-                        <a
-                          href={`/apartments/${ap.title}`}
-                          className="property-hidden-link"
-                          aria-label={ap.title}
-                          style={{
-                            display: "block",
-                            width: "50%",
-                            position: "relative",
-                            borderRadius: 12,
-                            overflow: "hidden",
-                            backgroundImage: `url(${ap.image})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            aspectRatio: "4 / 3",
-                          }}
+                        <a href={href} className="property-hidden-link">
+                          <span className="sr-only">{ap.title}</span>
+                        </a>
+
+                        <div
+                          className="swiper-switch-img position-absolute set-background-img"
+                          style={{ ...imgOverlayStyle, backgroundImage: `url(${overlayUrl})` }}
                         />
                       </div>
                     </SwiperSlide>

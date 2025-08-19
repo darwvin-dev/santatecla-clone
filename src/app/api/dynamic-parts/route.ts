@@ -8,7 +8,11 @@ import { Types } from "mongoose";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-async function saveImageFile(file: File, folder: string, subPrefix = ""): Promise<string> {
+async function saveImageFile(
+  file: File,
+  folder: string,
+  subPrefix = ""
+): Promise<string> {
   if (!file.type || !file.type.startsWith("image/")) {
     throw new Error("Invalid file type. Only images are allowed");
   }
@@ -16,7 +20,9 @@ async function saveImageFile(file: File, folder: string, subPrefix = ""): Promis
   await fs.mkdir(uploadDir, { recursive: true });
 
   const ext = path.extname(file.name) || ".jpg";
-  const unique = `${Date.now()}_${Math.random().toString(36).slice(2)}${subPrefix}`;
+  const unique = `${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2)}${subPrefix}`;
   const filename = `${unique}${ext}`;
   const destPath = path.join(uploadDir, filename);
 
@@ -30,21 +36,36 @@ export async function GET(req: NextRequest) {
   try {
     await dbConnect();
     const { searchParams } = new URL(req.url);
+
     const page = searchParams.get("page") || undefined;
     const key  = searchParams.get("key")  || undefined;
-    const parentIdRaw = searchParams.get("parentId");
+
+    const rawList = searchParams.getAll("parentId").flatMap(v => v.split(",").map(s => s.trim()).filter(Boolean));
 
     const filter: any = {};
     if (page) filter.page = page;
     if (key)  filter.key  = key;
 
-    if (parentIdRaw === "null" || parentIdRaw === "none") {
+    if (rawList.length === 0) {
       filter.parentId = null;
-    } else if (parentIdRaw && Types.ObjectId.isValid(parentIdRaw)) {
-      filter.parentId = new Types.ObjectId(parentIdRaw);
+    } else if (rawList.includes("all") || rawList.includes("any")) {
+    } else {
+      const list: (Types.ObjectId | null)[] = [];
+      for (const raw of rawList) {
+        if (raw === "null" || raw === "none" || raw === "") list.push(null);
+        else if (Types.ObjectId.isValid(raw)) list.push(new Types.ObjectId(raw));
+      }
+      if (list.length === 1) {
+        filter.parentId = list[0];
+      } else if (list.length > 1) {
+        filter.parentId = { $in: list };
+      }
     }
 
-    const docs = await DynamicPart.find(filter).sort({ order: 1, updatedAt: -1 }).lean();
+    const docs = await DynamicPart.find(filter)
+      .sort({ order: 1, updatedAt: -1 })
+      .lean();
+
     return NextResponse.json(docs);
   } catch (e: any) {
     console.error("GET /api/dynamic-parts error:", e);
@@ -57,33 +78,45 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const form = await req.formData();
 
-    const key  = String(form.get("key") || "");
+    const key = String(form.get("key") || "");
     const page = String(form.get("page") || "");
-    if (!key || !page) return NextResponse.json({ error: "key and page are required" }, { status: 400 });
+    if (!key || !page)
+      return NextResponse.json(
+        { error: "key and page are required" },
+        { status: 400 }
+      );
 
     const parentIdStr = (form.get("parentId") as string) || "";
     const parentId =
-      parentIdStr && Types.ObjectId.isValid(parentIdStr) ? new Types.ObjectId(parentIdStr) :
-      parentIdStr === "null" || parentIdStr === "none" ? null :
-      undefined; 
+      parentIdStr && Types.ObjectId.isValid(parentIdStr)
+        ? new Types.ObjectId(parentIdStr)
+        : parentIdStr === "null" || parentIdStr === "none"
+        ? null
+        : undefined;
 
-    const folder = path.join("DYNAMIC_PARTS", page, key, String(parentId ?? "_root")).replaceAll(path.sep, "/");
+    const folder = path
+      .join("DYNAMIC_PARTS", page, key, String(parentId ?? "_root"))
+      .replaceAll(path.sep, "/");
 
     async function pickUrlOrUpload(field: string, suffix: string) {
       const entry = form.get(field);
-      if (entry instanceof File && entry.size > 0) return await saveImageFile(entry, folder, suffix);
+      if (entry instanceof File && entry.size > 0)
+        return await saveImageFile(entry, folder, suffix);
       if (typeof entry === "string") return entry;
       return "";
     }
 
     const doc: any = {
-      key, page,
+      key,
+      page,
       title: String(form.get("title") || ""),
       secondTitle: String(form.get("secondTitle") || ""),
       description: String(form.get("description") || ""),
       secondDescription: String(form.get("secondDescription") || ""),
       order: Number(form.get("order") || 0),
-      published: ["true", "1", "on"].includes(String(form.get("published") || "true")),
+      published: ["true", "1", "on"].includes(
+        String(form.get("published") || "true")
+      ),
       image: await pickUrlOrUpload("image", "_image"),
       mobileImage: await pickUrlOrUpload("mobileImage", "_mobile"),
       image2: await pickUrlOrUpload("image2", "_image2"),
@@ -98,6 +131,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(created, { status: 201 });
   } catch (e: any) {
     console.error("POST /api/dynamic-parts error:", e);
-    return NextResponse.json({ error: e?.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

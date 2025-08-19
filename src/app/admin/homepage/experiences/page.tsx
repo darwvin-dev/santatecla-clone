@@ -2,24 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-
-type DP = {
-  _id: string;
-  key: string;
-  page: string;
-  title?: string;
-  description?: string;
-  image?: string;
-  order?: number;
-  updatedAt?: string;
-};
+import { DynamicPart } from "@/types/DynamicPart";
 
 export default function ExperiencesAdminPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const [parts, setParts] = useState<DP[]>([]);
+  const [parts, setParts] = useState<DynamicPart[]>([]);
 
-  // ---- states: titolo sezione
   const titlePart = useMemo(
     () => parts.find((p) => p.page === "Home" && p.key === "experiences"),
     [parts]
@@ -27,17 +16,17 @@ export default function ExperiencesAdminPage() {
   const [sectionTitle, setSectionTitle] = useState<string>("");
   const [savingTitle, setSavingTitle] = useState(false);
 
-  // ---- states: nuovo post
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newOrder, setNewOrder] = useState<number>(0);
   const [newFile, setNewFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
+  const [dpData, setDpData] = useState<DynamicPart | null>(null);
 
   const experienceItems = useMemo(
     () =>
       parts
-        .filter((p) => p.page === "Home" && p.key === "experience")
+        .filter((p) => p.page === "Home" && p.key === "experiences")
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [parts]
   );
@@ -46,13 +35,14 @@ export default function ExperiencesAdminPage() {
     try {
       setLoading(true);
       setErr(null);
-      const res = await fetch("/api/dynamic-parts?page=Home", {
+      const res = await fetch("/api/dynamic-parts?page=Home&parentId=all&key=experiences", {
         cache: "no-store",
       });
       if (!res.ok) throw new Error("Errore nel caricamento.");
-      const data: DP[] = await res.json();
-      setParts(data || []);
-      const tp = data.find((p) => p.key === "experiences");
+      const data: DynamicPart[] = await res.json();
+      setParts(data.filter(p=> p.parentId) || []);
+      const tp = data.find((p) => p.key === "experiences" && !p.parentId);
+      setDpData(tp)
       setSectionTitle(tp?.title || "Esperienze a Milano");
     } catch (e: any) {
       setErr(e?.message || "Errore di rete.");
@@ -108,9 +98,9 @@ export default function ExperiencesAdminPage() {
       setCreating(true);
       const fd = new FormData();
       fd.append("page", "Home");
-      fd.append("key", "experience");
+      fd.append("key", "experiences");
       fd.append("title", newTitle);
-      fd.append("parentId", experienceItems);
+      fd.append("parentId", dpData?._id);
       fd.append("description", newDesc);
       fd.append("order", String(newOrder || 0));
       fd.append("image", newFile);

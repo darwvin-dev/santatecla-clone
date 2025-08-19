@@ -22875,3 +22875,10 @@ div.ui-datepicker#ui-datepicker-div-octorate {
     min-height: 660px; 
   }
 }
+
+.header-channel .sch-schannel {
+    color: #fff;
+    text-decoration: none;
+    padding-right: 10px;
+    font-size: 28px;
+}

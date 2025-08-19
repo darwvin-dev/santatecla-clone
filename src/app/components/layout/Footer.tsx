@@ -103,7 +103,7 @@ export default function Footer() {
                 <li className="header-channel">
                   <a
                     href="https://www.facebook.com/santateclaimmobiliare"
-                    className="sch-schannel-fb"
+                    className="sch-schannel-fb sch-schannel"
                     title="Facebook"
                     target="_blank"
                     rel="noopener nofollow"
@@ -112,7 +112,7 @@ export default function Footer() {
                 <li className="header-channel">
                   <a
                     href="https://www.instagram.com/santatecla_immobiliare"
-                    className="sch-schannel-is"
+                    className="sch-schannel-is sch-schannel"
                     title="Instagram"
                     target="_blank"
                     rel="noopener nofollow"
@@ -121,7 +121,7 @@ export default function Footer() {
                 <li className="header-channel">
                   <a
                     href="https://www.linkedin.com/company/santateclaimmobiliare"
-                    className="sch-schannel-in"
+                    className="sch-schannel-in sch-schannel"
                     title="LinkedIn"
                     target="_blank"
                     rel="noopener nofollow"
@@ -130,7 +130,7 @@ export default function Footer() {
                 <li className="header-channel">
                   <a
                     href="https://www.youtube.com/c/SantateclaImmobiliareMilano"
-                    className="sch-schannel-yt"
+                    className="sch-schannel-yt sch-schannel"
                     title="YouTube"
                     target="_blank"
                     rel="noopener nofollow"

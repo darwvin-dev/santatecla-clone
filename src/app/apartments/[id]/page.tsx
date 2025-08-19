@@ -6,10 +6,10 @@ import ClientLayoutWrapper from "@/app/components/ClientLayoutWrapper";
 import ApartmentsGalerry from "@/app/components/apartments/ApartmentsGalerry";
 import ApartmentsDetails from "@/app/components/apartments/ApartmentsDetails";
 import Loading from "@/app/components/loading";
-import PropertyMap from "@/app/components/apartments/PropertyMap";
 import ApartmentRules from "@/app/components/apartments/ApartmentRules";
+import dynamic from "next/dynamic";
 
-/* ---------- Types aligned with your model ---------- */
+/* ---------- Types ---------- */
 type AmenityKey =
   | "macchina_caffe" | "aria_condizionata" | "bollitore" | "tostapane" | "lavastoviglie"
   | "self_check_in" | "tv" | "lavatrice" | "set_di_cortesia" | "microonde" | "biancheria"
@@ -24,40 +24,57 @@ type ApartmentDTO = {
   image: string;
   gallery: string[];
   plan?: string | null;
-
   description: string;
   details?: string;
-
   guests: number;
   sizeSqm: number;
   floor?: string;
   bathrooms: number;
-
   address: string;
   addressDetail?: string;
-
   amenities: AmenityKey[];
   rules?: Rules | null;
   cancellation?: Cancellation | null;
-
-  location?: { type: "Point"; coordinates: [number, number] }; // [lng, lat]
+  location?: { type: "Point"; coordinates: [number, number] };
   lat?: number;
   lng?: number;
 };
 
+const PropertyMapClient = dynamic(
+  () => import("../../components/apartments/PropertyMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          width: "100%",
+          height: 360,
+          borderRadius: 12,
+          background: "#f3f3f3",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        در حال بارگذاری نقشه…
+      </div>
+    ),
+  }
+);
+
 export default function PropertyIntro() {
   const params = useParams();
 
-  // ⚠️ اسم پارامتر باید دقیقا با نام فولدر داینامیک یکی باشد: [title] یا [name]
-  const title = useMemo(
-    () =>
-      typeof params?.title === "string"
-        ? params.title
-        : Array.isArray(params?.title)
-        ? params.title[0]
-        : "",
-    [params]
-  );
+  const slug = useMemo(() => {
+    const p: any = params;
+    const raw =
+      (typeof p?.id === "string" && p.id) ||
+      (Array.isArray(p?.id) && p.id[0]) ||
+      (typeof p?.title === "string" && p.title) ||
+      (Array.isArray(p?.title) && p.title[0]) ||
+      "";
+    return decodeURIComponent(raw);
+  }, [params]);
 
   const [data, setData] = useState<ApartmentDTO | null>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -65,21 +82,20 @@ export default function PropertyIntro() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!title) return;
+    if (!slug) return;
     let cancelled = false;
 
     (async () => {
       setLoading(true);
       setErr(null);
       try {
-        const res = await fetch(`/api/apartments/${encodeURIComponent(title)}`, {
+        const res = await fetch(`/api/apartments/${encodeURIComponent(slug)}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           cache: "no-store",
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json: ApartmentDTO = await res.json();
-
         if (!cancelled) {
           setData(json);
           setImages(
@@ -89,10 +105,7 @@ export default function PropertyIntro() {
           );
         }
       } catch (e: unknown) {
-        if (!cancelled) {
-          const msg = e instanceof Error ? e.message : "Fetch failed";
-          setErr(msg);
-        }
+        if (!cancelled) setErr(e instanceof Error ? e.message : "Fetch failed");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -101,7 +114,7 @@ export default function PropertyIntro() {
     return () => {
       cancelled = true;
     };
-  }, [title]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -127,15 +140,15 @@ export default function PropertyIntro() {
     );
   }
 
-  // GeoJSON: [lng, lat] —> به ترتیب صحیح به کامپوننت نقشه بده
+  // GeoJSON: [lng, lat]
   const lat = data.lat ?? data.location?.coordinates?.[1];
   const lng = data.lng ?? data.location?.coordinates?.[0];
+  const hasCoords = typeof lat === "number" && typeof lng === "number";
 
   return (
     <ClientLayoutWrapper>
       <ApartmentsGalerry images={images} name={data.title} />
 
-      {/* مطابق تایپ props کامپوننتت */}
       <ApartmentsDetails
         data={{
           title: data.title,
@@ -150,7 +163,9 @@ export default function PropertyIntro() {
         }}
       />
 
-      <PropertyMap lat={lat} lng={lng} addressLabel={data.address} />
+      {hasCoords && (
+        <PropertyMapClient lat={lat as number} lng={lng as number} title={data.title} />
+      )}
 
       <ApartmentRules
         data={{

@@ -11,7 +11,9 @@ export type DynamicPart = {
   page: string;
   published: true;
   secondDescription: string;
+  updatedAt: string;
   secondTitle: string;
   title: string;
+  parentId: string;
   _id: string;
 };

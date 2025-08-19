@@ -1,84 +1,142 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { EffectFade, Controller } from "swiper/modules";
+import { EffectFade, Controller, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
-import { useState } from "react";
+import "swiper/css/navigation";
+import { useRef, useMemo } from "react";
 import type { Swiper as SwiperType } from "swiper";
+import { DynamicPart } from "@/types/DynamicPart";
 
-const experiences = [
-  {
-    title: "Tramonto sulla cima del Duomo",
-    description: "Ammira lo skyline di Milano da un punto di vista eccezionale...",
-    image: "https://www.santateclaliving.com/wp-content/uploads/2023/03/adobestock_242806454-1920x1280.jpeg"
-  },
-  {
-    title: "Cena sul tram",
-    description: "Per trascorrere una serata indimenticabile nella nostra bellissima Milano...",
-    image: "https://www.santateclaliving.com/wp-content/uploads/2023/03/tram-ristorante-atmosfera.jpeg"
-  },
-  {
-    title: "Giro in 500 d'epoca",
-    description: "Vuoi visitare Milano da un punto di vista unico e in vero stile italiano?...",
-    image: "https://www.santateclaliving.com/wp-content/uploads/2023/03/adobestock_214367292-1920x2410.jpeg"
-  }
-];
+export default function ExperiencesSection({ experiences }: { experiences: DynamicPart[] }) {
+  const textSwiperRef = useRef<SwiperType | null>(null);
+  const imageSwiperRef = useRef<SwiperType | null>(null);
 
-export default function ExperiencesSection() {
-  const [textSwiper, setTextSwiper]   = useState<SwiperType | null>(null);
-  const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
+  // دکمه‌های ناوبری با ref
+  const prevElRef = useRef<HTMLDivElement | null>(null);
+  const nextElRef = useRef<HTMLDivElement | null>(null);
+
+  const baseData = experiences.find(e => !e.parentId);
+  const sorted = useMemo(
+    () => [...(experiences.filter(e => e.parentId) || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [experiences]
+  );
+
+  const IMAGE_HEIGHT_DESKTOP = 240;
+  const IMAGE_HEIGHT_MOBILE = 160;
+  const pickImg = (x: DynamicPart) => x.image || x.mobileImage || "/images/placeholder.jpg";
 
   return (
-    <section id="slider-invertito" className="row padding-y-90-120 overflow-hidden design-team-wrapper">
-      <div className="container">
-        <div className="row">
-          <div className="col-12 col-md-5 col-lg-6">
-            <div className="row position-relative">
+    <section id="slider-invertito" className="row padding-y-90-120 overflow-hidden design-team-wrapper" style={{ width: "100%" }}>
+      <div className="container" style={{ width: "100%" }}>
+        <div className="row" style={{ width: "100%", margin: 0 }}>
+          {/* ستون تصاویر */}
+          <div className="col-12 col-md-5 col-lg-6" style={{ width: "100%" }}>
+            <div className="row position-relative" id="teamsSlideImagesDesktop" style={{ width: "100%", margin: 0 }}>
               <Swiper
-                modules={[Controller]}
-                loop
-                controller={{ control: textSwiper ?? undefined }}   
-                onSwiper={(s) => setImageSwiper(s)}                 
-                className="team-swiper-images"
                 dir="rtl"
+                className="team-swiper-images"
+                modules={[Controller]}
+                onSwiper={(swiper) => {
+                  imageSwiperRef.current = swiper;
+                  if (textSwiperRef.current) swiper.controller.control = textSwiperRef.current;
+                }}
+                slidesPerView={2}
+                spaceBetween={15}
+                loop={sorted.length > 1}
+                controller={{ control: textSwiperRef.current as any }}
+                breakpoints={{
+                  0:   { slidesPerView: 1, spaceBetween: 10 },
+                  768: { slidesPerView: 2, spaceBetween: 15 },
+                }}
+                style={{ width: "100%" }}
               >
-                {experiences.map((exp, index) => (
-                  <SwiperSlide key={index}>
+                {sorted.map((item) => (
+                  <SwiperSlide key={item._id}>
                     <div
                       className="switch-img-wrap swiper-switch-main-img set-background-img"
-                      style={{ backgroundImage: `url(${exp.image})` }}
-                    ></div>
+                      style={{
+                        backgroundImage: `url(${pickImg(item)})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        borderRadius: 8,
+                        width: "100%",
+                        height: typeof window !== "undefined" && window.innerWidth < 768 ? IMAGE_HEIGHT_MOBILE : IMAGE_HEIGHT_DESKTOP,
+                      } as React.CSSProperties}
+                    />
                   </SwiperSlide>
                 ))}
               </Swiper>
             </div>
           </div>
 
-          <div className="d-flex flex-column justify-content-between slider-col-txt">
+          {/* ستون متن + ناوبری */}
+          <div className="d-flex flex-column justify-content-between slider-col-txt col-12 col-md-7 col-lg-6">
             <div className="position-relative team-wrapper">
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-                Esperienze a Milano{" "}
+                {baseData?.title ?? "Esperienze a Milano"}
               </h2>
-              <div className="swiper-button-wrap pos-nav-change-first-slider">
-                {/* Navigation buttons */}
+
+              {/* دکمه‌ها با ref اختصاصی */}
+              <div className="swiper-button-wrap pos-nav-change-first-slider" style={{ display: "flex", gap: 12 }}>
+                <div
+                  className="swiper-button-prev btn-only-arrow only-arrow-black"
+                  tabIndex={0}
+                  role="button"
+                  aria-label="Previous slide"
+                  style={{ cursor: "pointer" }}
+                  ref={prevElRef}
+                >
+                  <div className="btn-arrow btn-black btn-white-hover btn-right d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 27" width="27" height="27">
+                      <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  className="swiper-button-next btn-only-arrow only-arrow-black"
+                  tabIndex={0}
+                  role="button"
+                  aria-label="Next slide"
+                  style={{ cursor: "pointer" }}
+                  ref={nextElRef}
+                >
+                  <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 27" width="27" height="27">
+                      <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
+                    </svg>
+                  </div>
+                </div>
               </div>
+
               <Swiper
-                modules={[EffectFade, Controller]}
+                className="team-swiper swiper-fade"
+                modules={[EffectFade, Controller, Navigation]}
                 effect="fade"
-                loop
-                controller={{ control: imageSwiper }}
-                onSwiper={setTextSwiper}
-                className="team-swiper"
+                fadeEffect={{ crossFade: true }}
+                onBeforeInit={(swiper) => {
+                  (swiper.params.navigation as any).prevEl = prevElRef.current;
+                  (swiper.params.navigation as any).nextEl = nextElRef.current;
+                }}
+                onSwiper={(swiper) => {
+                  textSwiperRef.current = swiper;
+                  if (imageSwiperRef.current) swiper.controller.control = imageSwiperRef.current;
+                  swiper.navigation.init();
+                  swiper.navigation.update();
+                }}
+                slidesPerView={1}
+                loop={sorted.length > 1}
+                controller={{ control: imageSwiperRef.current as any }}
               >
-                {experiences.map((exp, index) => (
-                  <SwiperSlide key={index}>
+                {sorted.map((item) => (
+                  <SwiperSlide key={item._id}>
                     <div className="pt-1 pt-md-0 w-100 padding-y-0-25 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 ff-sans fw-400 fz-24 color-black lh-xs">
-                        {exp.title}
+                        {item.title || "—"}
                       </p>
                     </div>
                     <div className="w-100 position-relative">
                       <div className="slide-lg-enlarge-content site-content mb-0 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        <p>{exp.description}</p>
+                        <p style={{ margin: 0 }}>{item.description}</p>
                       </div>
                     </div>
                   </SwiperSlide>
