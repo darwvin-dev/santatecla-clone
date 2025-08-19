@@ -16,47 +16,32 @@ const FEATURES: Feature[] = [
   { label: "Set di cortesia", icon: "/features-icon/set-di-cortesia.svg" },
   { label: "Microonde", icon: "/features-icon/microonde.svg" },
   { label: "Biancheria", icon: "/features-icon/biancheria.svg" },
-  { label: "Culla su richiesta", icon: "/features-icon/culla-su-richiesta.svg" },
+  {
+    label: "Culla su richiesta",
+    icon: "/features-icon/culla-su-richiesta.svg",
+  },
   { label: "WiFi", icon: "/features-icon/wifi.svg" },
-  { label: "Parcheggio esterno", icon: "/features-icon/parcheggio-esterno.svg" },
+  {
+    label: "Parcheggio esterno",
+    icon: "/features-icon/parcheggio-esterno.svg",
+  },
   { label: "Animali ammessi", icon: "/features-icon/animali-ammessi.svg" },
   { label: "Asciugacapelli", icon: "/features-icon/asciugacapelli.svg" },
   { label: "Balcone", icon: "/features-icon/balcone.svg" },
 ];
 
-export default function ApartmentsDetails() {
+export default function ApartmentsDetails({ data }: { data: any }) {
   return (
     <section className="row padding-y-100-100 info-wrap-property">
       <div className="container">
         <div className="row mb-md-5">
           <div className="col-12 col-lg-5">
             <p className="ff-sans fw-400 fz-21 color-black lh-sm">
-              CityLife | Via Emanuele Filiberto 14
+              {data.address}
             </p>
 
             <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm padding-y-0-40">
-              <p>
-                Santa Tecla Living vi propone, per il vostro alloggio nella
-                città di Milano, questo appartamento di nuova costruzione,
-                appena ristrutturato, in via Emanuele Filiberto 14, a soli 10
-                minuti a piedi da City Life. Dispone di una camera da letto,
-                grande e luminosissimo soggiorno con cucina a vista,
-                equipaggiata con elettrodomestici di alta gamma, e un bagno con
-                box doccia. Al piano inferiore una grande zona living con divano
-                letto ed un letto aggiuntivo e un secondo bagno.
-              </p>
-              <p>
-                Il quartiere frutto di una riqualificazione totale, è diventato
-                un quartiere molto alla moda, moderno con spazi verdi su cui
-                svettano i tre iconoci grattacieli, simbolo dello skyline
-                milanese, aree pubbliche polifunzionali e palazzi in stile
-                Liberty che contrastano e arricchiscono lo stile futurista di
-                questo quartiere. Il cuore pulsante di CityLife è Piazza Tre
-                Torri, raggiungibile dall’appartamento in soli 10 minuti a
-                piedi. Questa grande area pedonale dà accesso al CityLife
-                Shopping District, centro commerciale all’interno del quale si
-                trovano più di 80 negozi e 20 ristoranti.
-              </p>
+              <p dangerouslySetInnerHTML={{__html: data.details}} />
               <p>&nbsp;</p>
               <p>
                 CIR: 015146-CIM-05557
@@ -67,28 +52,47 @@ export default function ApartmentsDetails() {
 
             <div className="row">
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Ospiti</p>
-                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">5</div>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Ospiti
+                </p>
+                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
+                  {data.guests}
+                </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Superficie</p>
-                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">95 mq</div>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Superficie
+                </p>
+                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
+                  {data.sizeSqm} mq
+                </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Piano</p>
-                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">Su due piani</div>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Piano
+                </p>
+                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
+                  {data.floor}
+                </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Bagni</p>
-                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">2</div>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Bagni
+                </p>
+                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
+                  {data.bathrooms}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Features */}
-          <div className="col-12 col-lg-6 offset-lg-1" style={{ marginTop: "37px" }}>
+          <div
+            className="col-12 col-lg-6 offset-lg-1"
+            style={{ marginTop: "37px" }}
+          >
             <div className="row">
-              {FEATURES.map((f) => (
+              {FEATURES.filter(f=> data.amenities.include(f)).map((f) => (
                 <div
                   key={f.label}
                   className="col-12 col-sm-6 col-md-4 col-lg-6 mt-3 d-flex flex-row align-items-center"
@@ -102,7 +106,9 @@ export default function ApartmentsDetails() {
                       loading="lazy"
                     />
                   </span>
-                  <span className="ff-sans fw-400 fz-18 color-black lh-sm pl-3">{f.label}</span>
+                  <span className="ff-sans fw-400 fz-18 color-black lh-sm pl-3">
+                    {f.label}
+                  </span>
                 </div>
               ))}
             </div>

@@ -8,9 +8,14 @@ import ApartmentsDetails from "@/app/components/apartments/ApartmentsDetails";
 import Loading from "@/app/components/loading";
 
 export default function PropertyIntro() {
-  const params = useParams(); 
+  const params = useParams();
   const name = useMemo(
-    () => (typeof params?.name === "string" ? params.name : Array.isArray(params?.name) ? params.name[0] : ""),
+    () =>
+      typeof params?.name === "string"
+        ? params.name
+        : Array.isArray(params?.name)
+        ? params.name[0]
+        : "",
     [params]
   );
 
@@ -36,8 +41,10 @@ export default function PropertyIntro() {
         const json = await res.json();
 
         if (!cancelled) {
-          setData(json?.details ?? json ?? null);
-          setImages(Array.isArray(json?.images) ? json.images : []);
+          setData(json);
+          console.log(json);
+          setImages([json.image, ...json.gallery]);
+          console.log(images)
         }
       } catch (e) {
         if (!cancelled) setErr(e?.message || "Fetch failed");
@@ -70,7 +77,7 @@ export default function PropertyIntro() {
 
   return (
     <ClientLayoutWrapper>
-      <ApartmentsGalerry images={images} />
+      <ApartmentsGalerry images={images} name={data?.title} />
       <ApartmentsDetails data={data} />
     </ClientLayoutWrapper>
   );

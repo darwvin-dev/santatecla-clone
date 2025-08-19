@@ -39,17 +39,14 @@ async function saveImageFile(file: File, folder: string, suffix = ""): Promise<s
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { name: string } }
 ) {
   try {
     await dbConnect();
 
-    const { id } = params;
-    if (!Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
-    }
+    const { name } = params;
 
-    const apartment = await Apartment.findById(id);
+    const apartment = await Apartment.findOne({name});
     if (!apartment) {
       return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
     }
