@@ -9,14 +9,7 @@ import { Controller, EffectFade, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
-
-export type Apartment = {
-  id: string | number;
-  slug: string;
-  title: string;
-  description: string;
-  image: string;
-};
+import { Apartment } from "@/types/Apartment";
 
 type Props = { apartments: Apartment[] };
 
@@ -74,7 +67,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 className="property-swiper"
               >
                 {apartments.map((ap) => (
-                  <SwiperSlide key={ap.id}>
+                  <SwiperSlide key={ap._id}>
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <a
                         href={`/apartments/${ap.title}`}
@@ -118,14 +111,14 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   const prev = apartments[prevIdx];
 
                   return (
-                    <SwiperSlide key={ap.id}>
+                    <SwiperSlide key={ap._id}>
                       <div
                         className="d-flex"
                         style={{ gap: 12, width: "100%" }}
                       >
                         {/* قبلی */}
                         <a
-                          href={`/apartments/${prev.slug}`}
+                          href={`/apartments/${prev.title}`}
                           className="property-hidden-link"
                           aria-label={`Previous: ${prev.title}`}
                           style={{
@@ -142,7 +135,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                         />
                         {/* فعلی */}
                         <a
-                          href={`/apartments/${ap.slug}`}
+                          href={`/apartments/${ap.title}`}
                           className="property-hidden-link"
                           aria-label={ap.title}
                           style={{

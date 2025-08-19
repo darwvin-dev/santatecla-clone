@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import NavMenu from "./NavMenu";
 
-export default function Header({ setIsMenuOpen, isMenuOpen }) {
+type HeaderProps = {
+  isMenuOpen: boolean;
+  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   return (
