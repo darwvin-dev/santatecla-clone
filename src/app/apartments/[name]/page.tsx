@@ -6,6 +6,8 @@ import ClientLayoutWrapper from "@/app/components/ClientLayoutWrapper";
 import ApartmentsGalerry from "@/app/components/apartments/ApartmentsGalerry";
 import ApartmentsDetails from "@/app/components/apartments/ApartmentsDetails";
 import Loading from "@/app/components/loading";
+import PropertyMap from "@/app/components/apartments/PropertyMap";
+import ApartmentRules from "@/app/components/apartments/ApartmentRules";
 
 export default function PropertyIntro() {
   const params = useParams();
@@ -79,6 +81,8 @@ export default function PropertyIntro() {
     <ClientLayoutWrapper>
       <ApartmentsGalerry images={images} name={data?.title} />
       <ApartmentsDetails data={data} />
+      <PropertyMap lat={data.location.coordinates[0]} lng={data.location.coordinates[1]} />
+      <ApartmentRules data={data} />
     </ClientLayoutWrapper>
   );
 }
