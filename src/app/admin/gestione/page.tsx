@@ -1,10 +1,7 @@
-// /app/admin/home/dynamic-parts/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-
-// -------------------- Types --------------------
 
 type Row = {
   _id: string;
@@ -99,7 +96,7 @@ function Skeleton({ className }: { className?: string }) {
 
 // -------------------- Page --------------------
 
-export default function DynamicPartsHomePage() {
+export default function DynamicPartsGestionePage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -116,7 +113,7 @@ export default function DynamicPartsHomePage() {
     try {
       setLoading(true);
       setErr(null);
-      const res = await fetch("/api/dynamic-parts?page=Home", { cache: "no-store" });
+      const res = await fetch("/api/dynamic-parts?page=Gestione", { cache: "no-store" });
       if (!res.ok) throw new Error("Errore nel caricamento delle sezioni.");
       const data = await res.json();
       setRows(Array.isArray(data) ? data : []);
@@ -159,7 +156,7 @@ export default function DynamicPartsHomePage() {
       <div className="sticky top-0 z-30 border-b border-zinc-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-900">Sezioni Dinamiche — Home</h1>
+            <h1 className="text-lg font-semibold tracking-tight text-zinc-900">Sezioni Dinamiche — Gestione</h1>
             <div className="flex items-center gap-2">
               <GhostButton onClick={load}>Ricarica</GhostButton>
               <PrimaryButton href="/admin/dynamic-parts/new">+ Nuovo</PrimaryButton>

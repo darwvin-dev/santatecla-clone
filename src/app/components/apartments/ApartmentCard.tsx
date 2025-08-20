@@ -29,8 +29,6 @@ export default function ApartmentCard({
   className = "",
   reversed = false,
 }: ApartmentCardProps) {
-  const link = "#";
-
   const imgColClasses = reversed
     ? "col-12 col-md-6 offset-lg-1 order-md-2 overflow-hidden"
     : "col-12 col-md-6 overflow-hidden";
@@ -46,7 +44,7 @@ export default function ApartmentCard({
           <div className="row">
             {/* Image */}
             <div className={imgColClasses}>
-              <a href={link} className="d-inline-block w-100 h-100">
+              <a href={`/apartments/${title}/`} className="d-inline-block w-100 h-100">
                 <figure className="mb-0 property-archive-img overflow-hidden">
                   <Image
                     src={image}
@@ -65,7 +63,7 @@ export default function ApartmentCard({
             {/* Info */}
             <div className={infoColClasses}>
               <div>
-                <a href={link} className="d-inline-block ff-sans fw-400 fz-21 color-black color-black-hover lh-xs txt-no-underline">
+                <a href={`/apartments/${title}/`} className="d-inline-block ff-sans fw-400 fz-21 color-black color-black-hover lh-xs txt-no-underline">
                   {title}
                 </a>
                 <div className="mt-3 site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">

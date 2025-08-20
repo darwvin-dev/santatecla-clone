@@ -73,12 +73,11 @@ export default function Footer() {
               </form>
             </div>
 
-            {/* Headquarter */}
             <div className="footer-custom-col footer-headquarter">
               <h3 className="footer-title ff-sans fw-400 fz-18 color-white lh-sm">Headquarter</h3>
               <div className="site-content link-white-bold ff-sans fw-200 fz-16 color-white lh-sm">
-                <p className="mb-0 mt-0">Largo 5° Alpini, 12</p>
-                <p className="mb-0 mt-0">20145 Milano</p>
+                <p className="mb-0 mt-0">Sede Via Matteo Bandello 14</p>
+                <p className="mb-0 mt-0">20123 Milano</p>
               </div>
             </div>
 
@@ -93,14 +92,14 @@ export default function Footer() {
                   +39 351 936 1241
                 </a>
                 <p className="ff-sans fw-200 fz-16 lh-sm mb-0 mt-0 footer-email">
-                  <a href="mailto:reservation@santateclaliving.com">
-                    reservation@santateclaliving.com
+                  <a href="mailto:habitabioita@gmail.com">
+                    habitabioita@gmail.com
                   </a>
                 </p>
               </div>
 
               <ul className="header-channels list-unstyled d-flex flex-row mb-0 mt-3">
-                <li className="header-channel">
+                {/* <li className="header-channel">
                   <a
                     href="https://www.facebook.com/santateclaimmobiliare"
                     className="sch-schannel-fb sch-schannel"
@@ -108,17 +107,17 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener nofollow"
                   ></a>
-                </li>
+                </li> */}
                 <li className="header-channel">
                   <a
-                    href="https://www.instagram.com/santatecla_immobiliare"
+                    href="https://www.instagram.com/habitabioo/profilecard/?igsh=b2x5MHJta2lyb3Iz"
                     className="sch-schannel-is sch-schannel"
                     title="Instagram"
                     target="_blank"
                     rel="noopener nofollow"
                   ></a>
                 </li>
-                <li className="header-channel">
+                {/* <li className="header-channel">
                   <a
                     href="https://www.linkedin.com/company/santateclaimmobiliare"
                     className="sch-schannel-in sch-schannel"
@@ -135,7 +134,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener nofollow"
                   ></a>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
@@ -175,7 +174,7 @@ export default function Footer() {
                 Santa Tecla Living
                 <br className="d-md-none" />
                 <span className="px-1 d-none d-md-inline">|</span>
-                Largo 5° Alpini, 12 - 20145 Milano
+                Sede Via Matteo Bandello 14 - 20123 Milano
                 <br className="d-sm-none" />
                 <span className="px-1 d-none d-sm-inline">|</span>
                 P.Iva 09314590960

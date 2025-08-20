@@ -11,7 +11,7 @@ type BannerBookProps = {
 export default function BannerBook({
   phone = "+393519361241",
   whatsappHref = "https://wa.me/393519361241",
-  email = "reservation@santateclaliving.com",
+  email = "habitabioita@gmail.com",
 }: BannerBookProps) {
   const [open, setOpen] = useState(false);
   const collapseId = useId(); 

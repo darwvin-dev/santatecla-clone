@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Apartment } from "@/types/Apartment";
 import ClientLayoutWrapper from "../components/ClientLayoutWrapper";
 import ApartmentsHeader from "../components/Home/ApartmentsHeader";
-import ApartmentCard from "../components/Home/ApartmentCard";
+import ApartmentCard from "../components/apartments/ApartmentCard";
 
 export default function Home() {
   const [apartments, setApartments] = useState<Apartment[]>([]);

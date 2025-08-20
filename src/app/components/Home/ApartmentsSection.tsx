@@ -13,13 +13,6 @@ import { Apartment } from "@/types/Apartment";
 
 type Props = { apartments: Apartment[] };
 
-const slugify = (s?: string) =>
-  (s || "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "apartment";
-
 const imgMainStyle: CSSProperties = {
   backgroundSize: "cover",
   backgroundPosition: "center",
@@ -129,7 +122,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   <SwiperSlide key={ap._id} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <a
-                        href={`/apartments/${slugify(ap.title)}`}
+                        href={`/apartments/${ap.title}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
                         {ap.title}
@@ -168,7 +161,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 controller={{ control: textSwiper as any }}
               >
                 {items.map((ap) => {
-                  const href = `/apartments/${slugify(ap.title)}`;
+                  const href = `/apartments/${ap.title}`;
                   const mainUrl = ap.image;
                   const overlayUrl =
                     (Array.isArray((ap as any).gallery) && (ap as any).gallery[0]) || ap.image;
