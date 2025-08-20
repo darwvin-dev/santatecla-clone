@@ -3,8 +3,8 @@
 import type { FC, CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper/types";
-import { EffectFade } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import { Controller, EffectFade } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/effect-fade";
@@ -29,63 +29,40 @@ const imgOverlayStyle: CSSProperties = {
   backgroundPosition: "center",
 };
 
-const BREAKPOINT_MD = 992;
-
 const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [textSwiper, setTextSwiper] = useState<SwiperType | null>(null);
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
-  const [spvImages, setSpvImages] = useState<number>(1);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const items = useMemo(() => apartments || [], [apartments]);
   if (!items.length) return null;
 
   useEffect(() => {
-    const calc = () => {
-      const isMdUp = typeof window !== "undefined" && window.innerWidth >= BREAKPOINT_MD;
-      setSpvImages(isMdUp ? 2 : 1);
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, []);
-
-  const canLoop = items.length > spvImages;
-  const canSlide = canLoop; // اگه نتونه اسلایدِ تصاویر حرکت کنه، دکمه‌ها رو هم غیرفعال کن
-  const isReady = !!(textSwiper && imageSwiper);
-
-  const gotoIndex = (idx: number) => {
-    if (textSwiper) {
-      if (canLoop) textSwiper.slideToLoop(idx);
-      else textSwiper.slideTo(idx);
+    if (textSwiper && imageSwiper) {
+      textSwiper.controller.control = imageSwiper;
+      imageSwiper.controller.control = textSwiper;
     }
-    if (imageSwiper) {
-      if (canLoop) imageSwiper.slideToLoop(idx);
-      else imageSwiper.slideTo(idx);
-    }
+  }, [textSwiper, imageSwiper]);
+
+  const canSlide = items.length > 1;
+
+  const handlePrev = () => {
+    if (!canSlide) return;
+    textSwiper?.slidePrev();
+    imageSwiper?.slidePrev();
+  };
+
+  const handleNext = () => {
+    if (!canSlide) return;
+    textSwiper?.slideNext();
+    imageSwiper?.slideNext();
   };
 
   const syncTo = (idx: number) => {
-    if (textSwiper && textSwiper.realIndex !== idx) {
-      if (canLoop) textSwiper.slideToLoop(idx);
-      else textSwiper.slideTo(idx);
-    }
-    if (imageSwiper && imageSwiper.realIndex !== idx) {
-      if (canLoop) imageSwiper.slideToLoop(idx);
-      else imageSwiper.slideTo(idx);
-    }
+    textSwiper?.slideTo(idx);
+    imageSwiper?.slideTo(idx);
+    setActiveIndex(idx);
   };
-
-  // ناوبری دکمه‌ها
-  const go = (dir: 1 | -1) => {
-    if (!canSlide || !isReady) return;
-    const base = imageSwiper ?? textSwiper!;
-    const len = items.length;
-    const next = (base.realIndex + dir + len) % len;
-    gotoIndex(next);
-  };
-
-  const handlePrev = () => go(-1);
-  const handleNext = () => go(1);
 
   const keyActivate =
     (fn: () => void) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -106,11 +83,9 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 I nostri appartamenti
               </h2>
 
-              <div id="propertySlideImagesMobile" />
-
               <div
                 className="swiper-button-wrap pos-nav-change-first-slider"
-                style={{ display: "flex", gap: 8 }}
+                style={{ display: "flex", gap: 8, marginBottom: "1rem" }}
               >
                 <button
                   type="button"
@@ -118,17 +93,19 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   aria-label="Previous slide"
                   onClick={handlePrev}
                   onKeyDown={keyActivate(handlePrev)}
-                  disabled={!canSlide || !isReady}
-                  aria-disabled={!canSlide || !isReady}
+                  disabled={!canSlide}
                   style={{
-                    cursor: canSlide && isReady ? "pointer" : "not-allowed",
-                    opacity: canSlide && isReady ? 1 : 0.5,
-                    position: "relative",
-                    zIndex: 10,
+                    cursor: canSlide ? "pointer" : "not-allowed",
+                    opacity: canSlide ? 1 : 0.5,
                   }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover btn-right d-flex align-items-center">
-                    <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 27 27"
+                      width="27"
+                      height="27"
+                      aria-hidden="true"
+                    >
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
@@ -140,38 +117,39 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   aria-label="Next slide"
                   onClick={handleNext}
                   onKeyDown={keyActivate(handleNext)}
-                  disabled={!canSlide || !isReady}
-                  aria-disabled={!canSlide || !isReady}
+                  disabled={!canSlide}
                   style={{
-                    cursor: canSlide && isReady ? "pointer" : "not-allowed",
-                    opacity: canSlide && isReady ? 1 : 0.5,
-                    position: "relative",
-                    zIndex: 10,
+                    cursor: canSlide ? "pointer" : "not-allowed",
+                    opacity: canSlide ? 1 : 0.5,
                   }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
-                    <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden="true">
+                    <svg
+                      viewBox="0 0 27 27"
+                      width="27"
+                      height="27"
+                      aria-hidden="true"
+                    >
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
                 </button>
               </div>
 
-              {/* اسلایدر متن (follower) */}
+              {/* اسلایدر متن */}
               <Swiper
-                modules={[EffectFade]}
+                modules={[EffectFade, Controller]}
                 className="property-swiper"
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                loop={canLoop}
-                rewind={!canLoop}
+                loop={canSlide}
                 onSwiper={setTextSwiper}
-                onSlideChange={(sw) => syncTo(sw.realIndex)}
-                allowTouchMove={canSlide}
-                watchOverflow
+                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                controller={{ control: imageSwiper }}
+                allowTouchMove={false}
               >
-                {items.map((ap) => (
-                  <SwiperSlide key={ap._id} className="pl-1">
+                {items.map((ap, index) => (
+                  <SwiperSlide key={ap._id || index} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <a
                         href={`/apartments/${ap.title}`}
@@ -188,6 +166,21 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   </SwiperSlide>
                 ))}
               </Swiper>
+
+              {/* نشانگرهای پیمایش */}
+              {canSlide && (
+                <div className="swiper-pagination-custom">
+                  {items.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={`swiper-pagination-bullet ${index === activeIndex ? 'active' : ''}`}
+                      onClick={() => syncTo(index)}
+                      aria-label={`Vai al slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="swiper-cta">
@@ -200,7 +193,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
             </div>
           </div>
 
-          {/* ستون تصاویر (master) */}
+          {/* ستون تصاویر */}
           <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div
               className="row gallery-prop-wrap"
@@ -209,28 +202,27 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
             >
               <Swiper
                 id="propertySlideImages"
+                modules={[Controller]}
                 className="property-swiper-images"
-                loop={canLoop}
-                rewind={!canLoop}
+                loop={canSlide}
                 spaceBetween={15}
                 onSwiper={setImageSwiper}
-                onSlideChange={(sw) => syncTo(sw.realIndex)}
+                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                controller={{ control: textSwiper }}
                 style={{ height: "100%" }}
                 breakpoints={{
                   0: { slidesPerView: 1 },
                   992: { slidesPerView: 2 },
                 }}
-                allowTouchMove={canSlide}
-                watchOverflow
               >
-                {items.map((ap) => {
+                {items.map((ap, index) => {
                   const href = `/apartments/${ap.title}`;
                   const main = ap.image;
-                  const overlay =
-                    (Array.isArray((ap as any).gallery) && (ap as any).gallery[0]) || ap.image;
+                  const gallery = (ap as any).gallery || [];
+                  const overlay = gallery[0] || ap.image;
 
                   return (
-                    <SwiperSlide key={ap._id} style={{ height: "100%" }}>
+                    <SwiperSlide key={ap._id || index} style={{ height: "100%" }}>
                       <div
                         className="switch-img-wrap swiper-switch-main-img set-background-img card-img"
                         style={{
@@ -257,6 +249,68 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .swiper-pagination-custom {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 1rem;
+        }
+        
+        .swiper-pagination-bullet {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background-color: #ccc;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        
+        .swiper-pagination-bullet.active {
+          background-color: #000;
+        }
+        
+        .swiper-pagination-bullet:hover {
+          background-color: #666;
+        }
+        
+        .property-hidden-link {
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+        }
+        
+        .card-img-overlay {
+          z-index: 1;
+          border-radius: 8px;
+          transition: opacity 0.3s ease;
+        }
+        
+        .card-img:hover .card-img-overlay {
+          opacity: 0;
+        }
+        
+        @media (max-width: 991px) {
+          .slider-col-txt {
+            order: 2;
+          }
+          
+          .gallery-single-prop {
+            order: 1;
+            margin-bottom: 2rem;
+          }
+          
+          .row.flex-nowrap {
+            flex-wrap: wrap !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };

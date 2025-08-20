@@ -1,7 +1,11 @@
 import { DynamicPart } from "@/types/DynamicPart";
 import React from "react";
 
-export default function GestioneAbout({about}: {about: DynamicPart | undefined}) {
+export default function GestioneAbout({
+  about,
+}: {
+  about: DynamicPart | undefined;
+}) {
   return (
     <section className="row padding-y-90-90 prop-section-about">
       <div className="w-100 position-relative overflow-hidden property-about-container">
@@ -30,8 +34,11 @@ export default function GestioneAbout({about}: {about: DynamicPart | undefined})
                 <h2 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
                   {about?.title}
                 </h2>
-                <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm" style={{ whiteSpace: "pre-line"}}>
-                 {about?.description}
+                <div
+                  className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm"
+                  style={{ whiteSpace: "pre-line" }}
+                >
+                  {about?.description}
                 </div>
               </div>
             </div>

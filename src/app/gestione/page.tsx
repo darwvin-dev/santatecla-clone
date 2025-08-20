@@ -47,7 +47,7 @@ export default function page() {
   );
 
   const about = useMemo(
-    () => gestione.find((h) => h.key === "About"),
+    () => gestione.find((h) => h.key === "about"),
     [gestione]
   );
 

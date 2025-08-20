@@ -16854,7 +16854,6 @@ nav.navigation.pagination .nav-links > .next {
     position: static;
     left: 0;
     top: 0;
-    width: 200%;
   }
 }
 
@@ -22362,6 +22361,7 @@ footer.site-footer {
   bottom: 0;
   z-index: 99991;
   -ms-flex-positive: 1;
+  background: white;
   flex-grow: 1;
 }
 

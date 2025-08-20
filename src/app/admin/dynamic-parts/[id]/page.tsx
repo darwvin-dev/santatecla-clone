@@ -1,7 +1,7 @@
 "use client";
 
-import { use, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 // -------------------- Types --------------------
 
@@ -17,12 +17,12 @@ type DP = {
   mobileImage?: string;
   image2?: string;
   mobileImage2?: string;
+  image3?: string;         // <-- اضافه شد
+  mobileImage3?: string;   // <-- اضافه شد
   order?: number;
   published?: boolean;
   updatedAt?: string;
 };
-
-type RouteParams = { id: string };
 
 // -------------------- UI primitives --------------------
 
@@ -30,9 +30,18 @@ function cn(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
-function Label({ htmlFor, children }: { htmlFor?: string; children: React.ReactNode }) {
+function Label({
+  htmlFor,
+  children,
+}: {
+  htmlFor?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <label htmlFor={htmlFor} className="mb-1 block text-xs font-medium text-zinc-600">
+    <label
+      htmlFor={htmlFor}
+      className="mb-1 block text-xs font-medium text-zinc-600"
+    >
       {children}
     </label>
   );
@@ -62,7 +71,11 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   );
 }
 
-function GhostButton({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+function GhostButton({
+  children,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
@@ -76,7 +89,11 @@ function GhostButton({ children, className, ...props }: React.ButtonHTMLAttribut
   );
 }
 
-function PrimaryButton({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+function PrimaryButton({
+  children,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
@@ -90,12 +107,24 @@ function PrimaryButton({ children, className, ...props }: React.ButtonHTMLAttrib
   );
 }
 
-function Card({ title, subtitle, children }: { title?: React.ReactNode; subtitle?: React.ReactNode; children?: React.ReactNode }) {
+function Card({
+  title,
+  subtitle,
+  children,
+}: {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white shadow-sm">
       {(title || subtitle) && (
         <header className="border-b border-zinc-200 px-4 py-3">
-          {title && <h3 className="text-base font-semibold tracking-tight text-zinc-900">{title}</h3>}
+          {title && (
+            <h3 className="text-base font-semibold tracking-tight text-zinc-900">
+              {title}
+            </h3>
+          )}
           {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
         </header>
       )}
@@ -104,25 +133,42 @@ function Card({ title, subtitle, children }: { title?: React.ReactNode; subtitle
   );
 }
 
-function Alert({ kind = "info", children }: { kind?: "info" | "error" | "success"; children: React.ReactNode }) {
+function Alert({
+  kind = "info",
+  children,
+}: {
+  kind?: "info" | "error" | "success";
+  children: React.ReactNode;
+}) {
   const map = {
     info: "border-sky-200 bg-sky-50 text-sky-800",
     error: "border-red-200 bg-red-50 text-red-700",
     success: "border-emerald-200 bg-emerald-50 text-emerald-700",
   } as const;
-  return <div className={cn("rounded-xl border px-4 py-3 text-sm", map[kind])}>{children}</div>;
+  return (
+    <div className={cn("rounded-xl border px-4 py-3 text-sm", map[kind])}>
+      {children}
+    </div>
+  );
 }
 
 function ImagePreview({ src, alt }: { src?: string; alt: string }) {
   if (!src) return <p className="text-xs text-zinc-500">Nessuna immagine.</p>;
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={alt} className="h-40 w-full rounded-xl border border-zinc-200 object-cover" />;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="h-40 w-full rounded-xl border border-zinc-200 object-cover"
+    />
+  );
 }
 
 // -------------------- Page --------------------
 
-export default function Page({ params }: { params: Promise<RouteParams> }) {
-  const { id } = use(params);
+export default function Page() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -143,6 +189,8 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
     mobileImage: "",
     image2: "",
     mobileImage2: "",
+    image3: "",          // <-- اضافه شد
+    mobileImage3: "",    // <-- اضافه شد
     order: 0,
     published: true,
   });
@@ -152,21 +200,55 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
   const [fileMobileImage, setFileMobileImage] = useState<File | null>(null);
   const [fileImage2, setFileImage2] = useState<File | null>(null);
   const [fileMobileImage2, setFileMobileImage2] = useState<File | null>(null);
+  const [fileImage3, setFileImage3] = useState<File | null>(null);             // <-- اضافه شد
+  const [fileMobileImage3, setFileMobileImage3] = useState<File | null>(null); // <-- اضافه شد
 
   const update = (k: keyof DP, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
   // previews
-  const previewImage = useMemo(() => (fileImage ? URL.createObjectURL(fileImage) : form.image || ""), [fileImage, form.image]);
-  const previewMobileImage = useMemo(() => (fileMobileImage ? URL.createObjectURL(fileMobileImage) : form.mobileImage || ""), [fileMobileImage, form.mobileImage]);
-  const previewImage2 = useMemo(() => (fileImage2 ? URL.createObjectURL(fileImage2) : form.image2 || ""), [fileImage2, form.image2]);
-  const previewMobileImage2 = useMemo(() => (fileMobileImage2 ? URL.createObjectURL(fileMobileImage2) : form.mobileImage2 || ""), [fileMobileImage2, form.mobileImage2]);
+  const previewImage = useMemo(
+    () => (fileImage ? URL.createObjectURL(fileImage) : form.image || ""),
+    [fileImage, form.image]
+  );
+  const previewMobileImage = useMemo(
+    () =>
+      fileMobileImage
+        ? URL.createObjectURL(fileMobileImage)
+        : form.mobileImage || "",
+    [fileMobileImage, form.mobileImage]
+  );
+  const previewImage2 = useMemo(
+    () => (fileImage2 ? URL.createObjectURL(fileImage2) : form.image2 || ""),
+    [fileImage2, form.image2]
+  );
+  const previewMobileImage2 = useMemo(
+    () =>
+      fileMobileImage2
+        ? URL.createObjectURL(fileMobileImage2)
+        : form.mobileImage2 || "",
+    [fileMobileImage2, form.mobileImage2]
+  );
+  const previewImage3 = useMemo(
+    () => (fileImage3 ? URL.createObjectURL(fileImage3) : form.image3 || ""),
+    [fileImage3, form.image3]
+  );
+  const previewMobileImage3 = useMemo(
+    () =>
+      fileMobileImage3
+        ? URL.createObjectURL(fileMobileImage3)
+        : form.mobileImage3 || "",
+    [fileMobileImage3, form.mobileImage3]
+  );
 
   // load data
   useEffect(() => {
+    if (!id) return;
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/dynamic-parts/${id}`, { cache: "no-store" });
+        const res = await fetch(`/api/dynamic-parts/${id}`, {
+          cache: "no-store",
+        });
         if (!res.ok) throw new Error("Impossibile caricare i dati.");
         const data: DP = await res.json();
         setForm({
@@ -181,6 +263,8 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
           mobileImage: data.mobileImage || "",
           image2: data.image2 || "",
           mobileImage2: data.mobileImage2 || "",
+          image3: (data as any).image3 || "",                 // <-- پوشش فیلدهای جدید
+          mobileImage3: (data as any).mobileImage3 || "",
           order: Number(data.order ?? 0),
           published: Boolean(data.published ?? true),
           updatedAt: data.updatedAt,
@@ -193,7 +277,12 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
     })();
   }, [id]);
 
-  function appendForPut(fd: FormData, name: keyof DP, file: File | null, currentUrl?: string) {
+  function appendForPut(
+    fd: FormData,
+    name: keyof DP,
+    file: File | null,
+    currentUrl?: string
+  ) {
     if (file) {
       fd.append(String(name), file);
     } else if (currentUrl !== undefined) {
@@ -208,7 +297,8 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
     setSaved(false);
 
     try {
-      if (!form.key?.trim() || !form.page?.trim()) throw new Error("Chiave e pagina sono obbligatorie.");
+      if (!form.key?.trim() || !form.page?.trim())
+        throw new Error("Chiave e pagina sono obbligatorie.");
 
       const fd = new FormData();
       fd.append("key", form.key);
@@ -224,18 +314,29 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
       appendForPut(fd, "mobileImage", fileMobileImage, form.mobileImage);
       appendForPut(fd, "image2", fileImage2, form.image2);
       appendForPut(fd, "mobileImage2", fileMobileImage2, form.mobileImage2);
+      appendForPut(fd, "image3", fileImage3, form.image3);                 // <-- اضافه شد
+      appendForPut(fd, "mobileImage3", fileMobileImage3, form.mobileImage3); // <-- اضافه شد
 
-      const res = await fetch(`/api/dynamic-parts/${id}`, { method: "POST", body: fd });
+      const res = await fetch(`/api/dynamic-parts/${id}`, {
+        method: "POST", // اگر API شما PUT/PATCH می‌خواهد، همین‌جا عوض کن
+        body: fd,
+      });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j?.error || "Errore durante il salvataggio.");
       }
       const updated: DP = await res.json();
-      setForm((s) => ({ ...s, ...updated, order: Number(updated.order ?? 0) }));
+      setForm((s) => ({
+        ...s,
+        ...updated,
+        order: Number(updated.order ?? 0),
+      }));
       setFileImage(null);
       setFileMobileImage(null);
       setFileImage2(null);
       setFileMobileImage2(null);
+      setFileImage3(null);            // ریست فایل‌های جدید
+      setFileMobileImage3(null);
       setSaved(true);
     } catch (err: any) {
       setError(err.message);
@@ -244,15 +345,28 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
     }
   }
 
-  function removeImage(field: "image" | "mobileImage" | "image2" | "mobileImage2") {
+  function removeImage(
+    field:
+      | "image"
+      | "mobileImage"
+      | "image2"
+      | "mobileImage2"
+      | "image3"
+      | "mobileImage3"
+  ) {
     update(field, "");
     if (field === "image") setFileImage(null);
     if (field === "mobileImage") setFileMobileImage(null);
     if (field === "image2") setFileImage2(null);
     if (field === "mobileImage2") setFileMobileImage2(null);
+    if (field === "image3") setFileImage3(null);               // پوشش
+    if (field === "mobileImage3") setFileMobileImage3(null);   // پوشش
   }
 
-  const fmt = new Intl.DateTimeFormat("it-IT", { dateStyle: "short", timeStyle: "short" });
+  const fmt = new Intl.DateTimeFormat("it-IT", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 
   // Loading state
   if (loading) {
@@ -275,15 +389,28 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
       {/* Top actions */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-zinc-900">Modifica Sezione — {form.key || "—"}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-900">
+            Modifica Sezione — {form.key || "—"}
+          </h1>
           {form.updatedAt && (
-            <p className="text-xs text-zinc-500">Ultimo aggiornamento: {fmt.format(new Date(form.updatedAt))}</p>
+            <p className="text-xs text-zinc-500">
+              Ultimo aggiornamento: {fmt.format(new Date(form.updatedAt))}
+            </p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <GhostButton type="button" onClick={() => router.push("/admin/homepage")}>← Indice</GhostButton>
-          <GhostButton type="button" onClick={() => history.back()}>Annulla</GhostButton>
-          <PrimaryButton type="submit" form="dp-form" disabled={saving}>{saving ? "Salvataggio…" : "Salva"}</PrimaryButton>
+          <GhostButton
+            type="button"
+            onClick={() => router.push("/admin/homepage")}
+          >
+            ← Indice
+          </GhostButton>
+          <GhostButton type="button" onClick={() => history.back()}>
+            Annulla
+          </GhostButton>
+          <PrimaryButton type="submit" form="dp-form" disabled={saving}>
+            {saving ? "Salvataggio…" : "Salva"}
+          </PrimaryButton>
         </div>
       </div>
 
@@ -304,18 +431,40 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <Label htmlFor="key">Chiave (key)</Label>
-              <Input id="key" value={form.key} onChange={(e) => update("key", e.target.value)} placeholder="hero, about, features…" required />
-              <p className="mt-1 text-xs text-zinc-500">Identificatore tecnico della sezione.</p>
+              <Input
+                id="key"
+                value={form.key}
+                onChange={(e) => update("key", e.target.value)}
+                placeholder="hero, about, features…"
+                required
+              />
+              <p className="mt-1 text-xs text-zinc-500">
+                Identificatore tecnico della sezione.
+              </p>
             </div>
             <div>
               <Label htmlFor="page">Pagina (page)</Label>
-              <Input id="page" value={form.page} onChange={(e) => update("page", e.target.value)} placeholder="Home" required />
+              <Input
+                id="page"
+                value={form.page}
+                onChange={(e) => update("page", e.target.value)}
+                placeholder="Home"
+                required
+              />
               <p className="mt-1 text-xs text-zinc-500">Es. Home</p>
             </div>
             <div>
               <Label htmlFor="order">Ordine</Label>
-              <Input id="order" type="number" value={form.order ?? 0} onChange={(e) => update("order", Number(e.target.value))} min={0} />
-              <p className="mt-1 text-xs text-zinc-500">Ordine di visualizzazione nella pagina.</p>
+              <Input
+                id="order"
+                type="number"
+                value={form.order ?? 0}
+                onChange={(e) => update("order", Number(e.target.value))}
+                min={0}
+              />
+              <p className="mt-1 text-xs text-zinc-500">
+                Ordine di visualizzazione nella pagina.
+              </p>
             </div>
           </div>
 
@@ -337,19 +486,43 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="title">Titolo</Label>
-              <Textarea id="title" rows={2} value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Titolo principale (Invio per nuova riga)" />
+              <Textarea
+                id="title"
+                rows={2}
+                value={form.title}
+                onChange={(e) => update("title", e.target.value)}
+                placeholder="Titolo principale (Invio per nuova riga)"
+              />
             </div>
             <div>
               <Label htmlFor="secondTitle">Secondo titolo</Label>
-              <Textarea id="secondTitle" rows={2} value={form.secondTitle} onChange={(e) => update("secondTitle", e.target.value)} placeholder="Sottotitolo / riga secondaria" />
+              <Textarea
+                id="secondTitle"
+                rows={2}
+                value={form.secondTitle}
+                onChange={(e) => update("secondTitle", e.target.value)}
+                placeholder="Sottotitolo / riga secondaria"
+              />
             </div>
             <div>
               <Label htmlFor="description">Descrizione</Label>
-              <Textarea id="description" rows={3} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Testo descrittivo" />
+              <Textarea
+                id="description"
+                rows={3}
+                value={form.description}
+                onChange={(e) => update("description", e.target.value)}
+                placeholder="Testo descrittivo"
+              />
             </div>
             <div>
               <Label htmlFor="secondDescription">Seconda descrizione</Label>
-              <Textarea id="secondDescription" rows={3} value={form.secondDescription} onChange={(e) => update("secondDescription", e.target.value)} placeholder="Testo descrittivo secondario" />
+              <Textarea
+                id="secondDescription"
+                rows={3}
+                value={form.secondDescription}
+                onChange={(e) => update("secondDescription", e.target.value)}
+                placeholder="Testo descrittivo secondario"
+              />
             </div>
           </div>
         </Card>
@@ -362,8 +535,16 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
             <div>
               <Label>Immagine desktop (image)</Label>
               <div className="mt-2 flex items-center gap-2">
-                <Input type="file" accept="image/*" onChange={(e) => setFileImage(e.currentTarget.files?.[0] ?? null)} />
-                <GhostButton type="button" onClick={() => removeImage("image")}>Rimuovi</GhostButton>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileImage(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton type="button" onClick={() => removeImage("image")}>
+                  Rimuovi
+                </GhostButton>
               </div>
               <div className="mt-3">
                 <ImagePreview src={previewImage} alt="Anteprima desktop" />
@@ -373,9 +554,20 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
             {/* Mobile */}
             <div>
               <Label>Immagine mobile (mobileImage)</Label>
-              <Input value={form.mobileImage || ""} onChange={(e) => update("mobileImage", e.target.value)} placeholder="URL o lascia vuoto e carica file" />
-              <div className="mt-2">
-                <GhostButton type="button" onClick={() => removeImage("mobileImage")}>Rimuovi</GhostButton>
+              <div className="mt-2 flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileMobileImage(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton
+                  type="button"
+                  onClick={() => removeImage("mobileImage")}
+                >
+                  Rimuovi
+                </GhostButton>
               </div>
               <div className="mt-3">
                 <ImagePreview src={previewMobileImage} alt="Anteprima mobile" />
@@ -388,9 +580,20 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
             {/* Desktop 2 */}
             <div>
               <Label>Immagine 2 (image2)</Label>
-              <Input value={form.image2 || ""} onChange={(e) => update("image2", e.target.value)} placeholder="URL o file (facoltativo)" />
-              <div className="mt-2">
-                <GhostButton type="button" onClick={() => removeImage("image2")}>Rimuovi</GhostButton>
+              <div className="mt-2 flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileImage2(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton
+                  type="button"
+                  onClick={() => removeImage("image2")}
+                >
+                  Rimuovi
+                </GhostButton>
               </div>
               <div className="mt-3">
                 <ImagePreview src={previewImage2} alt="Anteprima desktop 2" />
@@ -401,11 +604,77 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
             <div>
               <Label>Immagine mobile 2 (mobileImage2)</Label>
               <div className="mt-2 flex items-center gap-2">
-                <Input type="file" accept="image/*" onChange={(e) => setFileMobileImage2(e.currentTarget.files?.[0] ?? null)} />
-                <GhostButton type="button" onClick={() => removeImage("mobileImage2")}>Rimuovi</GhostButton>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileMobileImage2(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton
+                  type="button"
+                  onClick={() => removeImage("mobileImage2")}
+                >
+                  Rimuovi
+                </GhostButton>
               </div>
               <div className="mt-3">
-                <ImagePreview src={previewMobileImage2} alt="Anteprima mobile 2" />
+                <ImagePreview
+                  src={previewMobileImage2}
+                  alt="Anteprima mobile 2"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3 */}
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Desktop 3 */}
+            <div>
+              <Label>Immagine 3 (image3)</Label>
+              <div className="mt-2 flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileImage3(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton
+                  type="button"
+                  onClick={() => removeImage("image3")}
+                >
+                  Rimuovi
+                </GhostButton>
+              </div>
+              <div className="mt-3">
+                <ImagePreview src={previewImage3} alt="Anteprima desktop 3" />
+              </div>
+            </div>
+
+            {/* Mobile 3 */}
+            <div>
+              <Label>Immagine mobile 3 (mobileImage3)</Label>
+              <div className="mt-2 flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFileMobileImage3(e.currentTarget.files?.[0] ?? null)
+                  }
+                />
+                <GhostButton
+                  type="button"
+                  onClick={() => removeImage("mobileImage3")}
+                >
+                  Rimuovi
+                </GhostButton>
+              </div>
+              <div className="mt-3">
+                <ImagePreview
+                  src={previewMobileImage3}
+                  alt="Anteprima mobile 3"
+                />
               </div>
             </div>
           </div>
@@ -416,9 +685,18 @@ export default function Page({ params }: { params: Promise<RouteParams> }) {
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 p-4 sm:hidden">
         <div className="pointer-events-auto mx-auto max-w-5xl rounded-2xl border border-zinc-200 bg-white/90 p-3 shadow-lg backdrop-blur">
           <div className="flex items-center justify-end gap-2">
-            <GhostButton type="button" onClick={() => router.push("/admin/homepage")}>← Indice</GhostButton>
-            <GhostButton type="button" onClick={() => history.back()}>Annulla</GhostButton>
-            <PrimaryButton type="submit" form="dp-form" disabled={saving}>{saving ? "Salvataggio…" : "Salva"}</PrimaryButton>
+            <GhostButton
+              type="button"
+              onClick={() => router.push("/admin/homepage")}
+            >
+              ← Indice
+            </GhostButton>
+            <GhostButton type="button" onClick={() => history.back()}>
+              Annulla
+            </GhostButton>
+            <PrimaryButton type="submit" form="dp-form" disabled={saving}>
+              {saving ? "Salvataggio…" : "Salva"}
+            </PrimaryButton>
           </div>
         </div>
       </div>
