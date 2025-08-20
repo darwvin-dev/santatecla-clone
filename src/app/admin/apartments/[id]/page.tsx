@@ -298,9 +298,11 @@ export default function EditApartmentPage() {
       setRemovePlan(false);
     }
   };
+
   const handleGalleryNewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    setGalleryNew((g) => [...g, ...Array.from(e.target.files)]);
+    const files = e.currentTarget.files;
+    if (!files || files.length === 0) return;
+    setGalleryNew((g) => [...g, ...Array.from(files)]);
   };
 
   const removeExistingGalleryItem = (url: string) =>
