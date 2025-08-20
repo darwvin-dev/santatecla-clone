@@ -1,14 +1,14 @@
+import { DynamicPart } from "@/types/DynamicPart";
 import React from "react";
 
-export default function GestioneHero() {
+export default function GestioneHero({ hero }: { hero: DynamicPart | undefined }) {
   return (
-    
     <section className="row property-intro-wrap">
       <h1 className="sr-only color-white">Gestione</h1>
       <div
         style={{
           backgroundImage:
-            "url(https://www.santateclaliving.com/wp-content/uploads/2023/03/adobestock_158585580-scaled-e1678280883595-1920x998.jpeg);",
+            `url(${hero?.image})`,
         }}
         className="living-intro-background set-background-img vw-100 d-flex align-items-center justify-content-center position-relative"
       >
@@ -16,9 +16,9 @@ export default function GestioneHero() {
         <div className="col-12 col-sm-10 col-lg-7 col-xl-6 col-xxl-5">
           <h2
             className="homepage-title mb-0 ff-sans fw-200 fz-60 color-white lh-xs text-center"
-            style={{ zIndex: 1 }}
+            style={{ zIndex: 1, whiteSpace: "pre-line" }}
           >
-            Benvenuto in <br /> Santa Tecla Living{" "}
+            {hero?.title}
           </h2>
         </div>
       </div>

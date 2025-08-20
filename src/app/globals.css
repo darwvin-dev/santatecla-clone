@@ -16596,27 +16596,18 @@ nav.navigation.pagination .nav-links > .next {
   background-position: 50%;
 }
 
-.img-zoomInOut {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  bottom: 50%;
-  right: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(1.5);
-  transition-delay: 1.25s;
-  transition: transform 1.35s ease, opacity 0.9s ease;
+.translate-from-top {
+  transform: translateY(-20px);
+}
+.group:hover .translate-from-top {
+  transform: translateY(0);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .img-zoomInOut {
-    transition: none;
-  }
+.translate-from-left {
+  transform: translateX(-20px);
 }
-
-.img-zoomInOut.animated {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+.group:hover .translate-from-left {
+  transform: translateX(0);
 }
 
 .txt-opacityInOut {
@@ -22135,7 +22126,7 @@ footer.site-footer {
 
 @media (min-width: 768px) {
   .single-property-intro .swiper-button-wrap {
-    left: -15px;
+    left: -30px;
   }
 }
 
@@ -22881,4 +22872,19 @@ div.ui-datepicker#ui-datepicker-div-octorate {
     text-decoration: none;
     padding-right: 10px;
     font-size: 28px;
+}
+
+.img-slideIn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%); /* کمی پایین‌تر شروع کن */
+  opacity: 0;
+  transition: transform 1s ease, opacity 1s ease;
+}
+
+/* وقتی inview اضافه شد */
+.img-slideIn.animated {
+  transform: translate(-50%, -50%); /* جای درست مرکز */
+  opacity: 1;
 }

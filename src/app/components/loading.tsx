@@ -8,7 +8,7 @@ type LoadingProps = {
   thickness?: number;
   color?: string;
   trackColor?: string;
-  speed?: number;
+  speed?: number; // ms
   label?: string;
   fullscreen?: boolean;
   backdrop?: boolean;
@@ -33,13 +33,13 @@ const Loading: React.FC<LoadingProps> = ({
 }) => {
   if (!show) return null;
 
-  const vars: React.CSSProperties = {
-    ["--size" as any]: `${size}px`,
-    ["--thickness" as any]: `${thickness}px`,
-    ["--color" as any]: color,
-    ["--track" as any]: trackColor,
-    ["--speed" as any]: `${speed}ms`,
-  };
+  const vars = {
+    "--size": `${size}px`,
+    "--thickness": `${thickness}px`,
+    "--color": color,
+    "--track": trackColor,
+    "--speed": `${speed}ms`,
+  } as React.CSSProperties & Record<"--size" | "--thickness" | "--color" | "--track" | "--speed", string>;
 
   const LoaderEl =
     variant === "dots" ? (
@@ -50,16 +50,19 @@ const Loading: React.FC<LoadingProps> = ({
       <div className="ring" aria-hidden="true" />
     );
 
-  const content = (
+  const core = (
     <div
-      className={`spin-root ${className || ""}`}
+      className={`spin-root${className ? ` ${className}` : ""}`}
       role="status"
       aria-live="polite"
       aria-busy="true"
+      aria-label={label}
       style={{ ...vars, ...style, color }}
+      data-variant={variant}
     >
       {LoaderEl}
-      {label ? <span className="sr-only">{label}</span> : null}
+      {/* Screen-reader متن تکراری نشه: از aria-label بالا استفاده شده */}
+      <span className="sr-only">{label}</span>
 
       <style jsx>{`
         .spin-root {
@@ -77,7 +80,7 @@ const Loading: React.FC<LoadingProps> = ({
           white-space: nowrap; border: 0;
         }
 
-        /* ===== Ring Variant ===== */
+        /* ===== Ring ===== */
         .ring {
           width: var(--size);
           height: var(--size);
@@ -88,7 +91,7 @@ const Loading: React.FC<LoadingProps> = ({
           will-change: transform;
         }
 
-        /* ===== Dots Variant ===== */
+        /* ===== Dots ===== */
         .dots {
           width: calc(var(--size) * 2);
           display: inline-flex;
@@ -124,11 +127,15 @@ const Loading: React.FC<LoadingProps> = ({
     </div>
   );
 
-  if (!fullscreen) return content;
+  if (!fullscreen) return core;
 
   return (
-    <div className="spin-overlay" aria-hidden="false">
-      {content}
+    <div
+      className="spin-overlay"
+      aria-hidden="false"
+      role="presentation"
+    >
+      {core}
       <style jsx>{`
         .spin-overlay {
           position: fixed; inset: 0;

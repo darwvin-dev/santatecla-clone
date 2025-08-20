@@ -9,7 +9,7 @@ import "swiper/css/navigation";
 
 type Props = {
   name: string;
-  images: string[]; // ✅ به‌جای [string]
+  images: string[];
 };
 
 export default function ApartmentsGalerry({ images, name }: Props) {
@@ -17,32 +17,33 @@ export default function ApartmentsGalerry({ images, name }: Props) {
   const nextRef = useRef<HTMLDivElement>(null);
   const [navReady, setNavReady] = useState(false);
 
-  // اگر آرایه خالی یا null باشه، چیزی رندر نکنه
   const items = useMemo(() => (images ?? []).filter(Boolean), [images]);
 
-  useEffect(() => {
-    // بعد از mount، refها حاضرن → اجازه بده Swiper ناوبری رو init کنه
-    setNavReady(true);
-  }, []);
+  useEffect(() => setNavReady(true), []);
 
   if (!items.length) return null;
 
   return (
     <section className="row padding-y-190-190 single-property-intro">
       <div className="container padding-y-60-60">
-        <div className="row">
+        <div className="row flex-nowrap">
           {/* عنوان */}
-          <div className="property-about-text col-12 col-md-4 col-lg-2" style={{ minHeight: 416 }}>
-            <h1 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-xs">{name}</h1>
+          <div
+            className="property-about-text col-12 col-md-4 col-lg-2"
+            style={{ minHeight: 416 }}
+          >
+            <h1 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-xs">
+              {name}
+            </h1>
           </div>
 
           {/* گالری */}
-          <div className="col-12 col-md-7 col-lg-9 offset-md-1 gallery-single-prop position-relative">
+          <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div className="row gallery-prop-wrap">
               <Swiper
                 modules={[Navigation]}
                 className="property-swiper-images"
-                loop={items.length > 1}
+                loop={items.length > 2}
                 spaceBetween={15}
                 navigation={{
                   prevEl: prevRef.current!,
@@ -67,26 +68,31 @@ export default function ApartmentsGalerry({ images, name }: Props) {
                 }}
               >
                 {items.map((src, i) => (
-                  <SwiperSlide key={`${src}-${i}`}>
-                    <div className="switch-img-wrap swiper-switch-main-img set-background-img">
+                  <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
+                    <div className="switch-img-wrap swiper-switch-main-img">
                       <a
                         data-fancybox="single-property"
                         href={src}
-                        className="d-block h-100 w-100 property-hidden-link set-background-img"
+                        className="d-block w-100 property-hidden-link" 
                         aria-label={`Apri immagine ${i + 1}`}
                       >
                         <figure
-                          className="mb-0 h-100 position-relative overflow-hidden"
-                          style={{ aspectRatio: "3 / 2" }}
+                          className="mb-0 position-relative overflow-hidden" // ⬅️ position + overflow
+                          style={{ aspectRatio: "3 / 2", width: "100%" }} // ⬅️ کادر ثابت با نسبت
                         >
                           <Image
                             src={src}
                             alt={`${name} – immagine ${i + 1}`}
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"
-                            style={{ objectFit: "cover" }}
-                            className="img-fluid"
+                            style={{
+                              objectFit: "cover",
+                              objectPosition: "center",
+                            }} // ⬅️ پر کردن و کراپ
                             priority={i < 2}
+                            onError={(e) =>
+                              console.error("IMAGE LOAD ERROR:", { src, i }, e)
+                            }
                           />
                         </figure>
                       </a>
@@ -129,6 +135,11 @@ export default function ApartmentsGalerry({ images, name }: Props) {
           </div>
         </div>
       </div>
+
+      {/* 👇 گزینه‌ی اختیاری: اگر می‌خوای ارتفاع ثابت باشه به‌جای نسبت */}
+      {/* <style jsx global>{`
+        .property-swiper-images .swiper-slide figure { height: 320px; } // یا هر ارتفاعی
+      `}</style> */}
     </section>
   );
 }
