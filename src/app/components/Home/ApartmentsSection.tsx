@@ -1,15 +1,14 @@
 "use client";
 
 import type { FC, CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Controller, EffectFade } from "swiper/modules";
-
 import "swiper/css";
 import "swiper/css/effect-fade";
-
 import { Apartment } from "@/types/Apartment";
+import { resolveUrl } from "@/lib/helper";
 
 type Props = { apartments: Apartment[] };
 
@@ -33,50 +32,87 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [textSwiper, setTextSwiper] = useState<SwiperType | null>(null);
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // detect desktop to compute loop safety (slidesPerView=2 on >=992px)
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 992px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const items = useMemo(() => apartments || [], [apartments]);
   if (!items.length) return null;
 
-  useEffect(() => {
-    if (textSwiper && imageSwiper) {
-      textSwiper.controller.control = imageSwiper;
-      imageSwiper.controller.control = textSwiper;
-    }
-  }, [textSwiper, imageSwiper]);
-
+  const slidesPerView = isDesktop ? 2 : 1;
+  const loopEnabled = items.length > slidesPerView;
   const canSlide = items.length > 1;
 
-  const handlePrev = () => {
+  useEffect(() => {
+    if (imageSwiper && textSwiper) {
+      imageSwiper.controller.control = textSwiper;
+      textSwiper.controller.control = null as any;
+
+      const idx = 0;
+      if (loopEnabled) {
+        imageSwiper.slideToLoop(idx, 0);
+        textSwiper.slideToLoop(idx, 0);
+      } else {
+        imageSwiper.slideTo(idx, 0);
+        textSwiper.slideTo(idx, 0);
+      }
+      setActiveIndex(idx);
+    }
+  }, [imageSwiper, textSwiper, loopEnabled]);
+
+  const onImageChanged = useCallback(
+    (swiper: SwiperType) => {
+      const idx = swiper.realIndex ?? swiper.activeIndex ?? 0;
+      setActiveIndex(idx);
+      if (textSwiper) {
+        if (loopEnabled) textSwiper.slideToLoop(idx, 300);
+        else textSwiper.slideTo(idx, 300);
+      }
+    },
+    [textSwiper, loopEnabled]
+  );
+
+  const handlePrev = useCallback(() => {
     if (!canSlide) return;
-    textSwiper?.slidePrev();
     imageSwiper?.slidePrev();
-  };
+  }, [canSlide, imageSwiper]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!canSlide) return;
-    textSwiper?.slideNext();
     imageSwiper?.slideNext();
-  };
+  }, [canSlide, imageSwiper]);
 
-  const syncTo = (idx: number) => {
-    textSwiper?.slideTo(idx);
-    imageSwiper?.slideTo(idx);
-    setActiveIndex(idx);
-  };
+  const syncTo = useCallback(
+    (idx: number) => {
+      if (!canSlide || !imageSwiper) return;
+      if (loopEnabled) imageSwiper.slideToLoop(idx, 300);
+      else imageSwiper.slideTo(idx, 300);
+      setActiveIndex(idx);
+    },
+    [canSlide, imageSwiper, loopEnabled]
+  );
 
-  const keyActivate =
+  const keyActivate = useCallback(
     (fn: () => void) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         fn();
       }
-    };
+    },
+    []
+  );
 
   return (
     <section className="row padding-y-90-90 overflow-hidden prop-section-immobile">
       <div className="container">
         <div className="row flex-nowrap">
-          {/* ستون متن + ناوبری */}
           <div className="d-flex flex-column justify-content-between slider-col-txt">
             <div>
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
@@ -99,14 +135,17 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                     opacity: canSlide ? 1 : 0.5,
                   }}
                 >
-                  <div className="btn-arrow btn-black btn-white-hover btn-right d-flex align-items-center">
+                  <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
                     <svg
                       viewBox="0 0 27 27"
                       width="27"
                       height="27"
                       aria-hidden="true"
+                      focusable="false"
                     >
-                      <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
+                      <g transform="translate(27,0) scale(-1,1)">
+                        <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z" />
+                      </g>
                     </svg>
                   </div>
                 </button>
@@ -136,23 +175,20 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 </button>
               </div>
 
-              {/* اسلایدر متن */}
               <Swiper
                 modules={[EffectFade, Controller]}
                 className="property-swiper"
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                loop={canSlide}
-                onSwiper={setTextSwiper}
-                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-                controller={{ control: imageSwiper }}
+                loop={loopEnabled}
                 allowTouchMove={false}
+                onSwiper={setTextSwiper}
               >
                 {items.map((ap, index) => (
-                  <SwiperSlide key={ap._id || index} className="pl-1">
+                  <SwiperSlide key={ap._id ?? `txt-${index}`} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <a
-                        href={`/apartments/${ap.title}`}
+                        href={`/apartments/${encodeURIComponent(ap.title)}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
                         {ap.title}
@@ -167,14 +203,15 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 ))}
               </Swiper>
 
-              {/* نشانگرهای پیمایش */}
               {canSlide && (
                 <div className="swiper-pagination-custom">
                   {items.map((_, index) => (
                     <button
                       key={index}
                       type="button"
-                      className={`swiper-pagination-bullet ${index === activeIndex ? 'active' : ''}`}
+                      className={`swiper-pagination-bullet ${
+                        index === activeIndex ? "active" : ""
+                      }`}
                       onClick={() => syncTo(index)}
                       aria-label={`Vai al slide ${index + 1}`}
                     />
@@ -193,7 +230,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
             </div>
           </div>
 
-          {/* ستون تصاویر */}
+          {/* تصاویر (مستر) */}
           <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div
               className="row gallery-prop-wrap"
@@ -204,30 +241,37 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 id="propertySlideImages"
                 modules={[Controller]}
                 className="property-swiper-images"
-                loop={canSlide}
+                loop={loopEnabled}
                 spaceBetween={15}
-                onSwiper={setImageSwiper}
-                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-                controller={{ control: textSwiper }}
-                style={{ height: "100%" }}
+                slidesPerView={slidesPerView}
                 breakpoints={{
                   0: { slidesPerView: 1 },
                   992: { slidesPerView: 2 },
                 }}
+                onSwiper={setImageSwiper}
+                onSlideChange={onImageChanged}
+                style={{ height: "100%" }}
+                watchSlidesProgress
               >
                 {items.map((ap, index) => {
-                  const href = `/apartments/${ap.title}`;
-                  const main = ap.image;
+                  const href = `/apartments/${encodeURIComponent(ap.title)}`;
+                  const mainRaw = ap.image || "/fallback-image.jpg";
                   const gallery = (ap as any).gallery || [];
-                  const overlay = gallery[0] || ap.image;
+                  const overlayRaw = gallery[0] || mainRaw;
+
+                  const mainUrl = resolveUrl(mainRaw);
+                  const overlayUrl = resolveUrl(overlayRaw);
 
                   return (
-                    <SwiperSlide key={ap._id || index} style={{ height: "100%" }}>
+                    <SwiperSlide
+                      key={ap._id ?? `img-${index}`}
+                      style={{ height: "100%" }}
+                    >
                       <div
                         className="switch-img-wrap swiper-switch-main-img set-background-img card-img"
                         style={{
                           ...imgMainStyle,
-                          backgroundImage: `url(${main})`,
+                          backgroundImage: `url(${mainUrl})`,
                         }}
                       >
                         <a href={href} className="property-hidden-link">
@@ -237,7 +281,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                           className="swiper-switch-img position-absolute set-background-img card-img-overlay"
                           style={{
                             ...imgOverlayStyle,
-                            backgroundImage: `url(${overlay})`,
+                            backgroundImage: `url(${overlayUrl})`,
                           }}
                         />
                       </div>
@@ -257,7 +301,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           gap: 8px;
           margin-top: 1rem;
         }
-        
         .swiper-pagination-bullet {
           width: 12px;
           height: 12px;
@@ -267,15 +310,12 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           cursor: pointer;
           transition: background-color 0.3s ease;
         }
-        
         .swiper-pagination-bullet.active {
           background-color: #000;
         }
-        
         .swiper-pagination-bullet:hover {
           background-color: #666;
         }
-        
         .property-hidden-link {
           display: block;
           position: absolute;
@@ -285,27 +325,27 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           height: 100%;
           z-index: 2;
         }
-        
         .card-img-overlay {
           z-index: 1;
           border-radius: 8px;
           transition: opacity 0.3s ease;
         }
-        
         .card-img:hover .card-img-overlay {
           opacity: 0;
         }
-        
+        .swiper-switch-main-img,
+        .swiper-switch-img {
+          background-size: cover !important;
+          background-position: center !important;
+        }
         @media (max-width: 991px) {
           .slider-col-txt {
             order: 2;
           }
-          
           .gallery-single-prop {
             order: 1;
             margin-bottom: 2rem;
           }
-          
           .row.flex-nowrap {
             flex-wrap: wrap !important;
           }

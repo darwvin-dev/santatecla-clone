@@ -1,4 +1,3 @@
-// ApartmentsDetails.tsx
 import Image from "next/image";
 import React from "react";
 
@@ -95,13 +94,15 @@ type ApartmentsDetailsProps = {
   data: {
     title?: string;
     address?: string;
-    details?: string; // HTML از ادمین
+    details?: string; 
     guests?: number;
     sizeSqm?: number;
     floor?: string;
+    cir?: string;
+    cin?: string;
     bathrooms?: number;
-    amenities?: AmenityKey[]; // آرایه کلیدها
-    plan?: string | null; // مسیر تصویر پلان (اختیاری)
+    amenities?: AmenityKey[]; 
+    plan?: string | null; 
   };
 };
 
@@ -116,6 +117,8 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
     bathrooms,
     amenities = [],
     plan,
+    cir,
+    cin
   } = data || {};
 
   const selectedFeatures = FEATURES.filter((f) => amenities.includes(f.key));
@@ -149,9 +152,9 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
               ) : null}
               <p>&nbsp;</p>
               <p>
-                CIR: 015146-CIM-05557
+                CIR: {cir}
                 <br />
-                CIN: IT015146B4VIB7FRTT
+                CIN: {cin}
               </p>
             </div>
 

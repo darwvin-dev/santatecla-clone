@@ -28,6 +28,8 @@ type ApartmentDTO = {
   details?: string;
   guests: number;
   sizeSqm: number;
+  cir: string;
+  cin: string;
   floor?: string;
   bathrooms: number;
   address: string;
@@ -140,7 +142,6 @@ export default function PropertyIntro() {
     );
   }
 
-  // GeoJSON: [lng, lat]
   const lat = data.lat ?? data.location?.coordinates?.[1];
   const lng = data.lng ?? data.location?.coordinates?.[0];
   const hasCoords = typeof lat === "number" && typeof lng === "number";
@@ -160,6 +161,8 @@ export default function PropertyIntro() {
           bathrooms: data.bathrooms,
           amenities: data.amenities,
           plan: data.plan ?? null,
+          cir: data.cir ?? "",
+          cin: data.cin ?? "",
         }}
       />
 

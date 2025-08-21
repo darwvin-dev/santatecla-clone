@@ -6,6 +6,6 @@ export type Apartment = {
   description: string;
   guests: number;
   beds: number;
-  size: string;
+  sizeSqm: string;
   address: string;
 };

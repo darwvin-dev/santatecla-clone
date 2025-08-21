@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 320 80" role="img" aria-label="Habitabio wordmark">
+  <style>
+    :root { --hb-text:#111111; }
+    .t { fill: var(--hb-text); }
+  </style>
+  <text x="0" y="54" class="t" font-family="Georgia, 'Times New Roman', serif" font-size="36" letter-spacing="0.2">
+    Habitabio
+  </text>
+</svg>

@@ -88,31 +88,22 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
-      return NextResponse.json(
-        { error: "Apartment not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
     }
 
     const formData = await req.formData();
 
     const title = (formData.get("title") as string) ?? apartment.title;
-    const guests = formData.get("guests")
-      ? Number(formData.get("guests"))
-      : apartment.guests;
-    const sizeSqm = formData.get("sizeSqm")
-      ? Number(formData.get("sizeSqm"))
-      : apartment.sizeSqm;
-    const bathrooms = formData.get("bathrooms")
-      ? Number(formData.get("bathrooms"))
-      : apartment.bathrooms;
+    const guests = formData.get("guests") ? Number(formData.get("guests")) : apartment.guests;
+    const sizeSqm = formData.get("sizeSqm") ? Number(formData.get("sizeSqm")) : apartment.sizeSqm;
+    const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : apartment.bathrooms;
     const floor = (formData.get("floor") as string) ?? apartment.floor;
     const address = (formData.get("address") as string) ?? apartment.address;
-    const addressDetail =
-      (formData.get("addressDetail") as string) ?? apartment.addressDetail;
-    const description =
-      (formData.get("description") as string) ?? apartment.description;
+    const addressDetail = (formData.get("addressDetail") as string) ?? apartment.addressDetail;
+    const description = (formData.get("description") as string) ?? apartment.description;
     const details = (formData.get("details") as string) ?? apartment.details;
+    const cin = (formData.get("cin") as string) ?? apartment.cin;
+    const cir = (formData.get("cir") as string) ?? apartment.cir;
 
     apartment.title = title;
     apartment.guests = guests;
@@ -123,14 +114,14 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     apartment.addressDetail = addressDetail;
     apartment.description = description;
     apartment.details = details;
+    apartment.cin = cin;
+    apartment.cir = cir;
 
     const lat = formData.get("lat") ? Number(formData.get("lat")) : undefined;
     const lng = formData.get("lng") ? Number(formData.get("lng")) : undefined;
     if (
-      typeof lat === "number" &&
-      !Number.isNaN(lat) &&
-      typeof lng === "number" &&
-      !Number.isNaN(lng)
+      typeof lat === "number" && !Number.isNaN(lat) &&
+      typeof lng === "number" && !Number.isNaN(lng)
     ) {
       apartment.location = { type: "Point", coordinates: [lng, lat] } as any;
       apartment.lat = lat;
@@ -138,80 +129,86 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     }
 
     type Amenity =
-      | "macchina_caffe"
-      | "aria_condizionata"
-      | "bollitore"
-      | "tostapane"
-      | "lavastoviglie"
-      | "self_check_in"
-      | "tv"
-      | "lavatrice"
-      | "set_di_cortesia"
-      | "microonde"
-      | "biancheria"
-      | "culla_su_richiesta"
-      | "wifi"
-      | "parcheggio_esterno"
-      | "animali_ammessi"
-      | "asciugacapelli"
-      | "balcone";
+      | "macchina_caffe" | "aria_condizionata" | "bollitore" | "tostapane" | "lavastoviglie"
+      | "self_check_in" | "tv" | "lavatrice" | "set_di_cortesia" | "microonde" | "biancheria"
+      | "culla_su_richiesta" | "wifi" | "parcheggio_esterno" | "animali_ammessi"
+      | "asciugacapelli" | "balcone";
 
     const amenities = safeJson<Amenity[]>(formData.get("amenities"));
     if (amenities) apartment.amenities = amenities;
 
-    const rules = safeJson<{
-      checkInFrom: string;
-      checkInTo: string;
-      checkOutBy: string;
-    }>(formData.get("rules"));
+    const rules = safeJson<{ checkInFrom: string; checkInTo: string; checkOutBy: string }>(formData.get("rules"));
     if (rules) apartment.rules = rules;
 
-    const cancellation = safeJson<{
-      policy: "free_until_5_days" | "flexible" | "strict";
-      note?: string;
-    }>(formData.get("cancellation"));
+    const cancellation = safeJson<{ policy: "free_until_5_days" | "flexible" | "strict"; note?: string }>(
+      formData.get("cancellation")
+    );
     if (cancellation) apartment.cancellation = cancellation;
 
-    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(
-      /[/\\?%*:|"<>]/g,
-      "_"
-    );
+    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(/[/\\?%*:|"<>]/g, "_");
 
     const coverFile = formData.get("image") as File | null;
     if (coverFile && typeof coverFile === "object" && coverFile.size > 0) {
       if (apartment.image) {
-        await deleteIfExists(
-          path.join(process.cwd(), "public", apartment.image)
-        );
+        await deleteIfExists(path.join(process.cwd(), "public", apartment.image));
       }
       apartment.image = await saveImageFile(coverFile, folder, "_cover");
     }
 
-    const keepGallery = safeJson<string[]>(formData.get("keepGallery")) ?? [];
-    const currentGallery: string[] = Array.isArray(apartment.gallery)
-      ? apartment.gallery
-      : [];
+    const galleryOrder = safeJson<string[]>(formData.get("galleryOrder")); 
+    const galleryNewFiles = formData.getAll("galleryNew[]") as File[];
+    const currentGallery: string[] = Array.isArray(apartment.gallery) ? apartment.gallery : [];
 
-    const toDelete = currentGallery.filter((url) => !keepGallery.includes(url));
-    for (const url of toDelete) {
-      await deleteIfExists(path.join(process.cwd(), "public", url));
-    }
-
-    let nextGallery = [...keepGallery];
-
-    const galleryNew = formData.getAll("galleryNew[]") as File[];
-    for (const gf of galleryNew) {
-      if (
-        gf &&
-        typeof gf === "object" &&
-        "type" in gf &&
-        gf.type.startsWith("image/")
-      ) {
-        const p = await saveImageFile(gf, folder, "_gallery");
-        nextGallery.push(p);
+    if (Array.isArray(galleryOrder) && galleryOrder.length > 0) {
+      const existingTokens = new Set(galleryOrder.filter((t) => !t.startsWith("new:")));
+      const toDelete = currentGallery.filter((url) => !existingTokens.has(url));
+      for (const url of toDelete) {
+        await deleteIfExists(path.join(process.cwd(), "public", url));
       }
+
+      const nextGallery: string[] = [];
+      const usedNew = new Set<number>();
+
+      for (const token of galleryOrder) {
+        if (token.startsWith("new:")) {
+          const idxStr = token.split(":")[1] ?? "";
+          const idx = Number(idxStr);
+          const f = galleryNewFiles[idx];
+
+          if (
+            Number.isFinite(idx) &&
+            !usedNew.has(idx) &&
+            f &&
+            typeof f === "object" &&
+            "type" in f &&
+            f.type?.startsWith("image/")
+          ) {
+            const p = await saveImageFile(f, folder, "_gallery");
+            nextGallery.push(p);
+            usedNew.add(idx);
+          }
+        } else {
+          nextGallery.push(token);
+        }
+      }
+
+      apartment.gallery = nextGallery;
+    } else {
+      const keepGallery = safeJson<string[]>(formData.get("keepGallery")) ?? [];
+      const toDelete = currentGallery.filter((url) => !keepGallery.includes(url));
+      for (const url of toDelete) {
+        await deleteIfExists(path.join(process.cwd(), "public", url));
+      }
+
+      let nextGallery = [...keepGallery];
+      for (const gf of galleryNewFiles) {
+        if (gf && typeof gf === "object" && "type" in gf && gf.type?.startsWith("image/")) {
+          const p = await saveImageFile(gf, folder, "_gallery");
+          nextGallery.push(p);
+        }
+      }
+      apartment.gallery = nextGallery;
     }
-    apartment.gallery = nextGallery;
 
     const removePlan = (formData.get("removePlan") as string) === "true";
     const planFile = formData.get("plan") as File | null;
@@ -220,16 +217,9 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
       await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
       apartment.plan = undefined as any;
     }
-    if (
-      !removePlan &&
-      planFile &&
-      typeof planFile === "object" &&
-      planFile.size > 0
-    ) {
+    if (!removePlan && planFile && typeof planFile === "object" && planFile.size > 0) {
       if (apartment.plan) {
-        await deleteIfExists(
-          path.join(process.cwd(), "public", apartment.plan)
-        );
+        await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
       }
       apartment.plan = await saveImageFile(planFile, folder, "_plan");
     }
@@ -238,10 +228,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     return NextResponse.json(apartment, { status: 200 });
   } catch (e: any) {
     console.error("PUT /api/apartments/[id] error:", e);
-    return NextResponse.json(
-      { error: e?.message ?? "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
   }
 }
 

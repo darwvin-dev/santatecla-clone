@@ -9,8 +9,7 @@ type ApartmentCardProps = {
   image: string;
   description: string;
   guests: number;
-  beds: number;
-  size: string;
+  sizeSqm: string;
   address: string;
   priority?: boolean;
   className?: string;
@@ -22,8 +21,7 @@ export default function ApartmentCard({
   image,
   description,
   guests,
-  beds,
-  size,
+  sizeSqm,
   address,
   priority = false,
   className = "",
@@ -82,7 +80,7 @@ export default function ApartmentCard({
                     &nbsp;|&nbsp;
                   </p>
                   <p className="mb-2 mb-md-0 ff-sans fw-200 fz-21 color-gray lh-xs">
-                    {beds} mq
+                    {sizeSqm} mq
                   </p>
                 </div>
                 <div className="mt-md-3">

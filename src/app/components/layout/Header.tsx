@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import NavMenu from "./NavMenu";
+import { LogoFull, LogoH } from "../brand/Logo";
 
 type HeaderProps = {
   isMenuOpen: boolean;
@@ -10,6 +11,14 @@ type HeaderProps = {
 
 export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -37,20 +46,47 @@ export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
             </div>
 
             <Link
-              className="brand d-inline-flex flex-column align-items-center txt-no-underline position-relative"
+              className="brand d-inline-flex align-items-center txt-no-underline position-relative"
               href="/"
               aria-label="Santa Tecla Living"
+              style={{ gap: 8 }}
             >
-              <i className="main-brand webfont icon-wf-st_logo-ponte fz-40 color-black color-black-hover"></i>
-              <i
-                className="sub-brand webfont icon-wf-st_logo-ST-living fz-150 color-black color-black-hover"
+              <span
+                className="brand-wrap"
                 style={{
-                  maxHeight: "60px",
-                  opacity: 1,
+                  display: "inline-grid",
+                  placeItems: "center",
+                  height: 40, 
                 }}
               >
-                Santa Tecla
-              </i>
+                <LogoFull
+                  width={170}
+                  height={40}
+                  style={{
+                    display: "block",
+                    transition: "opacity .2s ease, transform .2s ease",
+                    opacity: scrolled ? 0 : 1,
+                    // transform: scrolled
+                    //   ? "translateY(-6px) scale(.96)"
+                    //   : "translateY(0) scale(1)",
+                    position: scrolled
+                      ? ("absolute" as const)
+                      : ("static" as const),
+                  }}
+                />
+                <LogoH
+                  width={36}
+                  height={36}
+                  style={{
+                    display: "block",
+                    transition: "opacity .2s ease, transform .2s ease",
+                    opacity: scrolled ? 1 : 0,
+                    transform: scrolled
+                      ? "translateY(0) scale(1)"
+                      : "translateY(6px) scale(.96)",
+                  }}
+                />
+              </span>
             </Link>
 
             <div className="nav-icn-wrap d-flex flex-row justify-content-end">

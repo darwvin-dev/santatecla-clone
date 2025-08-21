@@ -27,12 +27,21 @@ function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   }
 }
 
-async function saveImageFile(file: File, subPrefix = "", title = ""): Promise<string> {
+async function saveImageFile(
+  file: File,
+  subPrefix = "",
+  title = ""
+): Promise<string> {
   if (!file.type || !file.type.startsWith("image/")) {
     throw new Error("Invalid file type. Only images are allowed");
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", title || "APARTMENTS");
+  const uploadDir = path.join(
+    process.cwd(),
+    "public",
+    "uploads",
+    title || "APARTMENTS"
+  );
   await fs.mkdir(uploadDir, { recursive: true });
 
   const ext = path.extname(file.name) || ".jpg";
@@ -104,6 +113,8 @@ export async function POST(req: NextRequest) {
     ).trim();
     const description = (formData.get("description") as string) ?? "";
     const details = (formData.get("details") as string) ?? "";
+    const cin = (formData.get("cin") as string) ?? "";
+    const cir = (formData.get("cir") as string) ?? "";
     const lat = formData.get("lat") ? Number(formData.get("lat")) : undefined;
     const lng = formData.get("lng") ? Number(formData.get("lng")) : undefined;
 
@@ -152,6 +163,8 @@ export async function POST(req: NextRequest) {
       amenities,
       rules,
       cancellation,
+      cir,
+      cin,
     };
 
     if (typeof lat === "number" && typeof lng === "number") {

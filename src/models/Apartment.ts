@@ -49,6 +49,9 @@ export interface IApartment extends Document {
   floor?: string;
   bathrooms: number;
 
+  cir?: string;
+  cin?: string;
+
   address: string;
   addressDetail?: string;
 
@@ -93,7 +96,13 @@ const CancellationSchema = new Schema<Cancellation>(
 
 const ApartmentSchema = new Schema<IApartment>(
   {
-    title: { type: String, required: true, trim: true, unique: true, index: true },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      index: true,
+    },
 
     image: { type: String, required: true, trim: true },
     gallery: { type: [String], default: [] },
@@ -109,6 +118,9 @@ const ApartmentSchema = new Schema<IApartment>(
 
     address: { type: String, required: true, trim: true },
     addressDetail: { type: String, trim: true },
+
+    cir: { type: String, trim: true, default: "" },
+    cin: { type: String, trim: true, default: "" },
 
     amenities: {
       type: [{ type: String, enum: AMENITY_KEYS }],

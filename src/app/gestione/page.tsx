@@ -46,8 +46,8 @@ export default function page() {
     [gestione]
   );
 
-  const about = useMemo(
-    () => gestione.find((h) => h.key === "about"),
+  const abouts = useMemo(
+    () => gestione.filter((h) => h.key === "about"),
     [gestione]
   );
 
@@ -56,7 +56,7 @@ export default function page() {
   return (
     <ClientLayoutWrapper>
       <GestioneHero hero={hero} />
-      <GestioneAbout about={about} />
+      <GestioneAbout abouts={abouts} />
       <ApartmentsSection apartments={apartments} />
     </ClientLayoutWrapper>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import { Manrope } from "next/font/google";
 
 const manrope = Manrope({
@@ -7,6 +5,13 @@ const manrope = Manrope({
   weight: ["300", "400", "500", "600", "700", "800"], 
   variable: "--font-manrope",
 });
+
+export const metadata = {
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.png',
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

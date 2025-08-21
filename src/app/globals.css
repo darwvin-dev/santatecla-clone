@@ -1,6 +1,6 @@
 @charset "UTF-8";
-html{
-  --vh: 6.67px
+html {
+  --vh: 6.67px;
 }
 .jssocials-shares {
   margin: 0.2em 0;
@@ -1591,6 +1591,10 @@ pre code {
   .container-md,
   .container-sm {
     max-width: 720px;
+  }
+
+  #slider-invertito {
+    justify-self: center;
   }
 }
 
@@ -22863,15 +22867,15 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 
 @media (min-width: 992px) {
   .prop-about-img-wrap {
-    min-height: 660px; 
+    min-height: 660px;
   }
 }
 
 .header-channel .sch-schannel {
-    color: #fff;
-    text-decoration: none;
-    padding-right: 10px;
-    font-size: 28px;
+  color: #fff;
+  text-decoration: none;
+  padding-right: 10px;
+  font-size: 28px;
 }
 
 .img-slideIn {

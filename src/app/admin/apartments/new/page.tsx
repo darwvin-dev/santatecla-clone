@@ -182,6 +182,8 @@ export default function NewApartmentPage() {
     details: "",
     lat: "",
     lng: "",
+    cin: "",
+    cir: "",
   });
 
   const [amenities, setAmenities] = useState<Amenity[]>([
@@ -274,6 +276,8 @@ export default function NewApartmentPage() {
     fd.append("address", form.address);
     fd.append("description", form.description);
     fd.append("details", form.details);
+    fd.append("cin", form.cin);
+    fd.append("cir", form.cir);
     if (form.lat && form.lng) {
       fd.append("lat", form.lat);
       fd.append("lng", form.lng);
@@ -415,6 +419,32 @@ export default function NewApartmentPage() {
                 </div>
               </div>
 
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    CIR
+                  </label>
+                  <input
+                    name="cir"
+                    value={form.cir}
+                    onChange={handleChange}
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    CIN
+                  </label>
+                  <input
+                    name="cin"
+                    required
+                    value={form.cin}
+                    onChange={handleChange}
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                  />
+                </div>
+              </div>
+              
               <div className="grid gap-3 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">
