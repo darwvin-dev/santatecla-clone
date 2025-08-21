@@ -24,22 +24,70 @@ type AmenityKey =
 type Feature = { key: AmenityKey; label: string; icon: string };
 
 const FEATURES: Feature[] = [
-  { key: "macchina_caffe", label: "Macchina del caffè", icon: "/features-icon/coffee-machine.svg" },
-  { key: "aria_condizionata", label: "Aria condizionata", icon: "/features-icon/air-conditioning.svg" },
+  {
+    key: "macchina_caffe",
+    label: "Macchina del caffè",
+    icon: "/features-icon/coffee-machine.svg",
+  },
+  {
+    key: "aria_condizionata",
+    label: "Aria condizionata",
+    icon: "/features-icon/air-conditioning.svg",
+  },
   { key: "bollitore", label: "Bollitore", icon: "/features-icon/kettle.svg" },
   { key: "tostapane", label: "Tostapane", icon: "/features-icon/toaster.svg" },
-  { key: "lavastoviglie", label: "Lavastoviglie", icon: "/features-icon/dishwasher.svg" },
-  { key: "self_check_in", label: "Self Check-in", icon: "/features-icon/self-check-in.svg" },
+  {
+    key: "lavastoviglie",
+    label: "Lavastoviglie",
+    icon: "/features-icon/dishwasher.svg",
+  },
+  {
+    key: "self_check_in",
+    label: "Self Check-in",
+    icon: "/features-icon/self-check-in.svg",
+  },
   { key: "tv", label: "TV", icon: "/features-icon/tv.svg" },
-  { key: "lavatrice", label: "Lavatrice", icon: "/features-icon/lavatrice.svg" },
-  { key: "set_di_cortesia", label: "Set di cortesia", icon: "/features-icon/set-di-cortesia.svg" },
-  { key: "microonde", label: "Microonde", icon: "/features-icon/microonde.svg" },
-  { key: "biancheria", label: "Biancheria", icon: "/features-icon/biancheria.svg" },
-  { key: "culla_su_richiesta", label: "Culla su richiesta", icon: "/features-icon/culla-su-richiesta.svg" },
+  {
+    key: "lavatrice",
+    label: "Lavatrice",
+    icon: "/features-icon/lavatrice.svg",
+  },
+  {
+    key: "set_di_cortesia",
+    label: "Set di cortesia",
+    icon: "/features-icon/set-di-cortesia.svg",
+  },
+  {
+    key: "microonde",
+    label: "Microonde",
+    icon: "/features-icon/microonde.svg",
+  },
+  {
+    key: "biancheria",
+    label: "Biancheria",
+    icon: "/features-icon/biancheria.svg",
+  },
+  {
+    key: "culla_su_richiesta",
+    label: "Culla su richiesta",
+    icon: "/features-icon/culla-su-richiesta.svg",
+  },
   { key: "wifi", label: "WiFi", icon: "/features-icon/wifi.svg" },
-  { key: "parcheggio_esterno", label: "Parcheggio esterno", icon: "/features-icon/parcheggio-esterno.svg" },
-  { key: "animali_ammessi", label: "Animali ammessi", icon: "/features-icon/animali-ammessi.svg" },
-  { key: "asciugacapelli", label: "Asciugacapelli", icon: "/features-icon/asciugacapelli.svg" },
+  {
+    key: "parcheggio_esterno",
+    label: "Parcheggio esterno",
+    icon: "/features-icon/parcheggio-esterno.svg",
+  },
+  {
+    key: "animali_ammessi",
+    label: "Animali ammessi",
+    icon: "/features-icon/animali-ammessi.svg",
+  },
+  {
+    key: "asciugacapelli",
+    label: "Asciugacapelli",
+    icon: "/features-icon/asciugacapelli.svg",
+  },
   { key: "balcone", label: "Balcone", icon: "/features-icon/balcone.svg" },
 ];
 
@@ -72,12 +120,18 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
 
   const selectedFeatures = FEATURES.filter((f) => amenities.includes(f.key));
 
-  const mailSubject = encodeURIComponent(`Richiedi info per ${title ?? "appartamento"}`);
+  const mailSubject = encodeURIComponent(
+    `Richiedi info per ${title ?? "appartamento"}`
+  );
   const mailBody = encodeURIComponent(
-    `Salve, sono interessato a ricevere informazioni sull’appartamento: ${title ?? ""}.`
+    `Salve, sono interessato a ricevere informazioni sull’appartamento: ${
+      title ?? ""
+    }.`
   );
   const waText = encodeURIComponent(
-    `Salve, sono interessato a ricevere informazioni sull’appartamento: ${title ?? ""}.`
+    `Salve, sono interessato a ricevere informazioni sull’appartamento: ${
+      title ?? ""
+    }.`
   );
 
   return (
@@ -103,25 +157,33 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
 
             <div className="row">
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Ospiti</p>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Ospiti
+                </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {guests ?? "-"}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Superficie</p>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Superficie
+                </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {typeof sizeSqm === "number" ? `${sizeSqm} mq` : "-"}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Piano</p>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Piano
+                </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {floor || "-"}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
-                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">Bagni</p>
+                <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
+                  Bagni
+                </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {bathrooms ?? "-"}
                 </div>
@@ -130,7 +192,10 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
           </div>
 
           {/* Features */}
-          <div className="col-12 col-lg-6 offset-lg-1" style={{ marginTop: 37 }}>
+          <div
+            className="col-12 col-lg-6 offset-lg-1"
+            style={{ marginTop: 37 }}
+          >
             <div className="row">
               {selectedFeatures.map((f) => (
                 <div
@@ -138,14 +203,24 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                   className="col-12 col-sm-6 col-md-4 col-lg-6 mt-3 d-flex flex-row align-items-center"
                 >
                   <span className="features-icon" aria-hidden="true">
-                    <Image src={f.icon} alt={f.label} width={28} height={28} loading="lazy" />
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${f.icon}`}
+                      alt={f.label}
+                      width={28}
+                      height={28}
+                      loading="lazy"
+                    />
                   </span>
-                  <span className="ff-sans fw-400 fz-18 color-black lh-sm pl-3">{f.label}</span>
+                  <span className="ff-sans fw-400 fz-18 color-black lh-sm pl-3">
+                    {f.label}
+                  </span>
                 </div>
               ))}
               {selectedFeatures.length === 0 && (
                 <div className="col-12 mt-3">
-                  <span className="ff-sans fz-16 color-gray">Nessuna dotazione selezionata.</span>
+                  <span className="ff-sans fz-16 color-gray">
+                    Nessuna dotazione selezionata.
+                  </span>
                 </div>
               )}
             </div>

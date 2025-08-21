@@ -23,6 +23,8 @@ export default function ApartmentsGalerry({ images, name }: Props) {
 
   if (!items.length) return null;
 
+  console.log(process.env.NEXT_PUBLIC_DOMAIN_ADDRESS)
+
   return (
     <section className="row padding-y-190-190 single-property-intro">
       <div className="container padding-y-60-60">
@@ -73,22 +75,22 @@ export default function ApartmentsGalerry({ images, name }: Props) {
                       <a
                         data-fancybox="single-property"
                         href={src}
-                        className="d-block w-100 property-hidden-link" 
+                        className="d-block w-100 property-hidden-link"
                         aria-label={`Apri immagine ${i + 1}`}
                       >
                         <figure
-                          className="mb-0 position-relative overflow-hidden" // ⬅️ position + overflow
-                          style={{ aspectRatio: "3 / 2", width: "100%" }} // ⬅️ کادر ثابت با نسبت
+                          className="mb-0 position-relative overflow-hidden" 
+                          style={{ aspectRatio: "3 / 2", width: "100%" }} 
                         >
                           <Image
-                            src={src}
+                            src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
                             alt={`${name} – immagine ${i + 1}`}
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"
                             style={{
                               objectFit: "cover",
                               objectPosition: "center",
-                            }} // ⬅️ پر کردن و کراپ
+                            }}
                             priority={i < 2}
                             onError={(e) =>
                               console.error("IMAGE LOAD ERROR:", { src, i }, e)
