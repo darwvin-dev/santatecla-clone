@@ -2,7 +2,18 @@
   "homepage": {
     "home": "Home",
     "apartments": "I nostri appartamenti",
-    "extras": "Servizi extra on demand"
+    "services": {
+      "title": "Servizi extra on demand",
+      "items": {
+        "babysitter": "Baby Sitter",
+        "beauty": "Beauty center",
+        "chef": "Chef a domicilio",
+        "gym": "Palestra",
+        "parking": "Parcheggio",
+        "transfer": "Transfer"
+      }
+    },
+    "seeAll": "Vedi tutti"
   },
   "sidebar": {
     "dashboard": "Dashboard",

@@ -6,7 +6,7 @@ export default function HeroSection({
 }: {
   hero: DynamicPart | undefined;
 }) {
-    const t = useTranslations("homepage");
+  const t = useTranslations("homepage");
 
   return (
     <>

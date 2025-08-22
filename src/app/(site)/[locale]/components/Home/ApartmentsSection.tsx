@@ -10,6 +10,7 @@ import "swiper/css/effect-fade";
 import { Apartment } from "@/types/Apartment";
 import { resolveUrl } from "@/lib/helper";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 type Props = { apartments: Apartment[] };
 
@@ -34,6 +35,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const t = useTranslations("homepage");
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 992px)");
@@ -106,7 +108,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           <div className="d-flex flex-column justify-content-between slider-col-txt">
             <div>
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-                I nostri appartamenti
+                {t("apartments")}
               </h2>
 
               <div
@@ -180,12 +182,12 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 {items.map((ap, index) => (
                   <SwiperSlide key={ap._id ?? `txt-${index}`} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
-                      <a
+                      <Link
                         href={`/apartments/${encodeURIComponent(ap.title)}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
                         {ap.title}
-                      </a>
+                      </Link>
                     </div>
                     <div className="w-100 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 pb-4 pb-md-5 ff-sans fw-200 fz-18 color-gray lh-sm">
@@ -195,8 +197,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   </SwiperSlide>
                 ))}
               </Swiper>
-
-
             </div>
 
             <div className="swiper-cta">
@@ -204,7 +204,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 href="/apartments"
                 className="d-inline-flex align-items-center btn-rounded btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline text-center"
               >
-                <span>Vedi tutti</span>
+                <span>{t("seeAll")}</span>
               </Link>
             </div>
           </div>

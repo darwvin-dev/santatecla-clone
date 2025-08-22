@@ -2,7 +2,18 @@
   "homepage": {
     "home": "Home",
     "apartments": "Our apartments",
-    "extras": "On-demand extra services"
+    "services": {
+      "title": "Extra services on demand",
+      "items": {
+        "babysitter": "Babysitter",
+        "beauty": "Beauty center",
+        "chef": "Private chef",
+        "gym": "Gym",
+        "parking": "Parking",
+        "transfer": "Transfer"
+      }
+    },
+    "seeAll": "See all"
   },
   "sidebar": {
     "dashboard": "Dashboard",
