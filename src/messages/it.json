@@ -22,5 +22,22 @@
     "experiences": "Esperienze",
     "apartments": "Appartamenti",
     "backToSite": "Torna al sito"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Iscriviti alla nostra newsletter",
+      "placeholderEmail": "Email",
+      "submitAria": "Invia",
+      "consent": "Ho letto e accetto la {policy}",
+      "policy": "Privacy policy"
+    },
+    "headquarter": "Headquarter",
+    "contacts": "Contatti",
+    "cookies": "Cookies policy",
+    "privacy": "Privacy",
+    "preferences": "Preferenze",
+    "companyLine": "Santa Tecla Living",
+    "addressLine": "Sede Via Matteo Bandello 14 - 20123 Milano",
+    "vatLine": "P.Iva 09314590960"
   }
 }
