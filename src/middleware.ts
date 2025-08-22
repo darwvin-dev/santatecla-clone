@@ -1,54 +1,46 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import createMiddleware from 'next-intl/middleware';
+import {routing} from './i18n/routing';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"],
-};
+const intlMiddleware = createMiddleware(routing);
 
-const ALLOW_NO_AUTH = new Set(["GET", "HEAD", "OPTIONS"]);
-
+// Auth helpers
+const ALLOW_NO_AUTH = new Set(['GET','HEAD','OPTIONS']);
 function isAuthed(req: NextRequest) {
-  const header = req.headers.get("authorization") || "";
-  const [scheme, encoded] = header.split(" ");
-  if (scheme !== "Basic" || !encoded) return false;
+  const header = req.headers.get('authorization') || '';
+  const [scheme, encoded] = header.split(' ');
+  if (scheme !== 'Basic' || !encoded) return false;
   try {
-    const [user, pass] = atob(encoded).split(":");
-    return (
-      user === process.env.ADMIN_USER &&
-      pass === process.env.ADMIN_PASS
-    );
+    const [user, pass] = atob(encoded).split(':');
+    return user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASS;
   } catch {
     return false;
   }
 }
 
 export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const method = req.method;
+  const {pathname} = req.nextUrl;
 
-  if (method === "OPTIONS") return NextResponse.next();
-
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith('/api')) {
+    if (ALLOW_NO_AUTH.has(req.method)) return NextResponse.next();
     if (isAuthed(req)) return NextResponse.next();
-    return new NextResponse("Authentication required.", {
-      status: 401,
-      headers: {
-        "WWW-Authenticate": 'Basic realm="Admin Area", charset="UTF-8"',
-      },
-    });
+    return new NextResponse('Admin authentication required', {status: 401});
   }
 
-  if (pathname.startsWith("/api")) {
-    if (ALLOW_NO_AUTH.has(method)) return NextResponse.next();
-
+  if (pathname.startsWith('/admin')) {
     if (isAuthed(req)) return NextResponse.next();
-    return new NextResponse("Admin authentication required for non-GET requests.", {
-      status: 401,
-      headers: {
-        "WWW-Authenticate": 'Basic realm="Admin API", charset="UTF-8"',
-      },
-    });
+    return new NextResponse('Authentication required', {status: 401});
   }
 
-  return NextResponse.next();
+  // سایر مسیرها → i18n
+  return intlMiddleware(req);
 }
+
+export const config = {
+  matcher: [
+    '/((?!api|admin|trpc|_next|_vercel|.*\\..*).*)',
+    '/admin/:path*',
+    '/api/:path*'
+  ]
+};

@@ -1,0 +1,15 @@
+{
+  "homepage": {
+    "home": "Home",
+    "apartments": "Our apartments",
+    "extras": "On-demand extra services"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "homepage": "Home page",
+    "gestione": "Management",
+    "experiences": "Experiences",
+    "apartments": "Apartments",
+    "backToSite": "Back to site"
+  }
+}

@@ -1,9 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <circle cx="40" cy="40" r="28" fill="none" stroke="#16a34a" stroke-width="4"></circle>
-  <!-- H به شکل وکتور (بدون وابستگی به فونت) -->
-  <g fill="#111">
-    <rect x="26" y="24" width="8" height="32" rx="1.5"></rect>
-    <rect x="46" y="24" width="8" height="32" rx="1.5"></rect>
-    <rect x="26" y="36" width="28" height="8" rx="1.5"></rect>
-  </g>
-</svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 96 96"
+      role="img"
+      aria-label="H logomark"
+    >
+      <g fill="var(--ink, #0f172a)">
+        <rect x="0" y="0" width="28" height="96" rx="14" />
+        <rect x="68" y="0" width="28" height="96" rx="14" />
+        <rect x="20" y="39" width="56" height="18" rx="9" />
+      </g>
+    </svg>
