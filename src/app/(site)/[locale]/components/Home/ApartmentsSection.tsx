@@ -89,16 +89,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
     imageSwiper?.slideNext();
   }, [canSlide, imageSwiper]);
 
-  const syncTo = useCallback(
-    (idx: number) => {
-      if (!canSlide || !imageSwiper) return;
-      if (loopEnabled) imageSwiper.slideToLoop(idx, 300);
-      else imageSwiper.slideTo(idx, 300);
-      setActiveIndex(idx);
-    },
-    [canSlide, imageSwiper, loopEnabled]
-  );
-
   const keyActivate = useCallback(
     (fn: () => void) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
       if (e.key === "Enter" || e.key === " ") {

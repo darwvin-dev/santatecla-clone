@@ -13,7 +13,6 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
   const menuRef = useRef<HTMLElement | null>(null);
   const pathname = usePathname();
 
-  // بستن روی کلیک بیرون
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (!isMenuOpen) return;
@@ -26,7 +25,6 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
 
-  // بستن روی Escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!isMenuOpen) return;
@@ -36,12 +34,10 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     return () => window.removeEventListener("keydown", onKey);
   }, [isMenuOpen]);
 
-  // بستن روی تغییر مسیر
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  // قفل اسکرول وقتی منو باز است
   useEffect(() => {
     const { body } = document;
     if (!body) return;
@@ -68,14 +64,13 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
             inset: 0,
             background: "rgba(0,0,0,.35)",
             backdropFilter: "blur(2px)",
-            zIndex: 998, // کمتر از NavMenu
+            zIndex: 998, 
             border: "none",
           }}
         />
       )}
 
-      {/* مطمئن شو NavMenu ریشه‌اش ref می‌گیرد (forwardRef پایین) */}
-      <NavMenu isMenuOpen={isMenuOpen} ref={menuRef} />
+      <NavMenu isMenuOpen={isMenuOpen} menuRef={menuRef} />
 
       <div className="wrap container-fluid">
         <div className="content row">
