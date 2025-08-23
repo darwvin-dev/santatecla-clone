@@ -10,7 +10,7 @@ import "swiper/css/effect-fade";
 import { Apartment } from "@/types/Apartment";
 import { resolveUrl } from "@/lib/helper";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type Props = { apartments: Apartment[] };
 
@@ -36,6 +36,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
   const t = useTranslations("homepage");
+  const locale = useLocale();
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 992px)");
@@ -186,12 +187,12 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                         href={`/apartments/${encodeURIComponent(ap.title)}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
-                        {ap.title}
+                        {locale === "en" ? (ap.title_en || ap.title) : ap.title}
                       </Link>
                     </div>
                     <div className="w-100 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 pb-4 pb-md-5 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        {ap.description}
+                        {locale === "en" ? (ap.description_en || ap.description) : ap.description}
                       </p>
                     </div>
                   </SwiperSlide>

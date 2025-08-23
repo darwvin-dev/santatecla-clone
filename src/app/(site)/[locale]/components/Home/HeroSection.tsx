@@ -1,5 +1,5 @@
 import { DynamicPart } from "@/types/DynamicPart";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function HeroSection({
   hero,
@@ -7,6 +7,7 @@ export default function HeroSection({
   hero: DynamicPart | undefined;
 }) {
   const t = useTranslations("homepage");
+  const locale = useLocale();
 
   return (
     <>
@@ -24,7 +25,7 @@ export default function HeroSection({
               className="homepage-title mb-0 ff-sans fw-200 fz-60 color-white lh-xs text-center"
               style={{ whiteSpace: "pre-line" }}
             >
-              {hero?.title}
+              {locale === "en" ? hero?.title_en || hero?.title : hero?.title}
             </h2>
           </div>
         </div>
@@ -41,7 +42,7 @@ export default function HeroSection({
               className="homepage-title mb-0 ff-sans fw-200 fz-60 color-white lh-xs text-center"
               style={{ zIndex: 1, whiteSpace: "pre-line" }}
             >
-              {hero?.title}
+              {locale === "en" ? hero?.title_en || hero?.title : hero?.title}
             </h2>
           </div>
         </div>

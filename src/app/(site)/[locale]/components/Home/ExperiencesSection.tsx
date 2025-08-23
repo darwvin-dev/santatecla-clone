@@ -6,12 +6,15 @@ import "swiper/css/navigation";
 import { useRef, useMemo, useEffect } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { DynamicPart } from "@/types/DynamicPart";
+import { useLocale } from "next-intl";
 
 export default function ExperiencesSection({
   experiences,
 }: {
   experiences: DynamicPart[];
 }) {
+  const locale = useLocale();
+
   const textSwiperRef = useRef<SwiperType | null>(null);
   const imageSwiperRef = useRef<SwiperType | null>(null);
 
@@ -117,7 +120,7 @@ export default function ExperiencesSection({
           <div className="d-flex flex-column justify-content-between slider-col-txt col-12 col-md-7 col-lg-6">
             <div className="position-relative team-wrapper">
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-                {baseData?.title ?? "Esperienze a Milano"}
+                {locale === "en" ? (baseData?.title_en || baseData?.title) : baseData?.title ?? "Esperienze a Milano"}
               </h2>
 
               <div
@@ -189,12 +192,12 @@ export default function ExperiencesSection({
                   <SwiperSlide key={item._id}>
                     <div className="pt-1 pt-md-0 w-100 padding-y-0-25 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 ff-sans fw-400 fz-24 color-black lh-xs">
-                        {item.title || "—"}
+                        {locale === "en" ? (item.title_en || item.title) : item.title || "—"}
                       </p>
                     </div>
                     <div className="w-100 position-relative">
                       <div className="slide-lg-enlarge-content site-content mb-0 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        <p style={{ margin: 0 }}>{item.description}</p>
+                        <p style={{ margin: 0 }}>{locale === 'en' ? (item.description_en || item.description) : item.description}</p>
                       </div>
                     </div>
                   </SwiperSlide>

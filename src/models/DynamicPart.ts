@@ -8,6 +8,10 @@ const DynamicPartSchema = new Schema(
     secondTitle: { type: String, default: "" },
     description: { type: String, default: "" },
     secondDescription: { type: String, default: "" },
+    title_en: { type: String, default: "" },
+    secondTitle_en: { type: String, default: "" },
+    description_en: { type: String, default: "" },
+    secondDescription_en: { type: String, default: "" },
     image: { type: String, default: "" },
     mobileImage: { type: String, default: "" },
     image2: { type: String, default: "" },
@@ -29,6 +33,10 @@ export type DynamicPartDoc = {
   secondTitle?: string;
   description?: string;
   secondDescription?: string;
+  title_en?: string;
+  secondTitle_en?: string;
+  description_en?: string;
+  secondDescription_en?: string;
   image?: string;
   mobileImage?: string;
   image2?: string;

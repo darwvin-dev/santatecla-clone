@@ -1,8 +1,10 @@
 import React from "react";
 import { DynamicPart } from "@/types/DynamicPart";
+import { useLocale } from "next-intl";
 
 export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
   if (!abouts || abouts.length === 0) return null;
+  const locale = useLocale();
 
   return (
     <>
@@ -29,11 +31,11 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
               <div className="about-text">
                 <div className="about-text-inner">
                   {about.title && (
-                    <h2 className="about-title">{about.title}</h2>
+                    <h2 className="about-title">{locale === "en" ? (about.title_en || about.title) : about.title}</h2>
                   )}
                   {about.description && (
                     <div className="about-desc" style={{ whiteSpace: "pre-line" }}>
-                      {about.description}
+                      {locale === "en" ? (about.description_en || about.description) : about.description}
                     </div>
                   )}
                 </div>

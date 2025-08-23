@@ -1,4 +1,5 @@
 import { DynamicPart } from "@/types/DynamicPart";
+import { useLocale } from "next-intl";
 import React from "react";
 
 export default function GestioneHero({
@@ -6,6 +7,8 @@ export default function GestioneHero({
 }: {
   hero: DynamicPart | undefined;
 }) {
+    const locale = useLocale();
+
   return (
     <>
       <section className="row property-intro-wrap">
@@ -22,7 +25,7 @@ export default function GestioneHero({
               className="homepage-title mb-0 ff-sans fw-200 fz-60 color-white lh-xs text-center"
               style={{ zIndex: 1, whiteSpace: "pre-line" }}
             >
-              {hero?.title}
+              {locale === "en" ? (hero?.title_en || hero?.title) : hero?.title}
             </h2>
           </div>
         </div>

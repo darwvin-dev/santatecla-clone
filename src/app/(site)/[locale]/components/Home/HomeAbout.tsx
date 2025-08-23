@@ -1,7 +1,10 @@
 import { DynamicPart } from "@/types/DynamicPart";
+import { useLocale } from "next-intl";
 import React from "react";
 
 export default function HomeAbout({ about }: { about: DynamicPart | undefined }) {
+    const locale = useLocale();
+
   return (
     <section className="row padding-y-90-90 prop-section-about">
       <div className="w-100 position-relative overflow-hidden property-about-container">
@@ -25,11 +28,11 @@ export default function HomeAbout({ about }: { about: DynamicPart | undefined })
             <div className="property-about-text col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between">
               <div>
                 <h2 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-                  {about?.title}
+                  {locale === "en" ? (about?.title_en || about?.title) : about?.title}
                 </h2>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   <p style={{ whiteSpace: "pre-line" }}>
-                    {about?.description}
+                    {locale === "en" ? (about?.description_en || about?.description) : about?.description}
                   </p>
                 </div>
               </div>
