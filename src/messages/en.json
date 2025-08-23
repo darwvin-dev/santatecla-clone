@@ -39,5 +39,15 @@
     "companyLine": "Santa Tecla Living",
     "addressLine": "Head office: Via Matteo Bandello 14 - 20123 Milan",
     "vatLine": "VAT 09314590960"
+  },
+  "apartments": {
+    "header": {
+      "pageH1": "Apartments",
+      "title": "Our apartments",
+      "orderBy": "Sort by",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "filter": "Filter"
+    }
   }
 }

@@ -1,118 +1,136 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Loading.module.css";
 import type { CSSProperties } from "react";
-import type { SVGProps } from "react";
 
-// لوگوی شما
-export function LogoFull(props: SVGProps<SVGSVGElement>) {
+// لوگوی خلاقانه Habitabio با طراحی مینیمال
+function CreativeLogo({ color = "#3b82f6", size = 120 }) {
   return (
     <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 165 40"
-      aria-label="Habitabio wordmark"
-      {...props}
     >
+      <circle cx="60" cy="60" r="54" stroke={color} strokeWidth="3" strokeDasharray="10 6" className={styles.logoCircle} />
+      <circle cx="60" cy="60" r="40" stroke={color} strokeWidth="2" strokeOpacity="0.7" className={styles.logoCircleInner} />
       <text
-        x="0"
-        y="32"
-        fill="var(--ink, #0f172a)"
-        fontFamily="Georgia, 'Times New Roman', serif"
-        fontSize="36"
-        letterSpacing="0.2"
+        x="60"
+        y="65"
+        textAnchor="middle"
+        fill={color}
+        fontFamily="Georgia, serif"
+        fontSize="20"
+        fontWeight="700"
+        className={styles.logoText}
       >
-        Habitabio
+        H
       </text>
     </svg>
   );
 }
 
 export type LoadingProps = {
-  /** حالت تمام‌صفحه با بک‌درُپ */
   fullscreen?: boolean;
-  /** متن برای screen reader */
   label?: string;
-  /** اندازه‌ی لوگو (px) */
-  logoWidth?: number;
-  /** رنگ جوهری (برای لوگو و جزئیات) */
-  ink?: string;
-  /** رنگ پس‌زمینه بک‌درُپ */
+  size?: number;
+  color?: string;
+  secondaryColor?: string;
   backdrop?: string;
-  /** سرعت انیمیشن (ms) */
-  speed?: number;
-  /** اگر progress بدی، نوار پایین فعال میشه (0..100) */
   progress?: number;
-  /** کلاس اضافه */
   className?: string;
-  /** استایل inline */
   style?: CSSProperties;
+  showProgress?: boolean;
 };
 
 export default function Loading({
   fullscreen = true,
-  label = "Caricamento…",
-  logoWidth = 190,
-  ink = "#0f172a",
-  backdrop = "rgba(14,16,20,.55)",
-  speed = 900,
+  label = "Loading...",
+  size = 100,
+  color = "#3b82f6",
+  secondaryColor = "#8b5cf6",
+  backdrop = "rgba(255, 255, 255, 0.92)",
   progress,
   className,
-  style
+  style,
+  showProgress = false,
 }: LoadingProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+    return () => setIsVisible(false);
+  }, []);
+
   const cssVars = {
-    "--ink": ink,
-    "--backdrop": backdrop,
-    "--speed": `${speed}ms`,
+    "--loading-color": color,
+    "--loading-color-secondary": secondaryColor,
+    "--loading-backdrop": backdrop,
+    "--loading-size": `${size}px`,
   } as CSSProperties;
 
   const rootClass = [
-    styles.root,
-    fullscreen ? styles.full : "",
-    className || ""
-  ].join(" ");
+    styles.loadingContainer,
+    fullscreen ? styles.fullscreen : "",
+    isVisible ? styles.visible : "",
+    className || "",
+  ]
+    .join(" ")
+    .trim();
 
-  const clampedProgress =
-    typeof progress === "number"
-      ? Math.max(0, Math.min(100, progress))
-      : undefined;
+  const progressValue = typeof progress === "number" 
+    ? Math.min(100, Math.max(0, Math.round(progress))) 
+    : 0;
 
   return (
     <div
       className={rootClass}
       style={{ ...cssVars, ...style }}
       role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-label={label}
     >
-      <div className={styles.stage}>
-        {/* پالس نوری پس‌زمینه لوگو */}
-        <div className={styles.glow} aria-hidden="true" />
-        {/* حلقه مدرن کانیک */}
-        <div className={styles.ring} aria-hidden="true">
-          <i className={styles.track} />
-          <i className={styles.sweep} />
+      <div className={styles.content}>
+        <div className={styles.logoWrapper}>
+          <CreativeLogo color={color} size={size} />
+          
+          {/* ذرات چرخان اطراف لوگو */}
+          <div className={styles.particles}>
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className={styles.particle}
+                style={{
+                  animationDelay: `${i * 0.2}s`,
+                  backgroundColor: i % 2 === 0 ? color : secondaryColor,
+                }}
+              ></div>
+            ))}
+          </div>
         </div>
-
-        {/* لوگو */}
-        <div className={styles.brand} aria-hidden="true">
-          <LogoFull width={logoWidth} />
+        
+        {/* خطای امواج */}
+        <div className={styles.waveWrapper}>
+          <div className={styles.wave}></div>
+          <div className={styles.wave}></div>
         </div>
-
-        {/* نوار پیشرفت اختیاری */}
-        {typeof clampedProgress === "number" && (
-          <div className={styles.progress} aria-hidden="true">
-            <div
-              className={styles.progressBar}
-              style={{ width: `${clampedProgress}%` }}
-            />
+        
+        {/* نوار پیشرفت */}
+        {showProgress && (
+          <div className={styles.progressContainer}>
+            <div className={styles.progressText}>
+              {progressValue}%
+            </div>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${progressValue}%` }}
+              ></div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* متن برای SR (تکرار نشه) */}
-      <span className={styles.srOnly}>{label}</span>
     </div>
   );
 }

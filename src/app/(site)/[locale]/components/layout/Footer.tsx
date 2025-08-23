@@ -7,7 +7,6 @@ import React from "react";
 export default function Footer() {
   const t = useTranslations("footer");
 
-  // لینک‌های سیاست‌ها (اکسترنال هستن، i18n ندارن)
   const PRIVACY_URL =
     "https://www.santateclaliving.com/wp-content/uploads/2023/03/santa-tecla-living_privacy-policy-1.pdf";
   const COOKIES_URL =
@@ -21,16 +20,16 @@ export default function Footer() {
             {/* Newsletter */}
             <div className="col-12 col-sm-9 footer-form-wrap mb-5 mb-lg-0 col-xl-4">
               <form method="POST" className="newsletter footer-form">
-                <h3 className="contact_form_title footer-newsletter-title footer-title ff-sans fw-400 fz-18 color-white lh-sm">
+                {/* <h3 className="contact_form_title footer-newsletter-title footer-title ff-sans fw-400 fz-18 color-white lh-sm">
                   {t("newsletter.title")}
-                </h3>
+                </h3> */}
 
                 {/* Hidden fields: اگر سمت سرور می‌گیری، نگه‌شون دار */}
                 <input type="hidden" id="security-nl" name="security-nl" value="06d0d3b2b2" />
                 <input type="hidden" name="_wp_http_referer" value="/" />
                 <input type="hidden" name="action" value="submit_newsletter" />
 
-                <div className="newsletter_inputs">
+                {/* <div className="newsletter_inputs">
                   <div className="position-relative">
                     <div className="form-group mb-0">
                       <label className="sr-only" htmlFor="newsletter_email">
@@ -82,7 +81,7 @@ export default function Footer() {
                       </label>
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="newsletter_notice" style={{display: "none"}}>
                   <div className="newsletter_notice_close"></div>

@@ -87,7 +87,7 @@ export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
     <>
       <nav className={`navbar py-2 px-0 mt-2 fixed-top ${invert ? "navbar--invert" : ""}`}>
         <div className="container-fluid d-flex flex-row flex-wrap flex-lg-nowrap justify-content-between">
-          <div className="d-flex flex-nowrap flex-row align-items-center justify-content-between" style={{ flexGrow: 1 }}>
+          <div className="navbar-header d-flex flex-nowrap flex-row align-items-center align-items-md-start justify-content-between" style={{ flexGrow: 1 }}>
             <div className="hamburger-wrap d-flex align-items-start">
               <button
                 id="nav-icon"

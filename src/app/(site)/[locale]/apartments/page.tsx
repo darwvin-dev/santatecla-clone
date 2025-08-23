@@ -19,8 +19,6 @@ export default function Home() {
     fetchApartments();
   }, []);
 
-  // if(!apartments) return (<Error)
-
   return (
     <ClientLayoutWrapper>
       <section className="row padding-y-100-100">

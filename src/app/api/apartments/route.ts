@@ -4,11 +4,44 @@ import dbConnect from "@/lib/mongodb";
 import path from "path";
 import fs from "fs/promises";
 
-export async function GET() {
+type Locale = "it" | "en";
+type Order =
+  | "date_desc"
+  | "date_asc"
+  | "alpha_asc"
+  | "alpha_desc";
+
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
-    const apartments = await Apartment.find();
-    return NextResponse.json(apartments);
+
+    const { searchParams } = new URL(req.url);
+    const order = (searchParams.get("order") || "date_desc") as Order;
+    const locale = (searchParams.get("locale") || "it") as Locale;
+
+    const sort =
+      order === "date_asc"
+        ? { createdAt: 1 }
+        : order === "alpha_asc"
+        ? { title: 1 }
+        : order === "alpha_desc"
+        ? { title: -1 }
+        : { createdAt: -1 };
+
+    // داده‌ها
+    const docs = await Apartment.find().sort(sort).lean();
+
+    // نگاشت بر اساس زبان (فیلدهای *_en اگر بود)
+    const mapped = docs.map((doc: any) => ({
+      ...doc,
+      title: locale === "en" ? doc.title_en || doc.title : doc.title,
+      description:
+        locale === "en" ? doc.description_en || doc.description : doc.description,
+      details: locale === "en" ? doc.details_en || doc.details : doc.details,
+      address: locale === "en" ? doc.address_en || doc.address : doc.address,
+    }));
+
+    return NextResponse.json(mapped);
   } catch (error) {
     console.error("GET /api/apartments error:", error);
     return NextResponse.json(
@@ -17,6 +50,7 @@ export async function GET() {
     );
   }
 }
+
 
 function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   if (typeof value !== "string") return undefined;
