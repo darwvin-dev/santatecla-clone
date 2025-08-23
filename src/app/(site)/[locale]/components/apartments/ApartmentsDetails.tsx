@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React from "react";
 
@@ -94,19 +95,21 @@ type ApartmentsDetailsProps = {
   data: {
     title?: string;
     address?: string;
-    details?: string; 
+    details?: string;
     guests?: number;
     sizeSqm?: number;
     floor?: string;
     cir?: string;
     cin?: string;
     bathrooms?: number;
-    amenities?: AmenityKey[]; 
-    plan?: string | null; 
+    amenities?: AmenityKey[];
+    plan?: string | null;
   };
 };
 
 export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
+  const t = useTranslations("apartments");
+
   const {
     title,
     address,
@@ -118,7 +121,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
     amenities = [],
     plan,
     cir,
-    cin
+    cin,
   } = data || {};
 
   const selectedFeatures = FEATURES.filter((f) => amenities.includes(f.key));
@@ -161,7 +164,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
             <div className="row">
               <div className="col-6 col-md-4 col-lg-6 mb-2">
                 <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
-                  Ospiti
+                  {t("card.guests")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {guests ?? "-"}
@@ -169,15 +172,15 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
                 <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
-                  Superficie
+                   {t("apartment.superficie")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
-                  {typeof sizeSqm === "number" ? `${sizeSqm} mq` : "-"}
+                  {typeof sizeSqm === "number" ? `${sizeSqm} ${t("card.sqm")}` : "-"}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
                 <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
-                  Piano
+                  {t("card.floor")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {floor || "-"}
@@ -185,7 +188,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
                 <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
-                  Bagni
+                  {t("card.bathrooms")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   {bathrooms ?? "-"}
@@ -215,7 +218,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                     />
                   </span>
                   <span className="ff-sans fw-400 fz-18 color-black lh-sm pl-3">
-                    {f.label}
+                    {t(`amenities.${f.key}`)}
                   </span>
                 </div>
               ))}
@@ -230,11 +233,9 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
           </div>
         </div>
 
-        {/* CTA Links */}
         <div className="row d-flex flex-row justify-content-center padding-y-90-90 mb-md-5">
           <div className="col-12 col-md-11 col-lg-9 col-xl-10 col-xxl-8">
             <div className="row d-flex flex-row justify-content-center single-property-files">
-              {/* Planimetria: فقط اگر داده موجود بود */}
               {plan && (
                 <div className="col-10 col-sm-6 col-md-4 col-xl-3 my-2 my-md-3 my-xl-4">
                   <a
@@ -243,7 +244,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                     rel="nofollow noopener"
                     className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                   >
-                    <span>Planimetria</span>
+                    <span>{t("actions.plan")}</span>
                     <span className="btn-filter d-flex align-items-center justify-content-center">
                       <i className="webfont icon-wf-st_planimetria fz-28 color-black" />
                       <span className="btn-filter-hover d-flex align-items-center">
@@ -259,7 +260,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                   href={`mailto:reservation@santateclaliving.com?subject=${mailSubject}&body=${mailBody}`}
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Richiedi info</span>
+                  <span>{t("actions.requestInfo")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chiedi-info fz-28 color-black" />
                     <span className="btn-filter-hover d-flex align-items-center">
@@ -274,7 +275,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                   href="tel:+393519361241"
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Chiamaci</span>
+                  <span>{t("actions.callUs")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chiama-tel fz-28 color-black" />
                     <span className="btn-filter-hover d-flex align-items-center">
@@ -291,7 +292,7 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                   rel="nofollow noopener"
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Contattaci</span>
+                  <span>{t("actions.contactUs")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chat-wa fz-28 color-black" />
                     <span className="btn-filter-hover d-flex align-items-center">

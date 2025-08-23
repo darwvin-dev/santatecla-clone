@@ -3,28 +3,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-
-// -------------------- Types --------------------
-
-type DynamicPart = {
-  _id: string;
-  key: string;
-  page: string;
-  title?: string;
-  published?: boolean;
-  updatedAt?: string;
-  order?: number;
-};
-
-type Apartment = {
-  _id: string;
-  title: string;
-  image?: string;
-  address?: string;
-  updatedAt?: string;
-};
-
-// -------------------- UI Helpers --------------------
+import { DynamicPart } from "@/types/DynamicPart";
+import { Apartment } from "@/types/Apartment";
 
 function classNames(...xs: Array<string | false | undefined>) {
   return xs.filter(Boolean).join(" ");

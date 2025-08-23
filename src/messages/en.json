@@ -52,7 +52,50 @@
     "card": {
       "guests": "guests",
       "sqm": "sqm",
-      "readMore": "Read more"
+      "readMore": "Read more",
+      "floor": "Floor",
+      "bathrooms": "Bathrooms"
+    },
+    "amenities": {
+      "macchina_caffe": "Coffee machine",
+      "aria_condizionata": "Air conditioning",
+      "bollitore": "Kettle",
+      "tostapane": "Toaster",
+      "lavastoviglie": "Dishwasher",
+      "self_check_in": "Self Check-in",
+      "tv": "TV",
+      "lavatrice": "Washing machine",
+      "set_di_cortesia": "Courtesy set",
+      "microonde": "Microwave",
+      "biancheria": "Linen",
+      "culla_su_richiesta": "Crib on request",
+      "wifi": "WiFi",
+      "parcheggio_esterno": "Outdoor parking",
+      "animali_ammessi": "Pets allowed",
+      "asciugacapelli": "Hair dryer",
+      "balcone": "Balcony"
+    },
+    "apartment": {
+      "superficie": "Surface"
+    },
+    "actions": {
+      "requestInfo": "Request info",
+      "callUs": "Call us",
+      "contactUs": "Contact us",
+      "plan": "Floor plan"
+    },
+    "rules": {
+      "houseRules": "House rules",
+      "cancellationTerms": "Cancellation terms"
     }
+  },
+  "booking": {
+    "close": "Close",
+    "checkAvailability": "Check availability and discover the benefits of direct booking.",
+    "sendRequest": "Send us your request!",
+    "callUs": "Call us",
+    "contactUs": "Contact us",
+    "email": "Email",
+    "book": "Book"
   }
 }

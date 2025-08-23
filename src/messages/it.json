@@ -52,7 +52,50 @@
     "card": {
       "guests": "ospiti",
       "sqm": "mq",
-      "readMore": "Scopri di più"
+      "readMore": "Scopri di più",
+      "floor": "Piano",
+      "bathrooms": "Bagni"
+    },
+    "amenities": {
+      "macchina_caffe": "Macchina del caffè",
+      "aria_condizionata": "Aria condizionata",
+      "bollitore": "Bollitore",
+      "tostapane": "Tostapane",
+      "lavastoviglie": "Lavastoviglie",
+      "self_check_in": "Self Check-in",
+      "tv": "TV",
+      "lavatrice": "Lavatrice",
+      "set_di_cortesia": "Set di cortesia",
+      "microonde": "Microonde",
+      "biancheria": "Biancheria",
+      "culla_su_richiesta": "Culla su richiesta",
+      "wifi": "WiFi",
+      "parcheggio_esterno": "Parcheggio esterno",
+      "animali_ammessi": "Animali ammessi",
+      "asciugacapelli": "Asciugacapelli",
+      "balcone": "Balcone"
+    },
+    "apartment": {
+      "superficie": "Superficie"
+    },
+    "actions": {
+      "requestInfo": "Richiedi info",
+      "callUs": "Chiamaci",
+      "contactUs": "Contattaci",
+      "plan": "Planimetria"
+    },
+    "rules": {
+      "houseRules": "Regole della casa",
+      "cancellationTerms": "Termini di cancellazione"
     }
+  },
+  "booking": {
+    "close": "Chiudi",
+    "checkAvailability": "Verifica le disponibilità e scopri i vantaggi della prenotazione diretta.",
+    "sendRequest": "Mandaci la tua richiesta!",
+    "callUs": "Chiamaci",
+    "contactUs": "Contattaci",
+    "email": "Mail",
+    "book": "Prenota"
   }
 }

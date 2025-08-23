@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "use-intl";
 
 type Rules = {
   checkInFrom?: string; 
@@ -61,20 +62,21 @@ function buildCancellationText(c?: Cancellation | null) {
 export default function ApartmentRules({ data }: Props) {
   const rulesText = buildRulesText(data?.rules ?? undefined);
   const cancellationText = buildCancellationText(data?.cancellation ?? undefined);
+  const t = useTranslations("apartments.rules");
 
   return (
     <section className="row padding-y-90-120">
       <div className="container">
         <div className="row">
           <div className="col-12 col-md-6 mb-3 mb-md-0">
-            <p className="ff-sans fw-400 color-black fz-21 lh-sm">Regole della casa</p>
+            <p className="ff-sans fw-400 color-black fz-21 lh-sm">{t("houseRules")}</p>
             <p className="ff-sans fw-200 color-gray fz-21 lh-sm">
               {rulesText}
             </p>
           </div>
 
           <div className="col-12 col-md-6 mb-3 mb-md-0">
-            <p className="ff-sans fw-400 color-black fz-21 lh-sm">Termini di cancellazione</p>
+            <p className="ff-sans fw-400 color-black fz-21 lh-sm">{t('cancellationTerms')}</p>
             <p className="ff-sans fw-200 color-gray fz-21 lh-sm">
               {cancellationText}
             </p>

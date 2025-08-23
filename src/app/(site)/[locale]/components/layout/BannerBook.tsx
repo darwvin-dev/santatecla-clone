@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "use-intl";
 
 type BannerBookProps = {
   phone?: string;
@@ -15,6 +16,7 @@ export default function BannerBook({
 }: BannerBookProps) {
   const [open, setOpen] = useState(false);
   const collapseId = useId();
+  const t = useTranslations("booking")
 
   return (
     <div className="row living-banner-book d-flex flex-column">
@@ -29,15 +31,13 @@ export default function BannerBook({
           }`}
           data-open={open}
         >
-          {/* لیبل‌ها با کراس‌فید/اسلاید لطیف */}
           <span className="btn-label-wrap">
-            <span className={`btn-label ${open ? "out" : "in"}`}>Prenota</span>
-            <span className={`btn-label ${open ? "in" : "out"}`}>Chiudi</span>
+            <span className={`btn-label ${open ? "out" : "in"}`}>{t("book")}</span>
+            <span className={`btn-label ${open ? "in" : "out"}`}>{t("close")}</span>
           </span>
         </button>
       </div>
 
-      {/* آکاردئون با Grid: 0fr → 1fr + فید/ترنزلیت */}
       <div
         id={collapseId}
         className={`collapsible ${open ? "open" : ""}`}
@@ -49,10 +49,9 @@ export default function BannerBook({
               <div className="col-12 col-md-9 col-xl-6 mb-4">
                 <div className="site-content fz-20 text-center">
                   <p>
-                    Verifica le disponibilità e scopri i vantaggi della
-                    prenotazione diretta.
+                    {t("checkAvailability")}
                   </p>
-                  <p className="mt-0 fw-500">Mandaci la tua richiesta!</p>
+                  <p className="mt-0 fw-500">{t("sendRequest")}</p>
                 </div>
               </div>
             </div>
@@ -63,7 +62,7 @@ export default function BannerBook({
                   href={`tel:${phone}`}
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Chiamaci</span>
+                  <span>{t("callUs")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chiama-tel fz-28 color-black"></i>
                     <span className="btn-filter-hover d-flex align-items-center">
@@ -80,7 +79,7 @@ export default function BannerBook({
                   rel="nofollow noopener"
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Contattaci</span>
+                  <span>{t("contactUs")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chat-wa fz-28 color-black"></i>
                     <span className="btn-filter-hover d-flex align-items-center">
@@ -95,7 +94,7 @@ export default function BannerBook({
                   href={`mailto:${email}`}
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>Mail</span>
+                  <span>{t('email')}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chiedi-info fz-28 color-black"></i>
                     <span className="btn-filter-hover d-flex align-items-center">

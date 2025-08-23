@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { Manrope } from "next/font/google";
-import {notFound} from 'next/navigation';
+import { notFound } from "next/navigation";
+import React from "react";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -27,15 +28,18 @@ async function getMessages(locale: string) {
   }
 }
 
-export default async function RootLayout({
-  children,
-  params: { locale },
-}: {
-  children: React.ReactNode;
-  params: { locale: "it" | "en" };
-}) {
+export default async function RootLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ locale: "it" | "en" }>;
+  }
+) {
+  const { children, params } = props;
+  const { locale } = await params; 
+
   const messages = await getMessages(locale);
   if (!messages) notFound();
+
   return (
     <html lang={locale}>
       <head>
@@ -52,9 +56,7 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css?family=Google+Sans+Text:400&text=%E2%86%90%E2%86%92%E2%86%91%E2%86%93&lang=en"
         />
       </head>
-      <body
-        className={`archive post-type-archive post-type-archive-apartment ${manrope.variable}`}
-      >
+      <body className={`archive post-type-archive post-type-archive-apartment ${manrope.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>

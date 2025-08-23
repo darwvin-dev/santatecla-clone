@@ -116,16 +116,16 @@ export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
             >
               <span className="brand-wrap" style={{ display: "inline-grid", placeItems: "center", height: 40 }}>
                 <LogoFull
-                  width={170}
-                  height={40}
+                  width={180}
+                  height={50}
                   style={{
                     display: "block",
                     transition: "opacity .2s ease, transform .2s ease",
-                    opacity: scrolled ? 0 : 1,
-                    position: scrolled ? ("absolute" as const) : ("static" as const),
+                    // opacity: scrolled ? 0 : 1,
+                    // position: scrolled ? ("absolute" as const) : ("static" as const),
                   }}
                 />
-                <LogoH
+                {/* <LogoH
                   width={55}
                   height={55}
                   style={{
@@ -134,7 +134,7 @@ export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
                     opacity: scrolled ? 1 : 0,
                     transform: scrolled ? "translateY(0) scale(1)" : "translateY(6px) scale(.96)",
                   }}
-                />
+                /> */}
               </span>
             </Link>
 

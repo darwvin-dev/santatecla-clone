@@ -9,7 +9,8 @@ import ApartmentsDetails from "@/app/(site)/[locale]/components/apartments/Apart
 import Loading from "@/app/(site)/[locale]/components/loading";
 import ApartmentRules from "@/app/(site)/[locale]/components/apartments/ApartmentRules";
 
-// ⬇️ dynamic را بیرون از Hook صدا بزن (بدون useMemo)
+type MapProps = { coords: [number, number] };
+
 const PropertyMapClient = dynamic(
   () => import("@/app/(site)/[locale]/components/apartments/PropertyMap"),
   {
@@ -32,9 +33,23 @@ const PropertyMapClient = dynamic(
 );
 
 type AmenityKey =
-  | "macchina_caffe" | "aria_condizionata" | "bollitore" | "tostapane" | "lavastoviglie"
-  | "self_check_in" | "tv" | "lavatrice" | "set_di_cortesia" | "microonde" | "biancheria"
-  | "culla_su_richiesta" | "wifi" | "parcheggio_esterno" | "animali_ammessi" | "asciugacapelli" | "balcone";
+  | "macchina_caffe"
+  | "aria_condizionata"
+  | "bollitore"
+  | "tostapane"
+  | "lavastoviglie"
+  | "self_check_in"
+  | "tv"
+  | "lavatrice"
+  | "set_di_cortesia"
+  | "microonde"
+  | "biancheria"
+  | "culla_su_richiesta"
+  | "wifi"
+  | "parcheggio_esterno"
+  | "animali_ammessi"
+  | "asciugacapelli"
+  | "balcone";
 
 type Rules = { checkInFrom?: string; checkInTo?: string; checkOutBy?: string };
 type CancellationPolicy = "free_until_5_days" | "flexible" | "strict";
@@ -99,8 +114,10 @@ export default function PropertyIntro() {
         if (!cancelled) {
           setData(json);
           setImages(
-            [json.image, ...(Array.isArray(json.gallery) ? json.gallery : [])]
-              .filter((x): x is string => typeof x === "string" && !!x)
+            [
+              json.image,
+              ...(Array.isArray(json.gallery) ? json.gallery : []),
+            ].filter((x): x is string => typeof x === "string" && !!x)
           );
         }
       } catch (e: unknown) {
@@ -138,9 +155,14 @@ export default function PropertyIntro() {
     );
   }
 
-  const lat = data.lat ?? data.location?.coordinates?.[1];
-  const lng = data.lng ?? data.location?.coordinates?.[0];
+  const lat: number | null =
+    data.lat ?? data.location?.coordinates?.[1] ?? null;
+  const lng: number | null =
+    data.lng ?? data.location?.coordinates?.[0] ?? null;
   const hasCoords = typeof lat === "number" && typeof lng === "number";
+  const coords = hasCoords
+    ? ([lat as number, lng as number] as [number, number])
+    : null;
 
   return (
     <ClientLayoutWrapper>
@@ -162,12 +184,7 @@ export default function PropertyIntro() {
         }}
       />
 
-      {hasCoords && (
-        <PropertyMapClient
-          lat={lat}
-          lng={lng}
-        />
-      )}
+      {coords && <PropertyMapClient coords={coords} />}
 
       <ApartmentRules
         data={{

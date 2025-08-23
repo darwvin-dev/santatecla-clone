@@ -37,12 +37,21 @@ export type Cancellation = {
 
 export interface IApartment extends Document {
   title: string;
+  description: string;
+  details?: string;
+  address: string;
+  addressDetail?: string;
+
+  /** EN */
+  title_en?: string;
+  description_en?: string;
+  details_en?: string;
+  address_en?: string;
+  addressDetail_en?: string;
+
   image: string;
   gallery: string[];
   plan?: string;
-
-  description: string;
-  details?: string;
 
   guests: number;
   sizeSqm: number;
@@ -51,9 +60,6 @@ export interface IApartment extends Document {
 
   cir?: string;
   cin?: string;
-
-  address: string;
-  addressDetail?: string;
 
   amenities: Amenity[];
   rules?: Rules;
@@ -111,6 +117,12 @@ const ApartmentSchema = new Schema<IApartment>(
     description: { type: String, required: true },
     details: { type: String },
 
+    title_en: { type: String, trim: true },
+    description_en: { type: String, trim: true },
+    details_en: { type: String, trim: true },
+    address_en: { type: String, trim: true },
+    addressDetail_en: { type: String, trim: true },
+
     guests: { type: Number, required: true, min: 1 },
     sizeSqm: { type: Number, required: true, min: 1 },
     floor: { type: String, trim: true },
@@ -158,8 +170,11 @@ ApartmentSchema.index({ location: "2dsphere" });
 
 ApartmentSchema.index({
   title: "text",
+  title_en: "text",
   address: "text",
+  address_en: "text",
   description: "text",
+  description_en: "text",
 });
 
 const Apartment: Model<IApartment> =
