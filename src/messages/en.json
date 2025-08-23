@@ -48,6 +48,11 @@
       "newest": "Newest",
       "oldest": "Oldest",
       "filter": "Filter"
+    },
+    "card": {
+      "guests": "guests",
+      "sqm": "sqm",
+      "readMore": "Read more"
     }
   }
 }

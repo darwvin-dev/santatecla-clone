@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React from "react";
 import ScaleInImage from "../ui/ImageScaleIn";
+import { useTranslations } from "next-intl";
 
 type ApartmentCardProps = {
   title: string;
@@ -11,7 +12,6 @@ type ApartmentCardProps = {
   guests: number;
   sizeSqm: string;
   address: string;
-  priority?: boolean;
   className?: string;
   reversed?: boolean;
 };
@@ -23,7 +23,6 @@ export default function ApartmentCard({
   guests,
   sizeSqm,
   address,
-  priority = false,
   className = "",
   reversed = false,
 }: ApartmentCardProps) {
@@ -34,6 +33,8 @@ export default function ApartmentCard({
   const infoColClasses = reversed
     ? "col-12 col-md-6 col-lg-5 order-md-1 d-flex flex-column justify-content-between mt-4 mt-md-0"
     : "col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between mt-4 mt-md-0";
+
+  const t = useTranslations("apartments.card");
 
   return (
     <div
@@ -74,13 +75,13 @@ export default function ApartmentCard({
               <div>
                 <div className="d-flex flex-row flex-wrap align-items-md-center property-archive-info mt-4">
                   <p className="mb-2 mb-md-0 ff-sans fw-200 fz-21 color-gray lh-xs">
-                    {guests} ospiti
+                    {guests} {t("guests")}
                   </p>
                   <p className="mb-2 mb-md-0 ff-sans fw-200 fz-21 color-black lh-xs">
                     &nbsp;|&nbsp;
                   </p>
                   <p className="mb-2 mb-md-0 ff-sans fw-200 fz-21 color-gray lh-xs">
-                    {sizeSqm} mq
+                    {sizeSqm} {t("sqm")}
                   </p>
                 </div>
                 <div className="mt-md-3">
@@ -93,7 +94,7 @@ export default function ApartmentCard({
                     href={`/apartments/${title}/`}
                     className="position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                   >
-                    <span>Scopri di più</span>
+                    <span>{t("readMore")}</span>
                     <span className="btn-arrow btn-block btn-white-hover">
                       <svg viewBox="0 0 27 27">
                         <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>

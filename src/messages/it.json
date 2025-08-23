@@ -48,6 +48,11 @@
       "newest": "Più recenti",
       "oldest": "Meno recenti",
       "filter": "Filtra"
+    },
+    "card": {
+      "guests": "ospiti",
+      "sqm": "mq",
+      "readMore": "Scopri di più"
     }
   }
 }

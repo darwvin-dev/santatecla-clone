@@ -4,53 +4,94 @@ import dbConnect from "@/lib/mongodb";
 import path from "path";
 import fs from "fs/promises";
 
+
 type Locale = "it" | "en";
-type Order =
-  | "date_desc"
-  | "date_asc"
-  | "alpha_asc"
-  | "alpha_desc";
+type Order = "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc";
+
+const ALLOWED_ORDERS: Order[] = ["date_desc", "date_asc", "alpha_asc", "alpha_desc"];
+const DEFAULT_ORDER: Order = "date_desc";
+const DEFAULT_LOCALE: Locale = "it";
+
+function getCollation(locale: Locale) {
+  return { locale, strength: 1 as const };
+}
 
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
 
     const { searchParams } = new URL(req.url);
-    const order = (searchParams.get("order") || "date_desc") as Order;
-    const locale = (searchParams.get("locale") || "it") as Locale;
+    const orderParam = (searchParams.get("order") || DEFAULT_ORDER) as Order;
+    const locale = (searchParams.get("locale") || DEFAULT_LOCALE) as Locale;
 
-    const sort =
-      order === "date_asc"
-        ? { createdAt: 1 }
-        : order === "alpha_asc"
-        ? { title: 1 }
-        : order === "alpha_desc"
-        ? { title: -1 }
-        : { createdAt: -1 };
+    const order: Order = ALLOWED_ORDERS.includes(orderParam) ? orderParam : DEFAULT_ORDER;
 
-    // داده‌ها
-    const docs = await Apartment.find().sort(sort).lean();
+    const isAlpha = order === "alpha_asc" || order === "alpha_desc";
+    const alphaDirection = order === "alpha_desc" ? -1 : 1;
 
-    // نگاشت بر اساس زبان (فیلدهای *_en اگر بود)
-    const mapped = docs.map((doc: any) => ({
-      ...doc,
-      title: locale === "en" ? doc.title_en || doc.title : doc.title,
-      description:
-        locale === "en" ? doc.description_en || doc.description : doc.description,
-      details: locale === "en" ? doc.details_en || doc.details : doc.details,
-      address: locale === "en" ? doc.address_en || doc.address : doc.address,
-    }));
+    const isDateAsc = order === "date_asc";
+    const dateDirection = isDateAsc ? 1 : -1;
 
-    return NextResponse.json(mapped);
+    const pipeline: any[] = [];
+
+    if (isAlpha) {
+      pipeline.push({
+        $addFields: {
+          sortTitle:
+            locale === "en"
+              ? { $ifNull: ["$title_en", "$title"] }
+              : "$title",
+        },
+      });
+      pipeline.push({ $sort: { sortTitle: alphaDirection, _id: 1 } });
+    } else {
+      pipeline.push({ $sort: { createdAt: dateDirection, _id: 1 } });
+    }
+
+    pipeline.push({
+      $project: {
+        image: 1,
+        gallery: 1,
+        plan: 1,
+        guests: 1,
+        sizeSqm: 1,
+        floor: 1,
+        bathrooms: 1,
+        cir: 1,
+        cin: 1,
+        amenities: 1,
+        rules: 1,
+        cancellation: 1,
+        location: 1,
+        lat: 1,
+        lng: 1,
+        beds: 1,
+        size: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        title: locale === "en" ? { $ifNull: ["$title_en", "$title"] } : "$title",
+        description:
+          locale === "en"
+            ? { $ifNull: ["$description_en", "$description"] }
+            : "$description",
+        details:
+          locale === "en"
+            ? { $ifNull: ["$details_en", "$details"] }
+            : "$details",
+        address:
+          locale === "en"
+            ? { $ifNull: ["$address_en", "$address"] }
+            : "$address",
+      },
+    });
+
+    const docs = await Apartment.aggregate(pipeline).collation(getCollation(locale));
+    return NextResponse.json(docs);
   } catch (error) {
     console.error("GET /api/apartments error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
-
 
 function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   if (typeof value !== "string") return undefined;
