@@ -3,26 +3,32 @@
 import Link from "next/link";
 import React from "react";
 import ScaleInImage from "../ui/ImageScaleIn";
-import { useTranslations } from "next-intl";
+import { useTranslations, Locale, useLocale } from "next-intl";
 
 type ApartmentCardProps = {
   title: string;
+  title_en?: string;
   image: string;
   description: string;
+  description_en?: string;
   guests: number;
   sizeSqm: string;
   address: string;
+  address_en?: string;
   className?: string;
   reversed?: boolean;
 };
 
 export default function ApartmentCard({
   title,
+  title_en,
   image,
   description,
+  description_en,
   guests,
   sizeSqm,
   address,
+  address_en,
   className = "",
   reversed = false,
 }: ApartmentCardProps) {
@@ -35,7 +41,8 @@ export default function ApartmentCard({
     : "col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between mt-4 mt-md-0";
 
   const t = useTranslations("apartments.card");
-
+  const locale = useLocale();
+  
   return (
     <div
       className={`container-fluid padding-y-60-60 single-property-archive ${className}`}
@@ -65,10 +72,14 @@ export default function ApartmentCard({
                   href={`/apartments/${title}/`}
                   className="d-inline-block ff-sans fw-400 fz-21 color-black color-black-hover lh-xs txt-no-underline"
                 >
-                  {title}
+                  {locale === "en" ? title_en || title : title}
                 </a>
                 <div className="mt-3 site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
-                  <p>{description}</p>
+                  <p>
+                    {locale === "en"
+                      ? description_en || description
+                      : description}
+                  </p>
                 </div>
               </div>
 
@@ -86,7 +97,7 @@ export default function ApartmentCard({
                 </div>
                 <div className="mt-md-3">
                   <p className="mb-0 ff-sans fw-200 fz-21 color-black lh-xs">
-                    {address}
+                    {locale === "en" ? address_en || address : address}
                   </p>
                 </div>
                 <div className="pt-4">

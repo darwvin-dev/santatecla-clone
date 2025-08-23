@@ -8,8 +8,8 @@ import ApartmentsGalerry from "@/app/(site)/[locale]/components/apartments/Apart
 import ApartmentsDetails from "@/app/(site)/[locale]/components/apartments/ApartmentsDetails";
 import Loading from "@/app/(site)/[locale]/components/loading";
 import ApartmentRules from "@/app/(site)/[locale]/components/apartments/ApartmentRules";
-
-type MapProps = { coords: [number, number] };
+import { useLocale } from "next-intl";
+import { Apartment } from "@/types/Apartment";
 
 const PropertyMapClient = dynamic(
   () => import("@/app/(site)/[locale]/components/apartments/PropertyMap"),
@@ -32,54 +32,9 @@ const PropertyMapClient = dynamic(
   }
 );
 
-type AmenityKey =
-  | "macchina_caffe"
-  | "aria_condizionata"
-  | "bollitore"
-  | "tostapane"
-  | "lavastoviglie"
-  | "self_check_in"
-  | "tv"
-  | "lavatrice"
-  | "set_di_cortesia"
-  | "microonde"
-  | "biancheria"
-  | "culla_su_richiesta"
-  | "wifi"
-  | "parcheggio_esterno"
-  | "animali_ammessi"
-  | "asciugacapelli"
-  | "balcone";
-
-type Rules = { checkInFrom?: string; checkInTo?: string; checkOutBy?: string };
-type CancellationPolicy = "free_until_5_days" | "flexible" | "strict";
-type Cancellation = { policy: CancellationPolicy; note?: string };
-
-type ApartmentDTO = {
-  title: string;
-  image: string;
-  gallery: string[];
-  plan?: string | null;
-  description: string;
-  details?: string;
-  guests: number;
-  sizeSqm: number;
-  cir: string;
-  cin: string;
-  floor?: string;
-  bathrooms: number;
-  address: string;
-  addressDetail?: string;
-  amenities: AmenityKey[];
-  rules?: Rules | null;
-  cancellation?: Cancellation | null;
-  location?: { type: "Point"; coordinates: [number, number] };
-  lat?: number;
-  lng?: number;
-};
-
 export default function PropertyIntro() {
   const params = useParams();
+  const locale = useLocale();
 
   const slug = useMemo(() => {
     const p: any = params;
@@ -92,7 +47,7 @@ export default function PropertyIntro() {
     return decodeURIComponent(raw);
   }, [params]);
 
-  const [data, setData] = useState<ApartmentDTO | null>(null);
+  const [data, setData] = useState<Apartment | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [err, setErr] = useState<string | null>(null);
@@ -110,7 +65,7 @@ export default function PropertyIntro() {
           cache: "no-store",
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json: ApartmentDTO = await res.json();
+        const json: Apartment = await res.json();
         if (!cancelled) {
           setData(json);
           setImages(
@@ -166,22 +121,10 @@ export default function PropertyIntro() {
 
   return (
     <ClientLayoutWrapper>
-      <ApartmentsGalerry images={images} name={data.title} />
+      <ApartmentsGalerry images={images} name={locale === "en" ? (data.title_en || data.title) : data.title} />
 
       <ApartmentsDetails
-        data={{
-          title: data.title,
-          address: data.address,
-          details: data.details,
-          guests: data.guests,
-          sizeSqm: data.sizeSqm,
-          floor: data.floor,
-          bathrooms: data.bathrooms,
-          amenities: data.amenities,
-          plan: data.plan ?? null,
-          cir: data.cir ?? "",
-          cin: data.cin ?? "",
-        }}
+        data={data}
       />
 
       {coords && <PropertyMapClient coords={coords} />}

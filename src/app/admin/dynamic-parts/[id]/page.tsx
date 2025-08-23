@@ -2,27 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-// -------------------- Types --------------------
-
-type DP = {
-  _id: string;
-  key: string;
-  page: string;
-  title?: string;
-  secondTitle?: string;
-  description?: string;
-  secondDescription?: string;
-  image?: string;
-  mobileImage?: string;
-  image2?: string;
-  mobileImage2?: string;
-  image3?: string;         // <-- اضافه شد
-  mobileImage3?: string;   // <-- اضافه شد
-  order?: number;
-  published?: boolean;
-  updatedAt?: string;
-};
+import { DynamicPart } from "@/types/DynamicPart";
 
 // -------------------- UI primitives --------------------
 
@@ -177,7 +157,7 @@ export default function Page() {
   const [saved, setSaved] = useState(false);
 
   // form state
-  const [form, setForm] = useState<DP>({
+  const [form, setForm] = useState<DynamicPart>({
     _id: id,
     key: "",
     page: "Home",
@@ -189,23 +169,21 @@ export default function Page() {
     mobileImage: "",
     image2: "",
     mobileImage2: "",
-    image3: "",          // <-- اضافه شد
-    mobileImage3: "",    // <-- اضافه شد
+    image3: "",          
+    mobileImage3: "",    
     order: 0,
     published: true,
   });
 
-  // file states
   const [fileImage, setFileImage] = useState<File | null>(null);
   const [fileMobileImage, setFileMobileImage] = useState<File | null>(null);
   const [fileImage2, setFileImage2] = useState<File | null>(null);
   const [fileMobileImage2, setFileMobileImage2] = useState<File | null>(null);
-  const [fileImage3, setFileImage3] = useState<File | null>(null);             // <-- اضافه شد
-  const [fileMobileImage3, setFileMobileImage3] = useState<File | null>(null); // <-- اضافه شد
+  const [fileImage3, setFileImage3] = useState<File | null>(null);             
+  const [fileMobileImage3, setFileMobileImage3] = useState<File | null>(null); 
 
-  const update = (k: keyof DP, v: any) => setForm((s) => ({ ...s, [k]: v }));
+  const update = (k: keyof DynamicPart, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
-  // previews
   const previewImage = useMemo(
     () => (fileImage ? URL.createObjectURL(fileImage) : form.image || ""),
     [fileImage, form.image]
@@ -250,20 +228,24 @@ export default function Page() {
           cache: "no-store",
         });
         if (!res.ok) throw new Error("Impossibile caricare i dati.");
-        const data: DP = await res.json();
+        const data: DynamicPart = await res.json();
         setForm({
           _id: data._id,
           key: data.key,
           page: data.page,
           title: data.title || "",
+          title_en: data.title_en || "",
           secondTitle: data.secondTitle || "",
+          secondTitle_en: data.secondTitle_en || "",
           description: data.description || "",
+          description_en: data.description_en || "",
           secondDescription: data.secondDescription || "",
+          secondDescription_en: data.secondDescription_en || "",
           image: data.image || "",
           mobileImage: data.mobileImage || "",
           image2: data.image2 || "",
           mobileImage2: data.mobileImage2 || "",
-          image3: (data as any).image3 || "",                 // <-- پوشش فیلدهای جدید
+          image3: (data as any).image3 || "",                
           mobileImage3: (data as any).mobileImage3 || "",
           order: Number(data.order ?? 0),
           published: Boolean(data.published ?? true),
@@ -279,7 +261,7 @@ export default function Page() {
 
   function appendForPut(
     fd: FormData,
-    name: keyof DP,
+    name: keyof DynamicPart,
     file: File | null,
     currentUrl?: string
   ) {
@@ -309,23 +291,27 @@ export default function Page() {
       fd.append("secondDescription", form.secondDescription || "");
       fd.append("order", String(form.order ?? 0));
       fd.append("published", form.published ?? true ? "true" : "false");
+      fd.append("title_en", form.title_en || "");
+      fd.append("secondTitle_en", form.secondTitle_en || "");
+      fd.append("description_en", form.description_en || "");
+      fd.append("secondDescription_en", form.secondDescription_en || "");
 
       appendForPut(fd, "image", fileImage, form.image);
       appendForPut(fd, "mobileImage", fileMobileImage, form.mobileImage);
       appendForPut(fd, "image2", fileImage2, form.image2);
       appendForPut(fd, "mobileImage2", fileMobileImage2, form.mobileImage2);
-      appendForPut(fd, "image3", fileImage3, form.image3);                 // <-- اضافه شد
-      appendForPut(fd, "mobileImage3", fileMobileImage3, form.mobileImage3); // <-- اضافه شد
+      appendForPut(fd, "image3", fileImage3, form.image3);                 
+      appendForPut(fd, "mobileImage3", fileMobileImage3, form.mobileImage3);
 
       const res = await fetch(`/api/dynamic-parts/${id}`, {
-        method: "POST", // اگر API شما PUT/PATCH می‌خواهد، همین‌جا عوض کن
+        method: "POST", 
         body: fd,
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j?.error || "Errore durante il salvataggio.");
       }
-      const updated: DP = await res.json();
+      const updated: DynamicPart = await res.json();
       setForm((s) => ({
         ...s,
         ...updated,
@@ -335,7 +321,7 @@ export default function Page() {
       setFileMobileImage(null);
       setFileImage2(null);
       setFileMobileImage2(null);
-      setFileImage3(null);            // ریست فایل‌های جدید
+      setFileImage3(null);           
       setFileMobileImage3(null);
       setSaved(true);
     } catch (err: any) {
@@ -521,6 +507,51 @@ export default function Page() {
                 rows={3}
                 value={form.secondDescription}
                 onChange={(e) => update("secondDescription", e.target.value)}
+                placeholder="Testo descrittivo secondario"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Contenuti testuali(EN)">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="title">Titolo (EN)</Label>
+              <Textarea
+                id="title_en"
+                rows={2}
+                value={form.title_en}
+                onChange={(e) => update("title_en", e.target.value)}
+                placeholder="Titolo principale (Invio per nuova riga)"
+              />
+            </div>
+            <div>
+              <Label htmlFor="secondTitle">Secondo titolo (EN)</Label>
+              <Textarea
+                id="secondTitle_en"
+                rows={2}
+                value={form.secondTitle_en}
+                onChange={(e) => update("secondTitle_en", e.target.value)}
+                placeholder="Sottotitolo / riga secondaria"
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Descrizione(EN)</Label>
+              <Textarea
+                id="description_en"
+                rows={3}
+                value={form.description_en}
+                onChange={(e) => update("description_en", e.target.value)}
+                placeholder="Testo descrittivo"
+              />
+            </div>
+            <div>
+              <Label htmlFor="secondDescription">Seconda descrizione (EN)</Label>
+              <Textarea
+                id="secondDescription_en"
+                rows={3}
+                value={form.secondDescription_en}
+                onChange={(e) => update("secondDescription_en", e.target.value)}
                 placeholder="Testo descrittivo secondario"
               />
             </div>

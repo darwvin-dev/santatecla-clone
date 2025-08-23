@@ -1,25 +1,7 @@
-import { useTranslations } from "next-intl";
+import { AmenityKey, Apartment } from "@/types/Apartment";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import React from "react";
-
-type AmenityKey =
-  | "macchina_caffe"
-  | "aria_condizionata"
-  | "bollitore"
-  | "tostapane"
-  | "lavastoviglie"
-  | "self_check_in"
-  | "tv"
-  | "lavatrice"
-  | "set_di_cortesia"
-  | "microonde"
-  | "biancheria"
-  | "culla_su_richiesta"
-  | "wifi"
-  | "parcheggio_esterno"
-  | "animali_ammessi"
-  | "asciugacapelli"
-  | "balcone";
 
 type Feature = { key: AmenityKey; label: string; icon: string };
 
@@ -91,32 +73,20 @@ const FEATURES: Feature[] = [
   { key: "balcone", label: "Balcone", icon: "/features-icon/balcone.svg" },
 ];
 
-type ApartmentsDetailsProps = {
-  data: {
-    title?: string;
-    address?: string;
-    details?: string;
-    guests?: number;
-    sizeSqm?: number;
-    floor?: string;
-    cir?: string;
-    cin?: string;
-    bathrooms?: number;
-    amenities?: AmenityKey[];
-    plan?: string | null;
-  };
-};
-
-export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
+export default function ApartmentsDetails({ data }: { data: Apartment }) {
   const t = useTranslations("apartments");
+  const locale = useLocale();
 
   const {
     title,
     address,
-    details,
+    address_en,
+    description,
+    description_en,
     guests,
     sizeSqm,
     floor,
+    floor_en,
     bathrooms,
     amenities = [],
     plan,
@@ -146,13 +116,17 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
         <div className="row mb-md-5">
           <div className="col-12 col-lg-5">
             <p className="ff-sans fw-400 fz-21 color-black lh-sm">
-              {address || ""}
+              {locale === "en"
+                ? address_en || address
+                : address || ""}
             </p>
 
             <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm padding-y-0-40">
-              {details ? (
-                <div dangerouslySetInnerHTML={{ __html: details }} />
-              ) : null}
+              <div style={{whiteSpace: "pre-line"}}>
+                {locale === "en"
+                ? description_en || description
+                : description || ""}
+              </div>
               <p>&nbsp;</p>
               <p>
                 CIR: {cir}
@@ -172,10 +146,12 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
                 <p className="mb-0 ff-sans fw-400 fz-21 color-black lh-xs">
-                   {t("apartment.superficie")}
+                  {t("apartment.superficie")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
-                  {typeof sizeSqm === "number" ? `${sizeSqm} ${t("card.sqm")}` : "-"}
+                  {typeof sizeSqm === "number"
+                    ? `${sizeSqm} ${t("card.sqm")}`
+                    : "-"}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">
@@ -183,7 +159,9 @@ export default function ApartmentsDetails({ data }: ApartmentsDetailsProps) {
                   {t("card.floor")}
                 </p>
                 <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
-                  {floor || "-"}
+                  {locale === "en"
+                ? floor_en || floor
+                : floor || ""}
                 </div>
               </div>
               <div className="col-6 col-md-4 col-lg-6 mb-2">

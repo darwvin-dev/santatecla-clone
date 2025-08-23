@@ -94,26 +94,38 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     const formData = await req.formData();
 
     const title = (formData.get("title") as string) ?? apartment.title;
+    const title_en = (formData.get("title_en") as string) ?? apartment.title_en;
     const guests = formData.get("guests") ? Number(formData.get("guests")) : apartment.guests;
     const sizeSqm = formData.get("sizeSqm") ? Number(formData.get("sizeSqm")) : apartment.sizeSqm;
     const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : apartment.bathrooms;
     const floor = (formData.get("floor") as string) ?? apartment.floor;
+    const floor_en = (formData.get("floor_en") as string) ?? apartment.floor_en;
     const address = (formData.get("address") as string) ?? apartment.address;
+    const address_en = (formData.get("address_en") as string) ?? apartment.address_en;
     const addressDetail = (formData.get("addressDetail") as string) ?? apartment.addressDetail;
+    const addressDetail_en = (formData.get("addressDetail_en") as string) ?? apartment.addressDetail_en;
     const description = (formData.get("description") as string) ?? apartment.description;
+    const description_en = (formData.get("description_en") as string) ?? apartment.description_en;
     const details = (formData.get("details") as string) ?? apartment.details;
+    const details_en = (formData.get("details_en") as string) ?? apartment.details_en;
     const cin = (formData.get("cin") as string) ?? apartment.cin;
     const cir = (formData.get("cir") as string) ?? apartment.cir;
 
     apartment.title = title;
+    apartment.title_en = title_en;
     apartment.guests = guests;
     apartment.sizeSqm = sizeSqm;
     apartment.bathrooms = bathrooms;
     apartment.floor = floor;
+    apartment.floor_en = floor_en;
     apartment.address = address;
+    apartment.address_en = address_en;
     apartment.addressDetail = addressDetail;
+    apartment.addressDetail_en = addressDetail_en;
     apartment.description = description;
+    apartment.description_en = description_en;
     apartment.details = details;
+    apartment.details_en = details_en;
     apartment.cin = cin;
     apartment.cir = cir;
 
@@ -140,7 +152,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     const rules = safeJson<{ checkInFrom: string; checkInTo: string; checkOutBy: string }>(formData.get("rules"));
     if (rules) apartment.rules = rules;
 
-    const cancellation = safeJson<{ policy: "free_until_5_days" | "flexible" | "strict"; note?: string }>(
+    const cancellation = safeJson<{ policy: "free_until_5_days" | "flexible" | "strict"; note?: string, note_en?: string }>(
       formData.get("cancellation")
     );
     if (cancellation) apartment.cancellation = cancellation;

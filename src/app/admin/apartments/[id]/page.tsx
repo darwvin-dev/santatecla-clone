@@ -11,6 +11,7 @@ import {
 import { Section } from "@/app/(site)/[locale]/components/admin/sections/Section";
 import { ImagesManager } from "@/app/(site)/[locale]/components/admin/sections/ImagesManager";
 import { LocationFields } from "@/app/(site)/[locale]/components/admin/sections/LocationFields";
+import { toast } from "sonner";
 
 type FinalItem =
   | { kind: "existing"; url: string }
@@ -24,18 +25,24 @@ export default function EditApartmentPage() {
   const [form, setForm] = useState({
     id: "",
     title: "",
+    title_en: "",
     guests: "1",
     sizeSqm: "",
     floor: "",
+    floor_en: "",
     bathrooms: "1",
     address: "",
+    address_en: "",
     addressDetail: "",
+    addressDetail_en: "",
     description: "",
+    description_en: "",
     details: "",
+    details_en: "",
     lat: "",
     lng: "",
     cir: "",
-    cin: ""
+    cin: "",
   });
 
   const [amenities, setAmenities] = useState<Amenity[]>([]);
@@ -47,6 +54,7 @@ export default function EditApartmentPage() {
   const [cancellation, setCancellation] = useState<Cancellation>({
     policy: "free_until_5_days",
     note: "",
+    note_en: "",
   });
 
   // images (existing/new)
@@ -93,6 +101,12 @@ export default function EditApartmentPage() {
           lng: a.location?.lng ? String(a.location.lng) : "",
           cin: a.cin ?? "",
           cir: a.cir ?? "",
+          address_en: a.address_en,
+          title_en: a.title_en,
+          addressDetail_en: a.addressDetail_en,
+          details_en: a.details_en,
+          description_en: a.description_en,
+          floor_en: a.floor_en,
         });
 
         setAmenities(a.amenities ?? []);
@@ -104,7 +118,7 @@ export default function EditApartmentPage() {
           }
         );
         setCancellation(
-          a.cancellation ?? { policy: "free_until_5_days", note: "" }
+          a.cancellation ?? { policy: "free_until_5_days", note: "", note_en: "" }
         );
 
         setExistingCover(a.image ?? null);
@@ -169,14 +183,20 @@ export default function EditApartmentPage() {
 
     const fd = new FormData();
     fd.append("title", form.title);
+    fd.append("title_en", form.title_en);
     fd.append("guests", form.guests);
     fd.append("bathrooms", form.bathrooms);
     fd.append("sizeSqm", form.sizeSqm);
     fd.append("floor", form.floor);
+    fd.append("floor_en", form.floor_en);
     fd.append("address", form.address);
+    fd.append("address_en", form.address_en);
     fd.append("addressDetail", form.addressDetail);
+    fd.append("addressDetail_en", form.addressDetail_en);
     fd.append("description", form.description);
+    fd.append("description_en", form.description_en);
     fd.append("details", form.details);
+    fd.append("details_en", form.details_en);
     fd.append("cir", form.cir);
     fd.append("cin", form.cin);
 
@@ -225,13 +245,14 @@ export default function EditApartmentPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.status === 200) {
+        toast.success("Appartamento aggiornato con successo ✅");
         router.push("/admin/apartments");
       } else {
-        alert("Errore nell’aggiornamento");
+        toast.error("Errore durante l’aggiornamento!");
       }
     } catch (err: any) {
       console.error(err);
-      alert(
+      toast.error(
         "Errore nell’aggiornamento: " +
           (err?.response?.data?.error ?? "Sconosciuto")
       );
@@ -442,6 +463,95 @@ export default function EditApartmentPage() {
             </div>
           </Section>
 
+          <Section title="Informazioni principali (EN)">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Titolo(EN) *
+                </label>
+                <input
+                  name="title_en"
+                  required
+                  placeholder="Es. CityLife | Via Emanuele Filiberto 14"
+                  value={form.title_en}
+                  onChange={handleChange}
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Indirizzo(EN) *
+                  </label>
+                  <input
+                    name="address_en"
+                    required
+                    placeholder="Via Emanuele Filiberto 14, Milano"
+                    value={form.address_en}
+                    onChange={handleChange}
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Dettaglio indirizzo(EN)
+                  </label>
+                  <input
+                    name="addressDetail_en"
+                    placeholder="Scala B, Interno 5…"
+                    value={form.addressDetail_en}
+                    onChange={handleChange}
+                    className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Piano(EN) *
+                </label>
+                <input
+                  name="floor_en"
+                  required
+                  placeholder="Es. CityLife | Via Emanuele Filiberto 14"
+                  value={form.floor_en}
+                  onChange={handleChange}
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Descrizione breve(EN) *
+                </label>
+                <textarea
+                  name="description_en"
+                  required
+                  rows={5}
+                  placeholder="Descrizione dell’alloggio…"
+                  value={form.description_en}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Dettagli aggiuntivi(EN)
+              </label>
+              <textarea
+                name="details_en"
+                rows={4}
+                placeholder="Ulteriori info, dotazioni di pregio, note sul quartiere, ecc."
+                value={form.details_en}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+            </div>
+          </Section>
+
           {/* Immagini */}
           <ImagesManager
             existingCover={existingCover}
@@ -535,7 +645,7 @@ export default function EditApartmentPage() {
           </Section>
 
           <Section title="Termini di cancellazione">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">
                   Politica
@@ -570,6 +680,19 @@ export default function EditApartmentPage() {
                   value={cancellation.note ?? ""}
                   onChange={(e) =>
                     setCancellation((c) => ({ ...c, note: e.target.value }))
+                  }
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Nota (opzionale)(EN)
+                </label>
+                <input
+                  placeholder="Dettagli aggiuntivi sulla cancellazione"
+                  value={cancellation.note_en ?? ""}
+                  onChange={(e) =>
+                    setCancellation((c) => ({ ...c, note_en: e.target.value }))
                   }
                   className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
                 />

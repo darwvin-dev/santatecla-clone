@@ -25,13 +25,6 @@ function splitLocale(pathname: string): { locale: Locale; rest: string } {
   return { locale, rest: rest === "//" ? "/" : rest };
 }
 
-function withLocale(href: string, locale: Locale): string {
-  const clean = href.split("#")[0].split("?")[0];
-  const segs = clean.split("/").filter(Boolean);
-  if (segs[0] === "it" || segs[0] === "en") return clean; 
-  return `/${locale}${clean.startsWith("/") ? "" : "/"}${clean}`;
-}
-
 function normalizePathIgnoringLocale(pathname: string): string {
   const { rest } = splitLocale(pathname);
   const trimmed = rest !== "/" && rest.endsWith("/") ? rest.slice(0, -1) : rest;
@@ -53,9 +46,6 @@ export default function AdminSidebar({
   hideHeader?: boolean;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const { locale, rest } = useMemo(() => splitLocale(pathname), [pathname]);
 
   const closeDrawerIfMobile = useCallback(() => {
     const cb = document.getElementById(
@@ -63,15 +53,6 @@ export default function AdminSidebar({
     ) as HTMLInputElement | null;
     if (cb && cb.checked) cb.checked = false;
   }, []);
-
-  const switchLocale = useCallback(
-    (next: Locale) => {
-      // همان مسیر فعلی، فقط با زبان جدید
-      const nextPath = `/${next}${rest === "/" ? "" : rest}`;
-      router.replace(nextPath);
-    },
-    [router, rest]
-  );
 
   return (
     <aside
@@ -85,40 +66,16 @@ export default function AdminSidebar({
       {!hideHeader && (
         <div className="border-b border-white/10 px-5 py-4 flex items-center justify-between gap-3">
           <h2 className="text-lg font-bold tracking-tight">Pannello</h2>
-
-          {/* Language Switch */}
-          <div className="flex items-center gap-1 rounded-lg bg-white/5 p-1">
-            {(["it", "en"] as Locale[]).map((loc) => {
-              const active = loc === locale;
-              return (
-                <button
-                  key={loc}
-                  type="button"
-                  onClick={() => switchLocale(loc)}
-                  className={[
-                    "px-2.5 py-1 text-xs font-semibold rounded-md transition",
-                    active
-                      ? "bg-white text-slate-900"
-                      : "text-zinc-300 hover:bg-white/10 hover:text-white",
-                  ].join(" ")}
-                  aria-pressed={active}
-                >
-                  {loc.toUpperCase()}
-                </button>
-              );
-            })}
-          </div>
         </div>
       )}
 
       <nav className="p-3 space-y-1">
         {NAV_ITEMS.map((item) => {
           const active = isActive(pathname, item);
-          const href = withLocale(item.href, locale);
           return (
             <NavLink
               key={item.href}
-              href={href}
+              href={item.href}
               active={active}
               onClick={closeDrawerIfMobile}
             >
@@ -130,13 +87,13 @@ export default function AdminSidebar({
 
       <div className="mt-auto border-t border-white/10 p-3">
         <Link
-          href={withLocale("/", locale)}
+          href={"/"}
           onClick={closeDrawerIfMobile}
           className="group flex items-center gap-3 rounded-xl px-3 py-2 text-zinc-300 transition
                      hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30"
         >
           <IconExternal />
-          <span>{locale === "it" ? "Torna al sito" : "Back to site"}</span>
+          <span>Torna al sito</span>
         </Link>
       </div>
     </aside>

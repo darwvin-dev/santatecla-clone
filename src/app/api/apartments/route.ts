@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
         guests: 1,
         sizeSqm: 1,
         floor: 1,
+        floor_en: 1,
         bathrooms: 1,
         cir: 1,
         cin: 1,
@@ -69,19 +70,14 @@ export async function GET(req: NextRequest) {
         size: 1,
         createdAt: 1,
         updatedAt: 1,
-        title: locale === "en" ? { $ifNull: ["$title_en", "$title"] } : "$title",
-        description:
-          locale === "en"
-            ? { $ifNull: ["$description_en", "$description"] }
-            : "$description",
-        details:
-          locale === "en"
-            ? { $ifNull: ["$details_en", "$details"] }
-            : "$details",
-        address:
-          locale === "en"
-            ? { $ifNull: ["$address_en", "$address"] }
-            : "$address",
+        title: 1,
+        title_en: 1,
+        description: 1,
+        description_en: 1,
+        details: 1,
+        details_en: 1,
+        address: 1,
+        address_en: 1,
       },
     });
 

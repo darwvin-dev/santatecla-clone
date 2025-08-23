@@ -1,19 +1,22 @@
 export type DynamicPart = {
-  description: string;
-  image: string;
-  image2: string;
-  key: string;
-  mobileImage: string;
-  mobileImage2: string;
-  image3: string,
-  mobileImage3: string,
-  order: number;
-  page: string;
-  published: true;
-  secondDescription: string;
-  updatedAt: string;
-  secondTitle: string;
-  title: string;
-  parentId: string;
   _id: string;
+  key: string;
+  page: string;
+  title?: string;
+  title_en?: string;               
+  secondTitle?: string;
+  secondTitle_en?: string;         
+  description?: string;
+  description_en?: string;         
+  secondDescription?: string;
+  secondDescription_en?: string;   
+  image?: string;
+  mobileImage?: string;
+  image2?: string;
+  mobileImage2?: string;
+  image3?: string;
+  mobileImage3?: string;
+  order?: number;
+  published?: boolean;
+  updatedAt?: string;
 };

@@ -33,6 +33,7 @@ export type CancellationPolicy = "free_until_5_days" | "flexible" | "strict";
 export type Cancellation = {
   policy: CancellationPolicy;
   note?: string;
+  note_en?: string;
 };
 
 export interface IApartment extends Document {
@@ -56,6 +57,7 @@ export interface IApartment extends Document {
   guests: number;
   sizeSqm: number;
   floor?: string;
+  floor_en?: string;
   bathrooms: number;
 
   cir?: string;
@@ -96,6 +98,7 @@ const CancellationSchema = new Schema<Cancellation>(
       required: true,
     },
     note: { type: String },
+    note_en: { type: String },
   },
   { _id: false }
 );
@@ -126,6 +129,7 @@ const ApartmentSchema = new Schema<IApartment>(
     guests: { type: Number, required: true, min: 1 },
     sizeSqm: { type: Number, required: true, min: 1 },
     floor: { type: String, trim: true },
+    floor_en: { type: String, trim: true },
     bathrooms: { type: Number, required: true, min: 1 },
 
     address: { type: String, required: true, trim: true },

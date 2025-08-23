@@ -1,10 +1,10 @@
-// /app/admin/dashboard/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { DynamicPart } from "@/types/DynamicPart";
 import { Apartment } from "@/types/Apartment";
+import { AdminEndpoints } from "@/lib/adminApi";
 
 function classNames(...xs: Array<string | false | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -120,17 +120,13 @@ export default function AdminDashboard() {
         setLoading(true);
         setErr(null);
         const [dpRes, apRes] = await Promise.all([
-          fetch("/api/dynamic-parts?page=Home", { cache: "no-store" }),
-          fetch("/api/apartments", { cache: "no-store" }),
+          AdminEndpoints.homeParts("Home"),
+          AdminEndpoints.apartments(),
         ]);
-        if (!dpRes.ok)
-          throw new Error("Errore nel caricamento delle sezioni Home.");
-        if (!apRes.ok)
-          throw new Error("Errore nel caricamento degli appartamenti.");
-        const [dpData, apData] = await Promise.all([
-          dpRes.json(),
-          apRes.json(),
-        ]);
+
+        const dpData = dpRes.data;
+        const apData = apRes.data;
+        
         setHomeParts(Array.isArray(dpData) ? dpData : []);
         setApartments(Array.isArray(apData) ? apData : []);
       } catch (e: any) {
