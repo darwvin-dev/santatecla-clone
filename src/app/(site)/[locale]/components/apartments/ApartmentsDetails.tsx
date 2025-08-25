@@ -81,8 +81,8 @@ export default function ApartmentsDetails({ data }: { data: Apartment }) {
     title,
     address,
     address_en,
-    description,
-    description_en,
+    details,
+    details_en,
     guests,
     sizeSqm,
     floor,
@@ -124,8 +124,8 @@ export default function ApartmentsDetails({ data }: { data: Apartment }) {
             <div className="site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm padding-y-0-40">
               <div style={{whiteSpace: "pre-line"}}>
                 {locale === "en"
-                ? description_en || description
-                : description || ""}
+                ? details_en || details
+                : details || ""}
               </div>
               <p>&nbsp;</p>
               <p>

@@ -70,5 +70,5 @@ export type Apartment = {
   createdAt?: string;
   updatedAt?: string;
 
-  link?: string;
+  orderShow: number;
 };

@@ -43,6 +43,7 @@ export default function EditApartmentPage() {
     lng: "",
     cir: "",
     cin: "",
+    orderShow: ""
   });
 
   const [amenities, setAmenities] = useState<Amenity[]>([]);
@@ -57,7 +58,6 @@ export default function EditApartmentPage() {
     note_en: "",
   });
 
-  // images (existing/new)
   const [existingCover, setExistingCover] = useState<string | null>(null);
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
   const [existingPlan, setExistingPlan] = useState<string | null>(null);
@@ -107,6 +107,7 @@ export default function EditApartmentPage() {
           details_en: a.details_en,
           description_en: a.description_en,
           floor_en: a.floor_en,
+          orderShow: String(a.orderShow)
         });
 
         setAmenities(a.amenities ?? []);
@@ -118,7 +119,11 @@ export default function EditApartmentPage() {
           }
         );
         setCancellation(
-          a.cancellation ?? { policy: "free_until_5_days", note: "", note_en: "" }
+          a.cancellation ?? {
+            policy: "free_until_5_days",
+            note: "",
+            note_en: "",
+          }
         );
 
         setExistingCover(a.image ?? null);
@@ -187,6 +192,7 @@ export default function EditApartmentPage() {
     fd.append("guests", form.guests);
     fd.append("bathrooms", form.bathrooms);
     fd.append("sizeSqm", form.sizeSqm);
+    fd.append("orderShow", form.orderShow);
     fd.append("floor", form.floor);
     fd.append("floor_en", form.floor_en);
     fd.append("address", form.address);
@@ -348,7 +354,7 @@ export default function EditApartmentPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">
                   Ospiti *
@@ -391,6 +397,20 @@ export default function EditApartmentPage() {
                   className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
                 />
               </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Order Show *
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  name="orderShow"
+                  required
+                  value={form.orderShow}
+                  onChange={handleChange}
+                  className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -411,7 +431,6 @@ export default function EditApartmentPage() {
                 </label>
                 <input
                   name="cin"
-                  required
                   value={form.cin}
                   onChange={handleChange}
                   className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-emerald-400"
@@ -471,7 +490,6 @@ export default function EditApartmentPage() {
                 </label>
                 <input
                   name="title_en"
-                  required
                   placeholder="Es. CityLife | Via Emanuele Filiberto 14"
                   value={form.title_en}
                   onChange={handleChange}
@@ -485,7 +503,6 @@ export default function EditApartmentPage() {
                   </label>
                   <input
                     name="address_en"
-                    required
                     placeholder="Via Emanuele Filiberto 14, Milano"
                     value={form.address_en}
                     onChange={handleChange}
@@ -514,7 +531,6 @@ export default function EditApartmentPage() {
                 </label>
                 <input
                   name="floor_en"
-                  required
                   placeholder="Es. CityLife | Via Emanuele Filiberto 14"
                   value={form.floor_en}
                   onChange={handleChange}
@@ -527,7 +543,6 @@ export default function EditApartmentPage() {
                 </label>
                 <textarea
                   name="description_en"
-                  required
                   rows={5}
                   placeholder="Descrizione dell’alloggio…"
                   value={form.description_en}
@@ -575,7 +590,12 @@ export default function EditApartmentPage() {
                   ? { kind: "existing", url: x.url }
                   : { kind: "new", file: x.file }
               );
-              setFinalOrder(compact);
+              setFinalOrder((prev) => {
+                const isEqual =
+                  JSON.stringify(prev) === JSON.stringify(compact);
+                if (isEqual) return prev;
+                return compact;
+              });
             }}
           />
 

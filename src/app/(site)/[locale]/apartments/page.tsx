@@ -10,8 +10,8 @@ import Loading from "../components/loading";
 export default function Home() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const [order, setOrder] = useState<
-    "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc"
-  >("date_desc");
+    "" | "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc"
+  >("");
   const [isLoading, setIsLoading] = useState<Boolean>(false);
 
   useEffect(() => {

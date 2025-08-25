@@ -16,7 +16,7 @@ export default function BannerBook({
 }: BannerBookProps) {
   const [open, setOpen] = useState(false);
   const collapseId = useId();
-  const t = useTranslations("booking")
+  const t = useTranslations("booking");
 
   return (
     <div className="row living-banner-book d-flex flex-column">
@@ -32,8 +32,12 @@ export default function BannerBook({
           data-open={open}
         >
           <span className="btn-label-wrap">
-            <span className={`btn-label ${open ? "out" : "in"}`}>{t("book")}</span>
-            <span className={`btn-label ${open ? "in" : "out"}`}>{t("close")}</span>
+            <span className={`btn-label ${open ? "out" : "in"}`}>
+              {t("book")}
+            </span>
+            <span className={`btn-label ${open ? "in" : "out"}`}>
+              {t("close")}
+            </span>
           </span>
         </button>
       </div>
@@ -44,13 +48,14 @@ export default function BannerBook({
         aria-hidden={!open}
       >
         <div className="collapsible-inner">
-          <div className="container padding-y-30-30">
+          <div
+            className="container padding-y-30-30"
+            style={{ paddingBottom: 0 }}
+          >
             <div className="row d-flex justify-content-center">
               <div className="col-12 col-md-9 col-xl-6 mb-4">
                 <div className="site-content fz-20 text-center">
-                  <p>
-                    {t("checkAvailability")}
-                  </p>
+                  <p>{t("checkAvailability")}</p>
                   <p className="mt-0 fw-500">{t("sendRequest")}</p>
                 </div>
               </div>
@@ -94,7 +99,7 @@ export default function BannerBook({
                   href={`mailto:${email}`}
                   className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                 >
-                  <span>{t('email')}</span>
+                  <span>{t("email")}</span>
                   <span className="btn-filter d-flex align-items-center justify-content-center">
                     <i className="webfont icon-wf-st_chiedi-info fz-28 color-black"></i>
                     <span className="btn-filter-hover d-flex align-items-center">
@@ -124,9 +129,7 @@ export default function BannerBook({
           white-space: nowrap;
           opacity: 0;
           transform: translateY(6px);
-          transition:
-            opacity 220ms ease,
-            transform 220ms ease;
+          transition: opacity 440ms ease, transform 440ms ease;
         }
         .btn-label.in {
           opacity: 1;
@@ -141,10 +144,8 @@ export default function BannerBook({
         .collapsible {
           display: grid;
           grid-template-rows: 0fr; /* جمع‌شده */
-          transition:
-            grid-template-rows 360ms cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 300ms ease,
-            transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: grid-template-rows 720ms cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 600ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
           opacity: 0;
           transform: translateY(-6px);
           pointer-events: none; /* در حالت بسته کلیک‌ناپذیر باشد */

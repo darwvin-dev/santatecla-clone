@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "axios": "^1.11.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
@@ -32,6 +33,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^19",
     "@types/swiper": "^5.4.3",
     "autoprefixer": "^10.4.21",

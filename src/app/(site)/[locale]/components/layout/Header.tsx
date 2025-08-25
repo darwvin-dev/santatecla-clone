@@ -110,7 +110,7 @@ export default function Header({ setIsMenuOpen, isMenuOpen }: HeaderProps) {
             <Link
               className="brand d-inline-flex align-items-center txt-no-underline position-relative"
               href={"/"}
-              aria-label="Santa Tecla Living"
+              aria-label="Habitabio"
               style={{ gap: 8 }}
               onClick={closeMenu}
             >

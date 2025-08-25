@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import ClientLayoutWrapper from "@/app/(site)/[locale]/components/ClientLayoutWrapper";
 import ApartmentsGalerry from "@/app/(site)/[locale]/components/apartments/ApartmentsGalerry";
@@ -26,7 +26,7 @@ const PropertyMapClient = dynamic(
           placeItems: "center",
         }}
       >
-        در حال بارگذاری نقشه…
+        Loading Map...
       </div>
     ),
   }
@@ -87,27 +87,19 @@ export default function PropertyIntro() {
   }, [slug]);
 
   if (loading) {
-    return (
-      <ClientLayoutWrapper>
-        <Loading />
-      </ClientLayoutWrapper>
-    );
+    return <Loading />;
   }
 
   if (err) {
     return (
       <ClientLayoutWrapper>
-        <p style={{ color: "crimson" }}>خطا: {err}</p>
+        <p style={{ color: "crimson" }}>ERROR: {err}</p>
       </ClientLayoutWrapper>
     );
   }
 
   if (!data) {
-    return (
-      <ClientLayoutWrapper>
-        <p>چیزی پیدا نشد.</p>
-      </ClientLayoutWrapper>
-    );
+    return redirect("/")
   }
 
   const lat: number | null =
@@ -121,11 +113,12 @@ export default function PropertyIntro() {
 
   return (
     <ClientLayoutWrapper>
-      <ApartmentsGalerry images={images} name={locale === "en" ? (data.title_en || data.title) : data.title} />
-
-      <ApartmentsDetails
-        data={data}
+      <ApartmentsGalerry
+        images={images}
+        name={locale === "en" ? data.title_en || data.title : data.title}
       />
+
+      <ApartmentsDetails data={data} />
 
       {coords && <PropertyMapClient coords={coords} />}
 

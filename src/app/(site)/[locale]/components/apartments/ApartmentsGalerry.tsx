@@ -23,16 +23,12 @@ export default function ApartmentsGalerry({ images, name }: Props) {
 
   if (!items.length) return null;
 
-  console.log(process.env.NEXT_PUBLIC_DOMAIN_ADDRESS)
-
   return (
     <section className="row padding-y-190-190 single-property-intro">
       <div className="container padding-y-60-60">
-        <div className="row flex-nowrap">
-          {/* عنوان */}
+        <div className="row prampolini-apartment">
           <div
             className="property-about-text col-12 col-md-4 col-lg-2"
-            style={{ minHeight: 416 }}
           >
             <h1 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-xs">
               {name}
@@ -138,10 +134,6 @@ export default function ApartmentsGalerry({ images, name }: Props) {
         </div>
       </div>
 
-      {/* 👇 گزینه‌ی اختیاری: اگر می‌خوای ارتفاع ثابت باشه به‌جای نسبت */}
-      {/* <style jsx global>{`
-        .property-swiper-images .swiper-slide figure { height: 320px; } // یا هر ارتفاعی
-      `}</style> */}
     </section>
   );
 }

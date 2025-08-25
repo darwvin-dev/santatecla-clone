@@ -36,7 +36,7 @@
     "cookies": "Cookies policy",
     "privacy": "Privacy",
     "preferences": "Preferenze",
-    "companyLine": "Santa Tecla Living",
+    "companyLine": "Habitabio",
     "addressLine": "Sede Via Matteo Bandello 14 - 20123 Milano",
     "vatLine": "P.Iva 09314590960"
   },
@@ -46,6 +46,7 @@
       "title": "I nostri appartamenti",
       "orderBy": "Ordina per",
       "newest": "Più recenti",
+      "default": "Predefinito",
       "oldest": "Meno recenti",
       "filter": "Filtra"
     },

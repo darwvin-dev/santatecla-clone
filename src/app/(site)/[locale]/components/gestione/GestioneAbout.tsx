@@ -9,35 +9,50 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
   return (
     <>
       {abouts.map((about, index) => {
-        const isEven = index % 2 === 0; 
+        const isEven = index % 2 === 0;
 
         return (
           <section
-            key={`about_${about._id || index}`} 
-            className={`about-section ${isEven ? "left-image" : "right-image"}`}
+            key={`about_${about._id || index}`}
+            className={`row padding-y-90-90 prop-section-about`}
           >
-            <div className="about-row">
-              <div className="about-image">
-                <img
-                  src={about.image || "/fallback-image.jpg"}
-                  alt={about.title || "About section image"}
-                  width="1920"
-                  height="1280"
-                  loading="lazy"
-                  decoding="async"
-                  className="about-img"
-                />
-              </div>
-              <div className="about-text">
-                <div className="about-text-inner">
-                  {about.title && (
-                    <h2 className="about-title">{locale === "en" ? (about.title_en || about.title) : about.title}</h2>
-                  )}
-                  {about.description && (
-                    <div className="about-desc" style={{ whiteSpace: "pre-line" }}>
-                      {locale === "en" ? (about.description_en || about.description) : about.description}
+            <div className="w-100 position-relative overflow-hidden property-about-container">
+              <div className="container h-100">
+                <div className="row h-100" style={{ flexFlow: !isEven ? "row-reverse" : ""}}>
+                  <div className="col-12 col-md-6 col-lg-6 prop-about-img-wrap">
+                    <div className="prop-about-img prop-minheight-img" style={{ left: !isEven ? 0 : "unset", right: isEven ? 0 : "unset"}}>
+                      <img
+                        src={about.image || "/fallback-image.jpg"}
+                        alt={about.title || "About section image"}
+                        width="1920"
+                        height="1280"
+                        loading="lazy"
+                        decoding="async"
+                        className="about-img"
+                      />
                     </div>
-                  )}
+                  </div>
+                  <div className="property-about-text col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between" style={{ marginRight: !isEven ? "8.33333333%" : ""}}>
+                    <div>
+                      {about.title && (
+                        <h2 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
+                          {locale === "en"
+                            ? about.title_en || about.title
+                            : about.title}
+                        </h2>
+                      )}
+                      {about.description && (
+                        <div
+                          className="about-desc"
+                          style={{ whiteSpace: "pre-line" }}
+                        >
+                          {locale === "en"
+                            ? about.description_en || about.description
+                            : about.description}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -82,7 +97,10 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
               }
 
               .about-text-inner {
-                max-width: var(--textMax, 500px); /* Fallback to 500px if undefined */
+                max-width: var(
+                  --textMax,
+                  500px
+                ); /* Fallback to 500px if undefined */
               }
 
               /* Alternating layout */
@@ -137,11 +155,11 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
 
                 .about-text {
                   padding: 1rem clamp(1rem, 5vw, 1.5rem);
-                  margin: auto
+                  margin: auto;
                 }
                 .about-image {
                   padding: 1rem clamp(1rem, 5vw, 1.5rem);
-                  margin: auto
+                  margin: auto;
                 }
 
                 .about-text-inner {

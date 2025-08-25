@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 
-type Order = "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc";
+type Order = "" | "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc";
 
 export default function ApartmentsHeader({
   order,
@@ -37,6 +37,7 @@ export default function ApartmentsHeader({
               className="d-inline-block ff-sans fw-300 fz-20 color-black color-black-hover lh-xs txt-no-underline"
             >
               <option disabled>{t("orderBy")}:</option>
+              <option value="">{t("default")}</option>
               <option value="date_desc">{t("newest")}</option>
               <option value="date_asc">{t("oldest")}</option>
               <option value="alpha_asc">A → Z</option>

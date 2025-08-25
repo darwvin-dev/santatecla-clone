@@ -22916,3 +22916,13 @@ div.ui-datepicker#ui-datepicker-div-octorate {
   transform: translate(-50%, -50%);
   opacity: 1;
 }
+
+.prampolini-apartment{
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 767.98px) {
+ .prampolini-apartment{
+  flex-wrap: wrap;
+} 
+}

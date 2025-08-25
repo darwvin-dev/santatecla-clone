@@ -36,7 +36,7 @@
     "cookies": "Cookies policy",
     "privacy": "Privacy",
     "preferences": "Preferences",
-    "companyLine": "Santa Tecla Living",
+    "companyLine": "Habitabio",
     "addressLine": "Head office: Via Matteo Bandello 14 - 20123 Milan",
     "vatLine": "VAT 09314590960"
   },
@@ -47,7 +47,8 @@
       "orderBy": "Sort by",
       "newest": "Newest",
       "oldest": "Oldest",
-      "filter": "Filter"
+      "filter": "Filter",
+      "default": "Default"
     },
     "card": {
       "guests": "guests",

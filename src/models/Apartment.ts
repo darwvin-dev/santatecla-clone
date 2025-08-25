@@ -75,6 +75,7 @@ export interface IApartment extends Document {
   lng?: number;
 
   beds?: number;
+  orderShow?: number;
   size?: string;
 
   createdAt?: Date;
@@ -161,6 +162,8 @@ const ApartmentSchema = new Schema<IApartment>(
 
     beds: { type: Number, min: 0 },
     size: { type: String },
+
+    orderShow: { type: Number, default: 0 },
   },
   {
     timestamps: true,
