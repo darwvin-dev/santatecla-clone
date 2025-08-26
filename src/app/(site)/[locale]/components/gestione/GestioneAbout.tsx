@@ -18,9 +18,18 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
           >
             <div className="w-100 position-relative overflow-hidden property-about-container">
               <div className="container h-100">
-                <div className="row h-100" style={{ flexFlow: !isEven ? "row-reverse" : ""}}>
+                <div
+                  className="row h-100"
+                  style={{ flexFlow: !isEven ? "row-reverse" : "" }}
+                >
                   <div className="col-12 col-md-6 col-lg-6 prop-about-img-wrap">
-                    <div className="prop-about-img prop-minheight-img" style={{ left: !isEven ? 0 : "unset", right: isEven ? 0 : "unset"}}>
+                    <div
+                      className="prop-about-img prop-minheight-img"
+                      style={{
+                        left: !isEven ? 0 : "unset",
+                        right: isEven ? 0 : "unset",
+                      }}
+                    >
                       <img
                         src={about.image || "/fallback-image.jpg"}
                         alt={about.title || "About section image"}
@@ -32,7 +41,10 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
                       />
                     </div>
                   </div>
-                  <div className="property-about-text col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between" style={{ marginRight: !isEven ? "8.33333333%" : ""}}>
+                  <div
+                    className="property-about-text col-12 col-md-6 col-lg-5 offset-lg-1 d-flex flex-column justify-content-between"
+                    style={{ marginRight: !isEven ? "8.33333333%" : "" }}
+                  >
                     <div>
                       {about.title && (
                         <h2 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">

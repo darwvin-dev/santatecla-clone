@@ -24,7 +24,6 @@ async function deleteIfExists(absPath: string) {
   try {
     await fs.unlink(absPath);
   } catch {
-    /* ignore */
   }
 }
 
@@ -266,15 +265,12 @@ export async function DELETE(_req: NextRequest, { params }: IdCtx) {
       );
     }
 
-    // حذف کاور
     if (apartment.image) {
       await deleteIfExists(path.join(process.cwd(), "public", apartment.image));
     }
-    // حذف پلان
     if (apartment.plan) {
       await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
     }
-    // حذف گالری
     if (Array.isArray(apartment.gallery)) {
       for (const url of apartment.gallery) {
         await deleteIfExists(path.join(process.cwd(), "public", url));

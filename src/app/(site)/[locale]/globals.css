@@ -3511,9 +3511,7 @@ pre code {
   .prop-section-immobile .swiper-button-wrap {
     place-self: center;
   }
-  .prop-section-immobile .swiper-button-prev {
-    right: 5px !important;
-  }
+
   .prop-section-immobile .swiper-button-next {
     left: 5px !important;
   }
@@ -17075,7 +17073,7 @@ nav.navigation.pagination .nav-links > .next {
   .swiper-button-wrap .swiper-button-prev {
     width: 44px;
     height: 44px;
-    right: -3%;
+    /* right: -3%; */
   }
 }
 
@@ -17084,7 +17082,7 @@ nav.navigation.pagination .nav-links > .next {
   .swiper-button-wrap .swiper-button-prev {
     width: 48px;
     height: 48px;
-    right: -5%;
+    /* right: -5%; */
   }
 }
 
@@ -17100,7 +17098,7 @@ nav.navigation.pagination .nav-links > .next {
 @media (max-width: 767.98px) {
   .swiper-button-wrap .swiper-button-prev {
     top: calc(100% + 4px);
-    right: 75px;
+    /* right: 75px; */
   }
 }
 
@@ -19970,7 +19968,6 @@ select.custom-select:focus-visible {
   line-height: 1;
 }
 
-.swiper-button-prev,
 .swiper-rtl .swiper-button-next {
   left: 10px;
   right: auto;
@@ -19983,8 +19980,8 @@ select.custom-select:focus-visible {
 
 .swiper-button-next,
 .swiper-rtl .swiper-button-prev {
-  right: 10px;
-  left: auto;
+  /* right: 10px; */
+  /* left: auto; */
 }
 
 .swiper-button-next:after,
@@ -22925,4 +22922,17 @@ div.ui-datepicker#ui-datepicker-div-octorate {
  .prampolini-apartment{
   flex-wrap: wrap;
 } 
+}
+
+@media (max-width: 767.98px) {
+    .prop-section-immobile .swiper-button-prev {
+        right: 55% !important;
+        left: auto !important;
+    }
+}
+@media (max-width: 767.98px) {
+    .prop-section-immobile .swiper-button-next {
+        right: auto !important;
+        left: 55% !important;
+    }
 }
