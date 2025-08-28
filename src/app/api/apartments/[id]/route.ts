@@ -7,6 +7,14 @@ import fs from "fs/promises";
 
 /* ---------- Helpers ---------- */
 
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-_]/g, "");
+}
+
 function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   if (typeof value !== "string") return undefined;
   try {
@@ -16,38 +24,37 @@ function safeJson<T>(value: FormDataEntryValue | null): T | undefined {
   }
 }
 
-async function ensureDir(p: string) {
-  await fs.mkdir(p, { recursive: true });
-}
-
 async function deleteIfExists(absPath: string) {
   try {
     await fs.unlink(absPath);
-  } catch {
-  }
+  } catch {}
 }
 
 async function saveImageFile(
   file: File,
-  folder: string,
-  suffix = ""
+  subPrefix = "",
+  title = ""
 ): Promise<string> {
-  if (!file.type?.startsWith("image/")) {
+  if (!file.type || !file.type.startsWith("image/")) {
     throw new Error("Invalid file type. Only images are allowed");
   }
-  const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
-  await ensureDir(uploadDir);
+
+  const safeTitle = slugify(title || "APARTMENTS");
+
+  const uploadDir = path.join(process.cwd(), "public", "uploads", safeTitle);
+  await fs.mkdir(uploadDir, { recursive: true });
 
   const ext = path.extname(file.name) || ".jpg";
-  const filename = `${Date.now()}_${Math.random()
+  const unique = `${Date.now()}_${Math.random()
     .toString(36)
-    .slice(2)}${suffix}${ext}`;
+    .slice(2)}${subPrefix}`;
+  const filename = `${unique}${ext}`;
   const destPath = path.join(uploadDir, filename);
 
   const buffer = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(destPath, buffer);
 
-  return `/uploads/${folder}/${filename}`;
+  return `/uploads/${safeTitle}/${filename}`;
 }
 
 type IdCtx = { params: Promise<{ id: string }> };
@@ -58,7 +65,9 @@ export async function GET(_req: NextRequest, { params }: IdCtx) {
 
     const { id } = await params;
 
-    const apartment = await Apartment.findOne({ title: id });
+    const apartment = await Apartment.findOne({
+      $or: [{ title: id }, { slug: id }],
+    });
     if (!apartment) {
       return NextResponse.json(
         { error: "Apartment not found" },
@@ -87,26 +96,42 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
-      return NextResponse.json({ error: "Apartment not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Apartment not found" },
+        { status: 404 }
+      );
     }
 
     const formData = await req.formData();
 
     const title = (formData.get("title") as string) ?? apartment.title;
     const title_en = (formData.get("title_en") as string) ?? apartment.title_en;
-    const guests = formData.get("guests") ? Number(formData.get("guests")) : apartment.guests;
-    const sizeSqm = formData.get("sizeSqm") ? Number(formData.get("sizeSqm")) : apartment.sizeSqm;
-    const bathrooms = formData.get("bathrooms") ? Number(formData.get("bathrooms")) : apartment.bathrooms;
+    const guests = formData.get("guests")
+      ? Number(formData.get("guests"))
+      : apartment.guests;
+    const sizeSqm = formData.get("sizeSqm")
+      ? Number(formData.get("sizeSqm"))
+      : apartment.sizeSqm;
+    const bathrooms = formData.get("bathrooms")
+      ? Number(formData.get("bathrooms"))
+      : apartment.bathrooms;
     const floor = (formData.get("floor") as string) ?? apartment.floor;
     const floor_en = (formData.get("floor_en") as string) ?? apartment.floor_en;
     const address = (formData.get("address") as string) ?? apartment.address;
-    const address_en = (formData.get("address_en") as string) ?? apartment.address_en;
-    const addressDetail = (formData.get("addressDetail") as string) ?? apartment.addressDetail;
-    const addressDetail_en = (formData.get("addressDetail_en") as string) ?? apartment.addressDetail_en;
-    const description = (formData.get("description") as string) ?? apartment.description;
-    const description_en = (formData.get("description_en") as string) ?? apartment.description_en;
+    const address_en =
+      (formData.get("address_en") as string) ?? apartment.address_en;
+    const addressDetail =
+      (formData.get("addressDetail") as string) ?? apartment.addressDetail;
+    const addressDetail_en =
+      (formData.get("addressDetail_en") as string) ??
+      apartment.addressDetail_en;
+    const description =
+      (formData.get("description") as string) ?? apartment.description;
+    const description_en =
+      (formData.get("description_en") as string) ?? apartment.description_en;
     const details = (formData.get("details") as string) ?? apartment.details;
-    const details_en = (formData.get("details_en") as string) ?? apartment.details_en;
+    const details_en =
+      (formData.get("details_en") as string) ?? apartment.details_en;
     const cin = (formData.get("cin") as string) ?? apartment.cin;
     const cir = (formData.get("cir") as string) ?? apartment.cir;
 
@@ -131,8 +156,10 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     const lat = formData.get("lat") ? Number(formData.get("lat")) : undefined;
     const lng = formData.get("lng") ? Number(formData.get("lng")) : undefined;
     if (
-      typeof lat === "number" && !Number.isNaN(lat) &&
-      typeof lng === "number" && !Number.isNaN(lng)
+      typeof lat === "number" &&
+      !Number.isNaN(lat) &&
+      typeof lng === "number" &&
+      !Number.isNaN(lng)
     ) {
       apartment.location = { type: "Point", coordinates: [lng, lat] } as any;
       apartment.lat = lat;
@@ -140,38 +167,66 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     }
 
     type Amenity =
-      | "macchina_caffe" | "aria_condizionata" | "bollitore" | "tostapane" | "lavastoviglie"
-      | "self_check_in" | "tv" | "lavatrice" | "set_di_cortesia" | "microonde" | "biancheria"
-      | "culla_su_richiesta" | "wifi" | "parcheggio_esterno" | "animali_ammessi"
-      | "asciugacapelli" | "balcone";
+      | "macchina_caffe"
+      | "aria_condizionata"
+      | "bollitore"
+      | "tostapane"
+      | "lavastoviglie"
+      | "self_check_in"
+      | "tv"
+      | "lavatrice"
+      | "set_di_cortesia"
+      | "microonde"
+      | "biancheria"
+      | "culla_su_richiesta"
+      | "wifi"
+      | "parcheggio_esterno"
+      | "animali_ammessi"
+      | "asciugacapelli"
+      | "balcone";
 
     const amenities = safeJson<Amenity[]>(formData.get("amenities"));
     if (amenities) apartment.amenities = amenities;
 
-    const rules = safeJson<{ checkInFrom: string; checkInTo: string; checkOutBy: string }>(formData.get("rules"));
+    const rules = safeJson<{
+      checkInFrom: string;
+      checkInTo: string;
+      checkOutBy: string;
+    }>(formData.get("rules"));
     if (rules) apartment.rules = rules;
 
-    const cancellation = safeJson<{ policy: "free_until_5_days" | "flexible" | "strict"; note?: string, note_en?: string }>(
-      formData.get("cancellation")
-    );
+    const cancellation = safeJson<{
+      policy: "free_until_5_days" | "flexible" | "strict";
+      note?: string;
+      note_en?: string;
+    }>(formData.get("cancellation"));
     if (cancellation) apartment.cancellation = cancellation;
 
-    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(/[/\\?%*:|"<>]/g, "_");
+    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(
+      /[/\\?%*:|"<>]/g,
+      "_"
+    );
 
     const coverFile = formData.get("image") as File | null;
     if (coverFile && typeof coverFile === "object" && coverFile.size > 0) {
       if (apartment.image) {
-        await deleteIfExists(path.join(process.cwd(), "public", apartment.image));
+        await deleteIfExists(
+          path.join(process.cwd(), "public", apartment.image)
+        );
       }
       apartment.image = await saveImageFile(coverFile, folder, "_cover");
     }
 
-    const galleryOrder = safeJson<string[]>(formData.get("galleryOrder")); 
+    const galleryOrder = safeJson<string[]>(formData.get("galleryOrder"));
     const galleryNewFiles = formData.getAll("galleryNew[]") as File[];
-    const currentGallery: string[] = Array.isArray(apartment.gallery) ? apartment.gallery : [];
+    const currentGallery: string[] = Array.isArray(apartment.gallery)
+      ? apartment.gallery
+      : [];
 
     if (Array.isArray(galleryOrder) && galleryOrder.length > 0) {
-      const existingTokens = new Set(galleryOrder.filter((t) => !t.startsWith("new:")));
+      const existingTokens = new Set(
+        galleryOrder.filter((t) => !t.startsWith("new:"))
+      );
       const toDelete = currentGallery.filter((url) => !existingTokens.has(url));
       for (const url of toDelete) {
         await deleteIfExists(path.join(process.cwd(), "public", url));
@@ -206,14 +261,21 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
       apartment.gallery = nextGallery;
     } else {
       const keepGallery = safeJson<string[]>(formData.get("keepGallery")) ?? [];
-      const toDelete = currentGallery.filter((url) => !keepGallery.includes(url));
+      const toDelete = currentGallery.filter(
+        (url) => !keepGallery.includes(url)
+      );
       for (const url of toDelete) {
         await deleteIfExists(path.join(process.cwd(), "public", url));
       }
 
       let nextGallery = [...keepGallery];
       for (const gf of galleryNewFiles) {
-        if (gf && typeof gf === "object" && "type" in gf && gf.type?.startsWith("image/")) {
+        if (
+          gf &&
+          typeof gf === "object" &&
+          "type" in gf &&
+          gf.type?.startsWith("image/")
+        ) {
           const p = await saveImageFile(gf, folder, "_gallery");
           nextGallery.push(p);
         }
@@ -228,9 +290,16 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
       await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
       apartment.plan = undefined as any;
     }
-    if (!removePlan && planFile && typeof planFile === "object" && planFile.size > 0) {
+    if (
+      !removePlan &&
+      planFile &&
+      typeof planFile === "object" &&
+      planFile.size > 0
+    ) {
       if (apartment.plan) {
-        await deleteIfExists(path.join(process.cwd(), "public", apartment.plan));
+        await deleteIfExists(
+          path.join(process.cwd(), "public", apartment.plan)
+        );
       }
       apartment.plan = await saveImageFile(planFile, folder, "_plan");
     }
@@ -239,7 +308,10 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     return NextResponse.json(apartment, { status: 200 });
   } catch (e: any) {
     console.error("PUT /api/apartments/[id] error:", e);
-    return NextResponse.json({ error: e?.message ?? "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
   }
 }
 

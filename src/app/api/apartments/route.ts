@@ -7,6 +7,14 @@ import fs from "fs/promises";
 type Locale = "it" | "en";
 type Order = "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc";
 
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-_]/g, "");
+}
+
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
@@ -18,10 +26,8 @@ export async function GET(req: NextRequest) {
     const pipeline: any[] = [];
 
     if (!orderParam) {
-      // حالت عادی: فقط بر اساس orderShow
       pipeline.push({ $sort: { orderShow: 1, _id: 1 } });
     } else {
-      // اگر order داده شده است، بر اساس آن سورت کنیم
       const isAlpha = orderParam === "alpha_asc" || orderParam === "alpha_desc";
       const alphaDirection = orderParam === "alpha_desc" ? -1 : 1;
       const isDateAsc = orderParam === "date_asc";
@@ -30,7 +36,8 @@ export async function GET(req: NextRequest) {
       if (isAlpha) {
         pipeline.push({
           $addFields: {
-            sortTitle: locale === "en" ? { $ifNull: ["$title_en", "$title"] } : "$title",
+            sortTitle:
+              locale === "en" ? { $ifNull: ["$title_en", "$title"] } : "$title",
           },
         });
         pipeline.push({ $sort: { sortTitle: alphaDirection, _id: 1 } });
@@ -70,14 +77,21 @@ export async function GET(req: NextRequest) {
         address: 1,
         address_en: 1,
         orderShow: 1,
+        slug: 1,
       },
     });
 
-    const docs = await Apartment.aggregate(pipeline).collation({ locale, strength: 1 });
+    const docs = await Apartment.aggregate(pipeline).collation({
+      locale,
+      strength: 1,
+    });
     return NextResponse.json(docs);
   } catch (error) {
     console.error("GET /api/apartments error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -99,12 +113,9 @@ async function saveImageFile(
     throw new Error("Invalid file type. Only images are allowed");
   }
 
-  const uploadDir = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    title || "APARTMENTS"
-  );
+  const safeTitle = slugify(title || "APARTMENTS");
+
+  const uploadDir = path.join(process.cwd(), "public", "uploads", safeTitle);
   await fs.mkdir(uploadDir, { recursive: true });
 
   const ext = path.extname(file.name) || ".jpg";
@@ -117,7 +128,7 @@ async function saveImageFile(
   const buffer = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(destPath, buffer);
 
-  return `/uploads/${title || "APARTMENTS"}/${filename}`;
+  return `/uploads/${safeTitle}/${filename}`;
 }
 
 export async function POST(req: NextRequest) {

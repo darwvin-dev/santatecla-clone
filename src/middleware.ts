@@ -105,6 +105,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/apartments")) {
+    return NextResponse.next();
+  }
+
   if (isAdminApi) {
     if (ALLOW_NO_AUTH.has(req.method)) return NextResponse.next();
     const session = await verifySession(req.cookies.get(ADMIN_COOKIE)?.value);
@@ -120,14 +124,14 @@ export async function middleware(req: NextRequest) {
     return challenge401("Authentication required");
   }
 
-  // سایر مسیرها → i18n
   return intlMiddleware(req);
 }
 
 export const config = {
   matcher: [
     "/((?!api|admin|trpc|_next|_vercel|.*\\..*).*)",
+    "/apartments/:slug*",
     "/admin/:path*",
-    "/api/:path*", // اگر فقط /api/admin را می‌خواهی، این را به '/api/admin/:path*' محدود کن
+    "/api/:path*",
   ],
 };

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:slugs": "ts-node src/scripts/add-slugs.ts"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -31,7 +32,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/leaflet": "^1.9.20",
     "@types/multer": "^2.0.0",
-    "@types/node": "^20",
+    "@types/node": "^20.19.11",
     "@types/react": "^19",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "^19",
@@ -39,6 +40,7 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

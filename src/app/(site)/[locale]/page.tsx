@@ -64,7 +64,7 @@ export default function Home() {
     [homeParts]
   );
 
-  if (loading) return <Loading />;
+  // if (loading) return <Loading />;
 
   return (
     <ClientLayoutWrapper>

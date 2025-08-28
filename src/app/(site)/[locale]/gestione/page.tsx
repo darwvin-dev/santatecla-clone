@@ -51,7 +51,7 @@ export default function page() {
     [gestione]
   );
 
-  if (loading) return <Loading fullscreen />;
+  // if (loading) return <Loading fullscreen />;
 
   return (
     <ClientLayoutWrapper>

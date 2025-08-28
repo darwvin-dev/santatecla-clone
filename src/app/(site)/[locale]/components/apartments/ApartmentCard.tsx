@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import React from "react";
 import ScaleInImage from "../ui/ImageScaleIn";
 import { useTranslations, Locale, useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type ApartmentCardProps = {
   title: string;
+  slug: string;
   title_en?: string;
   image: string;
   description: string;
@@ -21,6 +22,7 @@ type ApartmentCardProps = {
 
 export default function ApartmentCard({
   title,
+  slug,
   title_en,
   image,
   description,
@@ -102,7 +104,7 @@ export default function ApartmentCard({
                 </div>
                 <div className="pt-4">
                   <Link
-                    href={`/apartments/${title}/`}
+                    href={`/apartments/${slug}/`}
                     className="position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
                   >
                     <span>{t("readMore")}</span>

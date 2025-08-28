@@ -21,6 +21,7 @@ export type Apartment = {
   _id: string;
 
   title: string;
+  slug: string;
   description: string;
   details?: string;
   address: string;

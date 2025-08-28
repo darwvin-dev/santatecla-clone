@@ -12,7 +12,6 @@ const manrope = Manrope({
 export const metadata = {
   icons: {
     icon: "/logo.svg",
-    apple: "/apple-icon.png",
   },
 };
 

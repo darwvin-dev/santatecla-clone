@@ -42,6 +42,7 @@ export interface IApartment extends Document {
   details?: string;
   address: string;
   addressDetail?: string;
+  slug: string;
 
   /** EN */
   title_en?: string;
@@ -82,6 +83,14 @@ export interface IApartment extends Document {
   updatedAt?: Date;
 }
 
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-_]/g, "");
+}
+
 const RulesSchema = new Schema<Rules>(
   {
     checkInFrom: { type: String },
@@ -110,6 +119,13 @@ const ApartmentSchema = new Schema<IApartment>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
+      index: true,
+    },
+
+     slug: {
+      type: String,
+      required: true,
       unique: true,
       index: true,
     },
@@ -182,6 +198,13 @@ ApartmentSchema.index({
   address_en: "text",
   description: "text",
   description_en: "text",
+});
+
+ApartmentSchema.pre("validate", function (next) {
+  if (this.isModified("title") || !this.slug) {
+    this.slug = slugify(this.title);
+  }
+  next();
 });
 
 const Apartment: Model<IApartment> =

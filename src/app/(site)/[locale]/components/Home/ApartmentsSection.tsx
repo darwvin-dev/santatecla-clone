@@ -47,7 +47,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   }, []);
 
   const items = useMemo(() => apartments || [], [apartments]);
-  if (!items.length) return null;
 
   const slidesPerView = isDesktop ? 2 : 1;
   const loopEnabled = items.length > slidesPerView;
@@ -102,13 +101,15 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
     []
   );
 
+    if (!items.length) return null;
+
   return (
     <section className="row padding-y-90-90 overflow-hidden prop-section-immobile">
       <div className="container">
         <div className="row flex-nowrap">
           <div className="d-flex flex-column justify-content-between slider-col-txt">
             <div>
-              <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
+              <h2 className="main-title-for-slider d-sm-none mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
                 {t("apartments")}
               </h2>
 
@@ -184,15 +185,17 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   <SwiperSlide key={ap._id ?? `txt-${index}`} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <Link
-                        href={`/apartments/${encodeURIComponent(ap.title)}`}
+                        href={`/apartments/${ap.slug}`}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
-                        {locale === "en" ? (ap.title_en || ap.title) : ap.title}
+                        {locale === "en" ? ap.title_en || ap.title : ap.title}
                       </Link>
                     </div>
                     <div className="w-100 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 pb-4 pb-md-5 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        {locale === "en" ? (ap.description_en || ap.description) : ap.description}
+                        {locale === "en"
+                          ? ap.description_en || ap.description
+                          : ap.description}
                       </p>
                     </div>
                   </SwiperSlide>
@@ -208,6 +211,12 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 <span>{t("seeAll")}</span>
               </Link>
             </div>
+          </div>
+
+          <div className="d-flex flex-column justify-content-between mobile-title ml-3 d-block d-lg-none">
+            <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm main-title-for-slider">
+              {t("apartments")}
+            </h2>
           </div>
 
           {/* تصاویر (مستر) */}
@@ -327,7 +336,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           }
           .gallery-single-prop {
             order: 1;
-            margin-bottom: 2rem;
+            margin-bottom: 0;
           }
           .row.flex-nowrap {
             flex-wrap: wrap !important;

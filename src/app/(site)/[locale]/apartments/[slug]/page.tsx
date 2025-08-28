@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import ClientLayoutWrapper from "@/app/(site)/[locale]/components/ClientLayoutWrapper";
 import ApartmentsGalerry from "@/app/(site)/[locale]/components/apartments/ApartmentsGalerry";
 import ApartmentsDetails from "@/app/(site)/[locale]/components/apartments/ApartmentsDetails";
-import Loading from "@/app/(site)/[locale]/components/loading";
 import ApartmentRules from "@/app/(site)/[locale]/components/apartments/ApartmentRules";
 import { useLocale } from "next-intl";
 import { Apartment } from "@/types/Apartment";
@@ -39,13 +38,15 @@ export default function PropertyIntro() {
   const slug = useMemo(() => {
     const p: any = params;
     const raw =
-      (typeof p?.id === "string" && p.id) ||
-      (Array.isArray(p?.id) && p.id[0]) ||
+      (typeof p?.slug === "string" && p.slug) ||
+      (Array.isArray(p?.slug) && p.slug[0]) ||
       (typeof p?.title === "string" && p.title) ||
       (Array.isArray(p?.title) && p.title[0]) ||
       "";
     return decodeURIComponent(raw);
   }, [params]);
+
+  console.log(slug)
 
   const [data, setData] = useState<Apartment | null>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -59,7 +60,7 @@ export default function PropertyIntro() {
       setLoading(true);
       setErr(null);
       try {
-        const res = await fetch(`/api/apartments/${encodeURIComponent(slug)}`, {
+        const res = await fetch(`/api/apartments/${slug}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           cache: "no-store",
@@ -86,8 +87,8 @@ export default function PropertyIntro() {
     };
   }, [slug]);
 
-  if (loading) {
-    return <Loading />;
+  if (loading || !data) {
+    return
   }
 
   if (err) {
@@ -96,10 +97,6 @@ export default function PropertyIntro() {
         <p style={{ color: "crimson" }}>ERROR: {err}</p>
       </ClientLayoutWrapper>
     );
-  }
-
-  if (!data) {
-    return redirect("/")
   }
 
   const lat: number | null =

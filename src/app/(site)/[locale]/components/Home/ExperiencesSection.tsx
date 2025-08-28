@@ -3,7 +3,7 @@ import { EffectFade, Controller, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState, useCallback } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { DynamicPart } from "@/types/DynamicPart";
 import { useLocale } from "next-intl";
@@ -13,13 +13,16 @@ export default function ExperiencesSection({
 }: {
   experiences: DynamicPart[];
 }) {
+  const IMAGE_HEIGHT_DESKTOP = 240;
+  const IMAGE_HEIGHT_MOBILE = 160;
+  const pickImg = (x: DynamicPart) =>
+    x.image || x.mobileImage || "/images/placeholder.jpg";
+
   const locale = useLocale();
-
-  const textSwiperRef = useRef<SwiperType | null>(null);
-  const imageSwiperRef = useRef<SwiperType | null>(null);
-
-  const prevElRef = useRef<HTMLDivElement | null>(null);
-  const nextElRef = useRef<HTMLDivElement | null>(null);
+  const [textSwiper, setTextSwiper] = useState<SwiperType | null>(null);
+  const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const baseData = experiences.find((e) => !e.parentId);
   const sorted = useMemo(
@@ -30,25 +33,66 @@ export default function ExperiencesSection({
     [experiences]
   );
 
-  const IMAGE_HEIGHT_DESKTOP = 240;
-  const IMAGE_HEIGHT_MOBILE = 160;
-  const pickImg = (x: DynamicPart) =>
-    x.image || x.mobileImage || "/images/placeholder.jpg";
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 992px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const slidesPerView = isDesktop ? 2 : 1;
+  const loopEnabled = sorted.length > slidesPerView;
+  const canSlide = sorted.length > 1;
 
   useEffect(() => {
-    const t = textSwiperRef.current;
-    const i = imageSwiperRef.current;
-    if (t && i) {
-      t.controller.control = i;
-      i.controller.control = t;
+    if (imageSwiper && textSwiper) {
+      imageSwiper.controller.control = textSwiper;
+      textSwiper.controller.control = null as any;
 
-      try {
-        t.navigation?.update();
-      } catch {}
+      const idx = 0;
+      if (loopEnabled) {
+        imageSwiper.slideToLoop(idx, 0);
+        textSwiper.slideToLoop(idx, 0);
+      } else {
+        imageSwiper.slideTo(idx, 0);
+        textSwiper.slideTo(idx, 0);
+      }
+      setActiveIndex(idx);
     }
-  }, [textSwiperRef.current, imageSwiperRef.current]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [imageSwiper, textSwiper, loopEnabled]);
 
-  if (!sorted.length) return null;
+  const onImageChanged = useCallback(
+    (swiper: SwiperType) => {
+      const idx = swiper.realIndex ?? swiper.activeIndex ?? 0;
+      setActiveIndex(idx);
+      if (textSwiper) {
+        if (loopEnabled) textSwiper.slideToLoop(idx, 300);
+        else textSwiper.slideTo(idx, 300);
+      }
+    },
+    [textSwiper, loopEnabled]
+  );
+
+  const handlePrev = useCallback(() => {
+    if (!canSlide) return;
+    imageSwiper?.slidePrev();
+  }, [canSlide, imageSwiper]);
+
+  const handleNext = useCallback(() => {
+    if (!canSlide) return;
+    imageSwiper?.slideNext();
+  }, [canSlide, imageSwiper]);
+
+  const keyActivate = useCallback(
+    (fn: () => void) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fn();
+      }
+    },
+    []
+  );
 
   return (
     <section
@@ -61,7 +105,6 @@ export default function ExperiencesSection({
         style={{ width: "100%", margin: 0, padding: 0 }}
       >
         <div className="row" style={{ width: "100%", margin: 0 }}>
-          {/* ستون تصاویر */}
           <div
             className="col-12 col-md-5 col-lg-6"
             style={{ width: "100%", margin: 0, padding: 0 }}
@@ -75,20 +118,20 @@ export default function ExperiencesSection({
                 dir="rtl"
                 className="team-swiper-images"
                 modules={[Controller]}
-                onSwiper={(swiper) => {
-                  imageSwiperRef.current = swiper;
-                }}
-                slidesPerView={2}
+                loop={loopEnabled}
                 spaceBetween={15}
-                loop={sorted.length > 1}
-                // فقط خواندن؛ ست کردن control را به useEffect سپردیم
-                controller={{ control: textSwiperRef.current as any }}
+                slidesPerView={slidesPerView}
                 breakpoints={{
-                  0: { slidesPerView: 1, spaceBetween: 10 },
-                  768: { slidesPerView: 2, spaceBetween: 15 },
+                  0: { slidesPerView: 1 },
+                  992: { slidesPerView: 2 },
                 }}
+                onSwiper={setImageSwiper}
+                onSlideChange={onImageChanged}
+                style={{ height: "100%" }}
                 watchSlidesProgress
-                style={{ width: "100%" }}
+                observer
+                observeParents
+                resizeObserver
               >
                 {sorted.map((item) => (
                   <SwiperSlide key={item._id}>
@@ -120,20 +163,27 @@ export default function ExperiencesSection({
           <div className="d-flex flex-column justify-content-between slider-col-txt col-12 col-md-7 col-lg-6">
             <div className="position-relative team-wrapper">
               <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-                {locale === "en" ? (baseData?.title_en || baseData?.title) : baseData?.title ?? "Esperienze a Milano"}
+                {locale === "en"
+                  ? baseData?.title_en || baseData?.title
+                  : baseData?.title ?? "Esperienze a Milano"}
               </h2>
 
               <div
                 className="swiper-button-wrap pos-nav-change-first-slider"
                 style={{ display: "flex", gap: 12 }}
               >
-                <div
+                <button
                   className="swiper-button-prev btn-only-arrow only-arrow-black"
                   tabIndex={0}
                   role="button"
                   aria-label="Previous slide"
-                  style={{ cursor: "pointer" }}
-                  ref={prevElRef}
+                  onClick={handlePrev}
+                  onKeyDown={keyActivate(handlePrev)}
+                  disabled={!canSlide}
+                  style={{
+                    cursor: canSlide ? "pointer" : "not-allowed",
+                    opacity: canSlide ? 1 : 0.5,
+                  }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover btn-right d-flex align-items-center">
                     <svg
@@ -145,14 +195,19 @@ export default function ExperiencesSection({
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
-                </div>
-                <div
+                </button>
+                <button
                   className="swiper-button-next btn-only-arrow only-arrow-black"
                   tabIndex={0}
                   role="button"
                   aria-label="Next slide"
-                  style={{ cursor: "pointer" }}
-                  ref={nextElRef}
+                  onClick={handleNext}
+                  onKeyDown={keyActivate(handleNext)}
+                  disabled={!canSlide}
+                  style={{
+                    cursor: canSlide ? "pointer" : "not-allowed",
+                    opacity: canSlide ? 1 : 0.5,
+                  }}
                 >
                   <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
                     <svg
@@ -164,40 +219,37 @@ export default function ExperiencesSection({
                       <path d="M16.808 3.954l-.707.707L24.439 13H.646v1H24.44l-8.338 8.339.707.707 9.546-9.546z"></path>
                     </svg>
                   </div>
-                </div>
+                </button>
               </div>
 
               <Swiper
                 className="team-swiper swiper-fade"
-                modules={[EffectFade, Controller, Navigation]}
+                modules={[EffectFade, Controller]}
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                onBeforeInit={(swiper) => {
-                  (swiper.params.navigation as any).prevEl = prevElRef.current;
-                  (swiper.params.navigation as any).nextEl = nextElRef.current;
-                }}
-                onSwiper={(swiper) => {
-                  textSwiperRef.current = swiper;
-                  // init/update ناوبری مطابق الگوی فعلی
-                  swiper.navigation.init();
-                  swiper.navigation.update();
-                }}
-                slidesPerView={1}
-                loop={sorted.length > 1}
-                // فقط خواندن؛ ست کردن control را به useEffect سپردیم
-                controller={{ control: imageSwiperRef.current as any }}
-                watchSlidesProgress
+                loop={loopEnabled}
+                allowTouchMove={false}
+                onSwiper={setTextSwiper}
+                observer
+                observeParents
+                resizeObserver
               >
                 {sorted.map((item) => (
                   <SwiperSlide key={item._id}>
                     <div className="pt-1 pt-md-0 w-100 padding-y-0-25 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 ff-sans fw-400 fz-24 color-black lh-xs">
-                        {locale === "en" ? (item.title_en || item.title) : item.title || "—"}
+                        {locale === "en"
+                          ? item.title_en || item.title
+                          : item.title || "—"}
                       </p>
                     </div>
                     <div className="w-100 position-relative">
                       <div className="slide-lg-enlarge-content site-content mb-0 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        <p style={{ margin: 0 }}>{locale === 'en' ? (item.description_en || item.description) : item.description}</p>
+                        <p style={{ margin: 0 }}>
+                          {locale === "en"
+                            ? item.description_en || item.description
+                            : item.description}
+                        </p>
                       </div>
                     </div>
                   </SwiperSlide>

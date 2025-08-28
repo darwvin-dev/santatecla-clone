@@ -27,9 +27,7 @@ export default function ApartmentsGalerry({ images, name }: Props) {
     <section className="row padding-y-190-190 single-property-intro">
       <div className="container padding-y-60-60">
         <div className="row prampolini-apartment">
-          <div
-            className="property-about-text col-12 col-md-4 col-lg-2"
-          >
+          <div className="property-about-text col-12 col-md-4 col-lg-2">
             <h1 className="mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-xs">
               {name}
             </h1>
@@ -75,18 +73,14 @@ export default function ApartmentsGalerry({ images, name }: Props) {
                         aria-label={`Apri immagine ${i + 1}`}
                       >
                         <figure
-                          className="mb-0 position-relative overflow-hidden" 
-                          style={{ aspectRatio: "3 / 2", width: "100%" }} 
+                          className="mb-0 position-relative overflow-hidden"
+                          style={{ width: "100%", aspectRatio: "3/2" }}
                         >
                           <Image
                             src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
                             alt={`${name} – immagine ${i + 1}`}
                             fill
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            style={{
-                              objectFit: "cover",
-                              objectPosition: "center",
-                            }}
+                            style={{ objectFit: "cover" }}
                             priority={i < 2}
                             onError={(e) =>
                               console.error("IMAGE LOAD ERROR:", { src, i }, e)
@@ -133,7 +127,6 @@ export default function ApartmentsGalerry({ images, name }: Props) {
           </div>
         </div>
       </div>
-
     </section>
   );
 }

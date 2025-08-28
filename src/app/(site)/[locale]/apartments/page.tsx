@@ -26,7 +26,7 @@ export default function Home() {
     fetchApartments();
   }, [order]);
 
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
 
   return (
     <ClientLayoutWrapper>

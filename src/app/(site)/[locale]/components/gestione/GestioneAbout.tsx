@@ -19,8 +19,7 @@ export default function GestioneAbout({ abouts }: { abouts: DynamicPart[] }) {
             <div className="w-100 position-relative overflow-hidden property-about-container">
               <div className="container h-100">
                 <div
-                  className="row h-100"
-                  style={{ flexFlow: !isEven ? "row-reverse" : "" }}
+                  className={`row h-100 ${!isEven ? "mid-row-reverse" : ""}`}
                 >
                   <div className="col-12 col-md-6 col-lg-6 prop-about-img-wrap">
                     <div
