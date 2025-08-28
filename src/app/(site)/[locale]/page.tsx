@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
-import { Apartment } from "@/types/Apartment";
 import HeroSection from "./components/Home/HeroSection";
 import HomeAbout from "./components/Home/HomeAbout";
 import ApartmentsSection from "./components/Home/ApartmentsSection";
 import ServicesSection from "./components/Home/ServicesSection";
-import { DynamicPart } from "@/types/DynamicPart";
-import Loading from "./components/loading";
 import ExperiencesSection from "./components/Home/ExperiencesSection";
+import Loading from "./components/loading";
+import { Apartment } from "@/types/Apartment";
+import { DynamicPart } from "@/types/DynamicPart";
 
 export default function Home() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
@@ -18,51 +18,43 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const endpoints = [
+        fetch("/api/apartments", { cache: "no-store" }),
+        fetch("/api/dynamic-parts?page=Home", { cache: "no-store" }),
+        fetch("/api/dynamic-parts?page=Home&parentId=all&key=experiences", {
+          cache: "no-store",
+        }),
+      ];
+
+      const [aRes, dRes, deRes] = await Promise.all(endpoints);
+
+      if (!aRes.ok) throw new Error("Errore nel caricamento degli appartamenti.");
+      if (!dRes.ok) throw new Error("Errore nel caricamento dei contenuti Home.");
+      if (!deRes.ok) throw new Error("Errore nel caricamento delle esperienze.");
+
+      const [aData, dData, deData] = await Promise.all([aRes.json(), dRes.json(), deRes.json()]);
+
+      setApartments(aData ?? []);
+      setHomeParts(dData ?? []);
+      setExperiences(deData ?? []);
+    } catch (err: any) {
+      setError(err?.message ?? "Errore di rete.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [aRes, dRes, deRes] = await Promise.all([
-          fetch("/api/apartments", { cache: "no-store" }),
-          fetch("/api/dynamic-parts?page=Home", { cache: "no-store" }),
-          fetch("/api/dynamic-parts?page=Home&parentId=all&key=experiences", {
-            cache: "no-store",
-          }),
-        ]);
-
-        if (!aRes.ok)
-          throw new Error("Errore nel caricamento degli appartamenti.");
-        if (!dRes.ok)
-          throw new Error("Errore nel caricamento dei contenuti Home.");
-
-        const [aData, dData, deData] = await Promise.all([
-          aRes.json(),
-          dRes.json(),
-          deRes.json(),
-        ]);
-
-        setApartments(aData ?? []);
-        setHomeParts(dData ?? []);
-        setExperiences(deData ?? []);
-      } catch (e: any) {
-        setError(e?.message || "Errore di rete.");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetchData();
   }, []);
 
-  const hero = useMemo(
-    () => homeParts.find((h) => h.key === "hero"),
-    [homeParts]
-  );
-
-  const about = useMemo(
-    () => homeParts.find((h) => h.key === "About"),
-    [homeParts]
-  );
+  const hero = useMemo(() => homeParts.find((h) => h.key === "hero"), [homeParts]);
+  const about = useMemo(() => homeParts.find((h) => h.key === "About"), [homeParts]);
 
   // if (loading) return <Loading />;
 

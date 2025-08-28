@@ -53,7 +53,6 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     <>
       <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
 
-      {/* اوِرلِی: کلیک روی آن منو را می‌بندد */}
       {isMenuOpen && (
         <button
           type="button"

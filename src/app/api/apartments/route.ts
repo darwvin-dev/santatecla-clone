@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const orderParam = searchParams.get("order") as Order | null;
+    const limitParam = Number(searchParams.get("limit") ?? 0);
     const locale = (searchParams.get("locale") || "it") as Locale;
 
     const pipeline: any[] = [];
@@ -44,6 +45,10 @@ export async function GET(req: NextRequest) {
       } else {
         pipeline.push({ $sort: { createdAt: dateDirection, _id: 1 } });
       }
+    }
+
+    if (limitParam > 0) {
+      pipeline.push({ $limit: limitParam });
     }
 
     pipeline.push({

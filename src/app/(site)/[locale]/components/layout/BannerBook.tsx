@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, useEffect } from "react";
 import { useTranslations } from "use-intl";
 
 type BannerBookProps = {
@@ -15,8 +15,13 @@ export default function BannerBook({
   email = "habitabioita@gmail.com",
 }: BannerBookProps) {
   const [open, setOpen] = useState(false);
-  const collapseId = useId();
+  const [mounted, setMounted] = useState(false);
+  const collapseId = "collapseBannerBook";
   const t = useTranslations("booking");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="row living-banner-book d-flex flex-column">
@@ -32,86 +37,90 @@ export default function BannerBook({
           data-open={open}
         >
           <span className="btn-label-wrap">
-            <span className={`btn-label ${open ? "out" : "in"}`}>
+            <span className={`btn-label ${open || !mounted ? "out" : "in"}`}>
               {t("book")}
             </span>
-            <span className={`btn-label ${open ? "in" : "out"}`}>
-              {t("close")}
-            </span>
+            {mounted && (
+              <span className={`btn-label ${open ? "in" : "out"}`}>
+                {t("close")}
+              </span>
+            )}
           </span>
         </button>
       </div>
 
-      <div
-        id={collapseId}
-        className={`collapsible ${open ? "open" : ""}`}
-        aria-hidden={!open}
-      >
-        <div className="collapsible-inner">
-          <div
-            className="container padding-y-30-30"
-            style={{ paddingBottom: 0 }}
-          >
-            <div className="row d-flex justify-content-center">
-              <div className="col-12 col-md-9 col-xl-6 mb-4">
-                <div className="site-content fz-20 text-center">
-                  <p>{t("checkAvailability")}</p>
-                  <p className="mt-0 fw-500">{t("sendRequest")}</p>
+      {mounted && (
+        <div
+          id={collapseId}
+          className={`collapsible ${mounted && open ? "open" : ""}`}
+          aria-hidden={!open}
+        >
+          <div className="collapsible-inner">
+            <div
+              className="container padding-y-30-30"
+              style={{ paddingBottom: 0 }}
+            >
+              <div className="row d-flex justify-content-center">
+                <div className="col-12 col-md-9 col-xl-6 mb-4">
+                  <div className="site-content fz-20 text-center">
+                    <p>{t("checkAvailability")}</p>
+                    <p className="mt-0 fw-500">{t("sendRequest")}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="row d-flex justify-content-center">
-              <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
-                <a
-                  href={`tel:${phone}`}
-                  className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
-                >
-                  <span>{t("callUs")}</span>
-                  <span className="btn-filter d-flex align-items-center justify-content-center">
-                    <i className="webfont icon-wf-st_chiama-tel fz-28 color-black"></i>
-                    <span className="btn-filter-hover d-flex align-items-center">
-                      <i className="webfont icon-wf-st_chiama-tel fz-28 color-white"></i>
+              <div className="row d-flex justify-content-center">
+                <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
+                  <a
+                    href={`tel:${phone}`}
+                    className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
+                  >
+                    <span>{t("callUs")}</span>
+                    <span className="btn-filter d-flex align-items-center justify-content-center">
+                      <i className="webfont icon-wf-st_chiama-tel fz-28 color-black"></i>
+                      <span className="btn-filter-hover d-flex align-items-center">
+                        <i className="webfont icon-wf-st_chiama-tel fz-28 color-white"></i>
+                      </span>
                     </span>
-                  </span>
-                </a>
-              </div>
+                  </a>
+                </div>
 
-              <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="nofollow noopener"
-                  className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
-                >
-                  <span>{t("contactUs")}</span>
-                  <span className="btn-filter d-flex align-items-center justify-content-center">
-                    <i className="webfont icon-wf-st_chat-wa fz-28 color-black"></i>
-                    <span className="btn-filter-hover d-flex align-items-center">
-                      <i className="webfont icon-wf-st_chat-wa fz-28 color-white"></i>
+                <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
+                  <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="nofollow noopener"
+                    className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
+                  >
+                    <span>{t("contactUs")}</span>
+                    <span className="btn-filter d-flex align-items-center justify-content-center">
+                      <i className="webfont icon-wf-st_chat-wa fz-28 color-black"></i>
+                      <span className="btn-filter-hover d-flex align-items-center">
+                        <i className="webfont icon-wf-st_chat-wa fz-28 color-white"></i>
+                      </span>
                     </span>
-                  </span>
-                </a>
-              </div>
+                  </a>
+                </div>
 
-              <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
-                <a
-                  href={`mailto:${email}`}
-                  className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
-                >
-                  <span>{t("email")}</span>
-                  <span className="btn-filter d-flex align-items-center justify-content-center">
-                    <i className="webfont icon-wf-st_chiedi-info fz-28 color-black"></i>
-                    <span className="btn-filter-hover d-flex align-items-center">
-                      <i className="webfont icon-wf-st_chiedi-info fz-28 color-white"></i>
+                <div className="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 my-2 my-md-3 my-xl-4">
+                  <a
+                    href={`mailto:${email}`}
+                    className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
+                  >
+                    <span>{t("email")}</span>
+                    <span className="btn-filter d-flex align-items-center justify-content-center">
+                      <i className="webfont icon-wf-st_chiedi-info fz-28 color-black"></i>
+                      <span className="btn-filter-hover d-flex align-items-center">
+                        <i className="webfont icon-wf-st_chiedi-info fz-28 color-white"></i>
+                      </span>
                     </span>
-                  </span>
-                </a>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <style jsx>{`
         /* --- Button label crossfade/slide --- */
