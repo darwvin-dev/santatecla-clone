@@ -7,7 +7,6 @@ import HomeAbout from "./components/Home/HomeAbout";
 import ApartmentsSection from "./components/Home/ApartmentsSection";
 import ServicesSection from "./components/Home/ServicesSection";
 import ExperiencesSection from "./components/Home/ExperiencesSection";
-import Loading from "./components/loading";
 import { Apartment } from "@/types/Apartment";
 import { DynamicPart } from "@/types/DynamicPart";
 

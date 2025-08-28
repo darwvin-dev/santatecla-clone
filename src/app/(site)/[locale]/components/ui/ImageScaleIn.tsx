@@ -41,6 +41,7 @@ export default function ImageScaleIn({
         src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
         alt={alt}
         fill
+        loading="lazy"
         className="img"
         style={{ objectFit: "cover", objectPosition: "center" }}
       />

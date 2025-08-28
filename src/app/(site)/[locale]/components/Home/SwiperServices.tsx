@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 const items = [
@@ -31,17 +32,15 @@ export default function SwiperServices() {
       className="swiper swiper-fp-service pb-5"
     >
       {items.map((service) => (
-        <SwiperSlide key={service.key} className="d-flex">
-          <div className="d-inline-flex flex-column mx-auto align-items-center text-center">
-            <figure
-              className="d-inline-block fp-services-icon mb-3"
-              style={{ margin: 0 }}
-            >
-              <img
+        <SwiperSlide key={service.key} className="d-flex justify-content-center">
+          <div className="d-flex flex-column align-items-center text-center">
+            <figure className="fp-services-icon mb-3" style={{ margin: 0 }}>
+              <Image
                 src={service.icon}
                 alt={t(`items.${service.key}`)}
-                className="img-fluid"
-                loading="lazy"
+                width={64} 
+                height={64}
+                priority={false} 
               />
             </figure>
             <span className="ff-sans fw-500 color-black fz-24 lh-sm">

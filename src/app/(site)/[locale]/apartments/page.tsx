@@ -5,35 +5,25 @@ import { Apartment } from "@/types/Apartment";
 import ClientLayoutWrapper from "../components/ClientLayoutWrapper";
 import ApartmentsHeader from "../components/Home/ApartmentsHeader";
 import ApartmentCard from "../components/apartments/ApartmentCard";
-import Loading from "../components/loading";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function Home() {
-  const [apartments, setApartments] = useState<Apartment[]>([]);
   const [order, setOrder] = useState<
     "" | "date_desc" | "date_asc" | "alpha_asc" | "alpha_desc"
   >("");
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const { data: apartments = [], isLoading, mutate } = useSWR(`/api/apartments?order=${order}`, fetcher);
 
   useEffect(() => {
-    async function fetchApartments() {
-      setIsLoading(true);
-      const res = await fetch(`/api/apartments?order=${order}`);
-      const data = await res.json();
-      setApartments(data);
-      setIsLoading(false);
-    }
-
-    fetchApartments();
+    mutate()
   }, [order]);
-
-  // if (isLoading) return <Loading />;
 
   return (
     <ClientLayoutWrapper>
       <section className="row padding-y-100-100">
         <ApartmentsHeader order={order} setOrder={setOrder} />
-
-        {apartments?.map((apartment, index) => (
+        {apartments?.map((apartment: Apartment, index: number) => (
           <ApartmentCard
             {...apartment}
             reversed={index % 2 === 1}

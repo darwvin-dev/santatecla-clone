@@ -9,12 +9,6 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
-export const metadata = {
-  icons: {
-    icon: "/logo.svg",
-  },
-};
-
 export function generateStaticParams() {
   return [{ locale: "it" }, { locale: "en" }];
 }
@@ -42,6 +36,37 @@ export default async function RootLayout(
   return (
     <html lang={locale}>
       <head>
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+
+        <link
+          rel="stylesheet"
+          href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400,500,700&lang=en"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Google+Sans+Text:400&text=%E2%86%90%E2%86%92%E2%86%91%E2%86%93&lang=en"
+        />
         <link
           rel="stylesheet"
           href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"

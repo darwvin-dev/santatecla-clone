@@ -8,6 +8,7 @@ export default function HeroSection({
 }) {
   const t = useTranslations("homepage");
   const locale = useLocale();
+  const heroTitle = locale === "en" ? hero?.title_en : hero?.title || "";
 
   return (
     <>
@@ -25,7 +26,7 @@ export default function HeroSection({
               className="homepage-title mb-0 ff-sans fw-200 fz-60 color-white lh-xs text-center"
               style={{ whiteSpace: "pre-line" }}
             >
-              {locale === "en" ? hero?.title_en || hero?.title : hero?.title}
+              {heroTitle}
             </h2>
           </div>
         </div>

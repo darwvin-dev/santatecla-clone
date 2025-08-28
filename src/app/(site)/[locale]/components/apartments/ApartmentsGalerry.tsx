@@ -23,6 +23,37 @@ export default function ApartmentsGalerry({ images, name }: Props) {
 
   if (!items.length) return null;
 
+  const SwiperItems = useMemo(
+    () =>
+      items.map((src, i) => (
+        <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
+          <div className="switch-img-wrap swiper-switch-main-img">
+            <a
+              data-fancybox="single-property"
+              href={src}
+              className="d-block w-100 property-hidden-link"
+              aria-label={`Apri immagine ${i + 1}`}
+            >
+              <figure
+                className="mb-0 position-relative overflow-hidden"
+                style={{ width: "100%", aspectRatio: "3/2" }}
+              >
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
+                  alt={`${name} – immagine ${i + 1}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority={i === 0}
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              </figure>
+            </a>
+          </div>
+        </SwiperSlide>
+      )),
+    [items, name]
+  );
+
   return (
     <section className="row padding-y-190-190 single-property-intro">
       <div className="container padding-y-60-60">
@@ -63,34 +94,7 @@ export default function ApartmentsGalerry({ images, name }: Props) {
                   992: { slidesPerView: 2 },
                 }}
               >
-                {items.map((src, i) => (
-                  <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
-                    <div className="switch-img-wrap swiper-switch-main-img">
-                      <a
-                        data-fancybox="single-property"
-                        href={src}
-                        className="d-block w-100 property-hidden-link"
-                        aria-label={`Apri immagine ${i + 1}`}
-                      >
-                        <figure
-                          className="mb-0 position-relative overflow-hidden"
-                          style={{ width: "100%", aspectRatio: "3/2" }}
-                        >
-                          <Image
-                            src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
-                            alt={`${name} – immagine ${i + 1}`}
-                            fill
-                            style={{ objectFit: "cover" }}
-                            priority={i < 2}
-                            onError={(e) =>
-                              console.error("IMAGE LOAD ERROR:", { src, i }, e)
-                            }
-                          />
-                        </figure>
-                      </a>
-                    </div>
-                  </SwiperSlide>
-                ))}
+                  {SwiperItems}
               </Swiper>
             </div>
 

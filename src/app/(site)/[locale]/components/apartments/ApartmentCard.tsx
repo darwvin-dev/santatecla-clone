@@ -2,7 +2,7 @@
 
 import React from "react";
 import ScaleInImage from "../ui/ImageScaleIn";
-import { useTranslations, Locale, useLocale } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 type ApartmentCardProps = {
@@ -20,7 +20,7 @@ type ApartmentCardProps = {
   reversed?: boolean;
 };
 
-export default function ApartmentCard({
+function ApartmentCard({
   title,
   slug,
   title_en,
@@ -45,6 +45,10 @@ export default function ApartmentCard({
   const t = useTranslations("apartments.card");
   const locale = useLocale();
   
+  const displayTitle = locale === "en" ? title_en || title : title;
+  const displayDescription = locale === "en" ? description_en || description : description;
+  const dAddress = locale === "en" ? address_en || address : address
+
   return (
     <div
       className={`container-fluid padding-y-60-60 single-property-archive ${className}`}
@@ -54,33 +58,31 @@ export default function ApartmentCard({
           <div className="row">
             {/* Image */}
             <div className={imgColClasses}>
-              <a
-                href={`/apartments/${title}/`}
+              <Link
+                href={`/apartments/${slug}/`}
                 className="d-inline-block w-100 h-100"
               >
                 <figure className="mb-0 property-archive-img overflow-hidden position-relative">
-                  <ScaleInImage src={image} alt={title} />
+                  <ScaleInImage src={image} alt={displayTitle} />
                   <figcaption className="sr-only color-black">
-                    {title}
+                    {displayTitle}
                   </figcaption>
                 </figure>
-              </a>
+              </Link>
             </div>
 
             {/* Info */}
             <div className={infoColClasses}>
               <div>
-                <a
-                  href={`/apartments/${title}/`}
+                <Link
+                  href={`/apartments/${slug}/`}
                   className="d-inline-block ff-sans fw-400 fz-21 color-black color-black-hover lh-xs txt-no-underline"
                 >
-                  {locale === "en" ? title_en || title : title}
-                </a>
+                  {displayTitle}
+                </Link>
                 <div className="mt-3 site-content link-black ff-sans fw-200 fz-18 color-gray lh-sm">
                   <p>
-                    {locale === "en"
-                      ? description_en || description
-                      : description}
+                    {displayDescription}
                   </p>
                 </div>
               </div>
@@ -99,7 +101,7 @@ export default function ApartmentCard({
                 </div>
                 <div className="mt-md-3">
                   <p className="mb-0 ff-sans fw-200 fz-21 color-black lh-xs">
-                    {locale === "en" ? address_en || address : address}
+                    {dAddress}
                   </p>
                 </div>
                 <div className="pt-4">
@@ -123,3 +125,5 @@ export default function ApartmentCard({
     </div>
   );
 }
+
+export default React.memo(ApartmentCard);

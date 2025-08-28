@@ -1,7 +1,8 @@
 "use client";
 
 import type { FC, CSSProperties } from "react";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Controller, EffectFade } from "swiper/modules";
@@ -15,19 +16,18 @@ import { useLocale, useTranslations } from "next-intl";
 type Props = { apartments: Apartment[] };
 
 const imgMainStyle: CSSProperties = {
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  overflow: "hidden",
   position: "relative",
+  width: "100%",
   height: "100%",
   minHeight: "300px",
+  overflow: "hidden",
+  borderRadius: 8,
 };
 
-const imgOverlayStyle: CSSProperties = {
+const overlayStyle: CSSProperties = {
   position: "absolute",
-  inset: 12,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
+  inset: 0,
+  zIndex: 1,
 };
 
 const ApartmentsSection: FC<Props> = ({ apartments }) => {
@@ -35,38 +35,65 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+
   const t = useTranslations("homepage");
   const locale = useLocale();
+  const mqRef = useRef<MediaQueryList | null>(null);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 992px)");
-    const update = () => setIsDesktop(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+  // precompute items with resolved urls and safe fallbacks
+  const items = useMemo(() => {
+    return (apartments || []).map((ap) => {
+      const mainRaw = ap.image || "/fallback-image.jpg";
+      const gallery: string[] = (ap as any).gallery || [];
+      const overlayRaw = gallery[0] || mainRaw;
 
-  const items = useMemo(() => apartments || [], [apartments]);
+      return {
+        ...ap,
+        mainUrl: resolveUrl(mainRaw),
+        overlayUrl: resolveUrl(overlayRaw),
+        href: `/apartments/${encodeURIComponent(ap.slug || ap.title || "")}`,
+        titleText: locale === "en" ? ap.title_en || ap.title : ap.title || "",
+        descText:
+          locale === "en"
+            ? ap.description_en || ap.description || ""
+            : ap.description || "",
+      };
+    });
+  }, [apartments, locale]);
 
   const slidesPerView = isDesktop ? 2 : 1;
   const loopEnabled = items.length > slidesPerView;
   const canSlide = items.length > 1;
 
   useEffect(() => {
-    if (imageSwiper && textSwiper) {
+    const mq = window.matchMedia("(min-width: 992px)");
+    mqRef.current = mq;
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!imageSwiper || !textSwiper) return;
+
+    try {
       imageSwiper.controller.control = textSwiper;
       textSwiper.controller.control = null as any;
-
-      const idx = 0;
-      if (loopEnabled) {
-        imageSwiper.slideToLoop(idx, 0);
-        textSwiper.slideToLoop(idx, 0);
-      } else {
-        imageSwiper.slideTo(idx, 0);
-        textSwiper.slideTo(idx, 0);
-      }
-      setActiveIndex(idx);
+    } catch {
+      // ignore if controllers not ready
     }
+
+    const idx = 0;
+    if (loopEnabled) {
+      imageSwiper.slideToLoop(idx, 0);
+      textSwiper.slideToLoop(idx, 0);
+    } else {
+      imageSwiper.slideTo(idx, 0);
+      textSwiper.slideTo(idx, 0);
+    }
+    setActiveIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageSwiper, textSwiper, loopEnabled]);
 
   const onImageChanged = useCallback(
@@ -91,22 +118,21 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
     imageSwiper?.slideNext();
   }, [canSlide, imageSwiper]);
 
-  const keyActivate = useCallback(
+  const keyActivate =
     (fn: () => void) => (e: React.KeyboardEvent<HTMLButtonElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         fn();
       }
-    },
-    []
-  );
+    };
 
-    if (!items.length) return null;
+  if (!items.length) return null;
 
   return (
     <section className="row padding-y-90-90 overflow-hidden prop-section-immobile">
       <div className="container">
         <div className="row flex-nowrap">
+          {/* text column */}
           <div className="d-flex flex-column justify-content-between slider-col-txt">
             <div>
               <h2 className="main-title-for-slider d-sm-none mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
@@ -185,17 +211,15 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                   <SwiperSlide key={ap._id ?? `txt-${index}`} className="pl-1">
                     <div className="pt-1 pt-md-0 w-100 position-relative">
                       <Link
-                        href={`/apartments/${ap.slug}`}
+                        href={ap.href}
                         className="slide-lg-enlarge-content d-inline-block pb-3 ff-sans fw-500 fz-24 color-black color-black-hover lh-xs txt-no-underline"
                       >
-                        {locale === "en" ? ap.title_en || ap.title : ap.title}
+                        {ap.titleText}
                       </Link>
                     </div>
                     <div className="w-100 position-relative">
                       <p className="slide-lg-enlarge-content mb-0 pb-4 pb-md-5 ff-sans fw-200 fz-18 color-gray lh-sm">
-                        {locale === "en"
-                          ? ap.description_en || ap.description
-                          : ap.description}
+                        {ap.descText}
                       </p>
                     </div>
                   </SwiperSlide>
@@ -214,12 +238,12 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           </div>
 
           <div className="d-flex flex-column justify-content-between mobile-title ml-3 d-block d-lg-none">
-            <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm main-title-for-slider">
+            <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
               {t("apartments")}
             </h2>
           </div>
 
-          {/* تصاویر (مستر) */}
+          {/* images column */}
           <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div
               className="row gallery-prop-wrap"
@@ -246,14 +270,8 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 resizeObserver
               >
                 {items.map((ap, index) => {
-                  const href = `/apartments/${encodeURIComponent(ap.title)}`;
-                  const mainRaw = ap.image || "/fallback-image.jpg";
-                  const gallery = (ap as any).gallery || [];
-                  const overlayRaw = gallery[0] || mainRaw;
-
-                  const mainUrl = resolveUrl(mainRaw);
-                  const overlayUrl = resolveUrl(overlayRaw);
-
+                  // priority only for the very first slide to help LCP
+                  const isPriority = index === 0;
                   return (
                     <SwiperSlide
                       key={ap._id ?? `img-${index}`}
@@ -261,21 +279,43 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                     >
                       <div
                         className="switch-img-wrap swiper-switch-main-img set-background-img card-img"
-                        style={{
-                          ...imgMainStyle,
-                          backgroundImage: `url(${mainUrl})`,
-                        }}
+                        style={{ ...imgMainStyle }}
                       >
-                        <Link href={href} className="property-hidden-link">
-                          <span className="sr-only">{ap.title}</span>
+                        <Link
+                          href={ap.href}
+                          className="property-hidden-link"
+                          aria-label={ap.titleText}
+                        >
+                          <span className="sr-only">{ap.titleText}</span>
                         </Link>
+
+                        {/* main image using next/image for responsive and optimized loading */}
+                        <div style={{ position: "absolute", inset: 0 }}>
+                          <Image
+                            src={ap.mainUrl}
+                            alt={ap.titleText || "Apartment image"}
+                            fill
+                            priority={isPriority}
+                            sizes="(min-width: 992px) 50vw, 100vw"
+                            style={{ objectFit: "cover" }}
+                          />
+                        </div>
+
+                        {/* overlay / secondary image (kept as background visual) */}
                         <div
-                          className="swiper-switch-img swiper-overlay-img position-absolute set-background-img card-img-overlay"
-                          style={{
-                            ...imgOverlayStyle,
-                            backgroundImage: `url(${overlayUrl})`,
-                          }}
-                        />
+                          style={overlayStyle}
+                          className="card-img-overlay"
+                          aria-hidden
+                        >
+                          <Image
+                            src={ap.overlayUrl}
+                            alt=""
+                            fill
+                            priority={false}
+                            sizes="(min-width: 992px) 25vw, 100vw"
+                            style={{ objectFit: "cover", opacity: 0.08 }}
+                          />
+                        </div>
                       </div>
                     </SwiperSlide>
                   );
@@ -287,27 +327,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
       </div>
 
       <style jsx>{`
-        .swiper-pagination-custom {
-          display: flex;
-          justify-content: center;
-          gap: 8px;
-          margin-top: 1rem;
-        }
-        .swiper-pagination-bullet {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          background-color: #ccc;
-          border: none;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-        .swiper-pagination-bullet.active {
-          background-color: #000;
-        }
-        .swiper-pagination-bullet:hover {
-          background-color: #666;
-        }
         .property-hidden-link {
           display: block;
           position: absolute;
@@ -315,12 +334,13 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           left: 0;
           width: 100%;
           height: 100%;
-          z-index: 2;
+          z-index: 4;
         }
         .card-img-overlay {
-          z-index: 1;
+          z-index: 2;
           border-radius: 8px;
           transition: opacity 0.3s ease;
+          pointer-events: none;
         }
         .card-img:hover .card-img-overlay {
           opacity: 0;
@@ -347,11 +367,9 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
         .property-swiper-images .swiper-slide {
           height: 100% !important;
         }
-
         #propertySlideImagesDesktop {
           height: clamp(320px, 68vh, 720px);
         }
-
         @media (max-width: 991px) {
           #propertySlideImagesDesktop {
             height: clamp(260px, 56vh, 520px) !important;
