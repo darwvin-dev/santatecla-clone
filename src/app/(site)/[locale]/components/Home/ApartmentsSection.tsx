@@ -24,10 +24,19 @@ const imgMainStyle: CSSProperties = {
   borderRadius: 8,
 };
 
-const overlayStyle: CSSProperties = {
+const overlayContainerStyle: CSSProperties = {
   position: "absolute",
   inset: 0,
-  zIndex: 1,
+  zIndex: 2,
+  pointerEvents: "none", // so clicks go through to link
+};
+
+const overlayImgBase = {
+  position: "absolute" as const,
+  inset: 0,
+  objectFit: "cover" as const,
+  width: "100%",
+  height: "100%",
 };
 
 const ApartmentsSection: FC<Props> = ({ apartments }) => {
@@ -35,6 +44,8 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const [imageSwiper, setImageSwiper] = useState<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [touchOverlayIndex, setTouchOverlayIndex] = useState<number | null>(null);
 
   const t = useTranslations("homepage");
   const locale = useLocale();
@@ -124,6 +135,14 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
         fn();
       }
     };
+
+  // mobile tap: show overlay for a short time if the slide is active
+  const handleTouchToggle = (index: number) => {
+    if (isDesktop) return;
+    if (activeIndex !== index) return;
+    setTouchOverlayIndex(index);
+    window.setTimeout(() => setTouchOverlayIndex(null), 2500);
+  };
 
   if (!items.length) return null;
 
@@ -270,16 +289,17 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
               >
                 {items.map((ap, index) => {
                   const isPriority = index === 0;
-                  let src = ap.mainUrl;
+                  const overlayVisible =
+                    activeIndex === index &&
+                    (hoveredIndex === index || touchOverlayIndex === index);
+
                   return (
                     <SwiperSlide
                       key={ap._id ?? `img-${index}`}
                       style={{ height: "100%" }}
-                      onMouseEnter={() => {
-                        if (index === activeIndex) {
-                          src = ap.overlayUrl;
-                        }
-                      }}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex((v) => (v === index ? null : v))}
+                      onClick={() => handleTouchToggle(index)}
                     >
                       <div
                         className="switch-img-wrap swiper-switch-main-img set-background-img card-img"
@@ -293,6 +313,7 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                           <span className="sr-only">{ap.titleText}</span>
                         </Link>
 
+                        {/* main image */}
                         <div style={{ position: "absolute", inset: 0 }}>
                           <Image
                             src={ap.mainUrl}
@@ -300,6 +321,22 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                             fill
                             priority={isPriority}
                             sizes="(min-width: 992px) 50vw, 100vw"
+                            style={{ objectFit: "cover" }}
+                          />
+                        </div>
+
+                        {/* overlay image (opacity + scale animated) */}
+                        <div
+                          className={`overlay-image ${overlayVisible ? "visible" : ""}`}
+                          style={overlayContainerStyle}
+                          aria-hidden
+                        >
+                          <Image
+                            src={ap.overlayUrl}
+                            alt=""
+                            fill
+                            priority={false}
+                            sizes="(min-width: 992px) 25vw, 100vw"
                             style={{ objectFit: "cover" }}
                           />
                         </div>
@@ -323,6 +360,21 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
           height: 100%;
           z-index: 4;
         }
+
+        .overlay-image {
+          z-index: 2;
+          border-radius: 8px;
+          opacity: 0;
+          transform: scale(1);
+          transition: opacity 720ms cubic-bezier(0.2, 0.8, 0.2, 1),
+            transform 720ms cubic-bezier(0.2, 0.8, 0.2, 1);
+          pointer-events: none;
+        }
+        .overlay-image.visible {
+          opacity: 1;
+          transform: scale(1.03);
+        }
+
         .card-img-overlay {
           z-index: 2;
           border-radius: 8px;
