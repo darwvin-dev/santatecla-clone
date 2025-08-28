@@ -202,11 +202,6 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
     }>(formData.get("cancellation"));
     if (cancellation) apartment.cancellation = cancellation;
 
-    const folder = (title?.trim() ? title.trim() : `APT_${id}`).replace(
-      /[/\\?%*:|"<>]/g,
-      "_"
-    );
-
     const coverFile = formData.get("image") as File | null;
     if (coverFile && typeof coverFile === "object" && coverFile.size > 0) {
       if (apartment.image) {
@@ -214,7 +209,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
           path.join(process.cwd(), "public", apartment.image)
         );
       }
-      apartment.image = await saveImageFile(coverFile, folder, "_cover");
+      apartment.image = await saveImageFile(coverFile, "_cover", title);
     }
 
     const galleryOrder = safeJson<string[]>(formData.get("galleryOrder"));
@@ -249,7 +244,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
             "type" in f &&
             f.type?.startsWith("image/")
           ) {
-            const p = await saveImageFile(f, folder, "_gallery");
+            const p = await saveImageFile(f, "_gallery", title);
             nextGallery.push(p);
             usedNew.add(idx);
           }
@@ -276,7 +271,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
           "type" in gf &&
           gf.type?.startsWith("image/")
         ) {
-          const p = await saveImageFile(gf, folder, "_gallery");
+          const p = await saveImageFile(gf, "_gallery", title);
           nextGallery.push(p);
         }
       }
@@ -301,7 +296,7 @@ export async function PUT(req: NextRequest, { params }: IdCtx) {
           path.join(process.cwd(), "public", apartment.plan)
         );
       }
-      apartment.plan = await saveImageFile(planFile, folder, "_plan");
+      apartment.plan = await saveImageFile(planFile, "_plan", title);
     }
 
     await apartment.save();

@@ -403,7 +403,6 @@ export default function EditApartmentPage() {
                 </label>
                 <input
                   type="number"
-                  min={1}
                   name="orderShow"
                   required
                   value={form.orderShow}
