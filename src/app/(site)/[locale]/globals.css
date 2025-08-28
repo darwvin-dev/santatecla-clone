@@ -1594,7 +1594,7 @@ pre code {
   }
 
   .mid-row-reverse {
-    flex-flow: row-reverse;
+    flex-flow: row-reverse !important;
   }
 }
 

@@ -50,7 +50,7 @@ export default function AdminApartmentsPage() {
     try {
       setDeleting(true);
       await fetch(`/api/apartments/${selectedId}`, { method: "DELETE" });
-      setApartments((prev) => prev.filter((apt) => apt.title !== selectedId));
+      setApartments((prev) => prev.filter((apt) => apt._id !== selectedId));
       setShowModal(false);
       setSelectedId(null);
     } catch (e: any) {
@@ -219,7 +219,7 @@ export default function AdminApartmentsPage() {
                                   </Link>
                                   <button
                                     onClick={() => {
-                                      setSelectedId(apt.title);
+                                      setSelectedId(apt._id);
                                       setShowModal(true);
                                     }}
                                     className="inline-flex h-9 items-center rounded-lg bg-rose-500 px-3 text-xs font-semibold text-white shadow hover:bg-rose-600"
