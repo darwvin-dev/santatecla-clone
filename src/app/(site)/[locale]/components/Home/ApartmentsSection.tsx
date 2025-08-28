@@ -40,7 +40,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
   const locale = useLocale();
   const mqRef = useRef<MediaQueryList | null>(null);
 
-  // precompute items with resolved urls and safe fallbacks
   const items = useMemo(() => {
     return (apartments || []).map((ap) => {
       const mainRaw = ap.image || "/fallback-image.jpg";
@@ -270,12 +269,17 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                 resizeObserver
               >
                 {items.map((ap, index) => {
-                  // priority only for the very first slide to help LCP
                   const isPriority = index === 0;
+                  let src = ap.mainUrl;
                   return (
                     <SwiperSlide
                       key={ap._id ?? `img-${index}`}
                       style={{ height: "100%" }}
+                      onMouseEnter={() => {
+                        if (index === activeIndex) {
+                          src = ap.overlayUrl;
+                        }
+                      }}
                     >
                       <div
                         className="switch-img-wrap swiper-switch-main-img set-background-img card-img"
@@ -289,7 +293,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                           <span className="sr-only">{ap.titleText}</span>
                         </Link>
 
-                        {/* main image using next/image for responsive and optimized loading */}
                         <div style={{ position: "absolute", inset: 0 }}>
                           <Image
                             src={ap.mainUrl}
@@ -298,22 +301,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
                             priority={isPriority}
                             sizes="(min-width: 992px) 50vw, 100vw"
                             style={{ objectFit: "cover" }}
-                          />
-                        </div>
-
-                        {/* overlay / secondary image (kept as background visual) */}
-                        <div
-                          style={overlayStyle}
-                          className="card-img-overlay"
-                          aria-hidden
-                        >
-                          <Image
-                            src={ap.overlayUrl}
-                            alt=""
-                            fill
-                            priority={false}
-                            sizes="(min-width: 992px) 25vw, 100vw"
-                            style={{ objectFit: "cover", opacity: 0.08 }}
                           />
                         </div>
                       </div>
