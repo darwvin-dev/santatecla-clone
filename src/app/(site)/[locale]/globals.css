@@ -3497,7 +3497,21 @@ pre code {
   }
 
   #slider-invertito {
-    justify-self: center;
+    display: flex !important;
+    justify-self: center !important;
+    place-self: center;
+    padding-top: 0 !important;
+    margin: 0 auto;
+  }
+
+  #slider-invertito .container {
+    justify-content: center !important;
+    margin: 0 auto !important;
+  }
+
+  #slider-invertito .swiper-button-wrap {
+    margin-bottom: 1.5rem !important;
+    margin-top: 1.5rem !important;
   }
 
   .swiper-overlay-img {
@@ -3512,11 +3526,13 @@ pre code {
     width: 100%;
   }
 
-  .prop-section-immobile .swiper-button-wrap {
+  .prop-section-immobile .swiper-button-wrap,
+  #slider-invertito .swiper-button-wrap {
     place-self: center;
   }
 
-  .prop-section-immobile .swiper-button-next {
+  .prop-section-immobile .swiper-button-next,
+  #slider-invertito .swiper-button-next {
     left: 5px !important;
   }
   .gallery-single-prop .gallery-prop-wrap .swiper,
@@ -21151,34 +21167,34 @@ footer.site-footer {
 
 @media (min-width: 768px) {
   .footer-custom-col {
-    -ms-flex: 0 0 31.25%;
-    flex: 0 0 31.25%;
-    max-width: 31.25%;
+    -ms-flex: 0 0 33%;
+    flex: 0 0 33%;
+    max-width: 33%;
     margin-top: 0;
   }
 }
 
 @media (min-width: 992px) {
   .footer-custom-col {
-    -ms-flex: 0 0 18.33333333%;
-    flex: 0 0 18.33333333%;
-    max-width: 18.33333333%;
+    -ms-flex: 0 0 33%;
+    flex: 0 0 33%;
+    max-width: 33%;
   }
 }
 
 @media (min-width: 1200px) {
   .footer-custom-col {
-    -ms-flex: 0 0 17.5%;
-    flex: 0 0 17.5%;
-    max-width: 17.5%;
+    -ms-flex: 0 0 33%;
+    flex: 0 0 33%;
+    max-width: 33%;
   }
 }
 
 @media (min-width: 1530px) {
   .footer-custom-col {
-    -ms-flex: 0 0 15%;
-    flex: 0 0 15%;
-    max-width: 15%;
+    -ms-flex: 0 0 33%;
+    flex: 0 0 33%;
+    max-width: 33%;
   }
 }
 
@@ -22930,15 +22946,17 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 }
 
 @media (max-width: 767.98px) {
-  .prop-section-immobile .swiper-button-prev {
+  .prop-section-immobile .swiper-button-prev,
+  #slider-invertito .swiper-button-prev {
     background-color: white;
     right: 52% !important;
     left: auto !important;
   }
 }
 @media (max-width: 767.98px) {
-  .prop-section-immobile .swiper-button-next {
-    background-color: white;
+  .prop-section-immobile .swiper-button-next,
+  #slider-invertito .swiper-button-next {
+    background-color: white !important;
     right: auto !important;
     left: 52% !important;
   }
@@ -22966,3 +22984,18 @@ div.ui-datepicker#ui-datepicker-div-octorate {
     display: none;
   }
 }
+
+.footer-quick-links li {
+  margin-bottom: 0.5rem; 
+}
+
+.footer-quick-links a {
+  color: #ffffff; 
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-quick-links a:hover {
+  color: #a0e1e0; 
+}
+

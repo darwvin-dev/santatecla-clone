@@ -21,7 +21,6 @@ const imgMainStyle: CSSProperties = {
   height: "100%",
   minHeight: "300px",
   overflow: "hidden",
-  borderRadius: 8,
 };
 
 const overlayContainerStyle: CSSProperties = {
@@ -363,7 +362,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
 
         .overlay-image {
           z-index: 2;
-          border-radius: 8px;
           opacity: 0;
           transform: scale(1);
           transition: opacity 720ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -377,7 +375,6 @@ const ApartmentsSection: FC<Props> = ({ apartments }) => {
 
         .card-img-overlay {
           z-index: 2;
-          border-radius: 8px;
           transition: opacity 0.3s ease;
           pointer-events: none;
         }

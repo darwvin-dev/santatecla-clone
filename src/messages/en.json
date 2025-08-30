@@ -38,7 +38,13 @@
     "preferences": "Preferences",
     "companyLine": "Habitabio",
     "addressLine": "Head office: Via Matteo Bandello 14 - 20123 Milan",
-    "vatLine": "VAT 13009430961"
+    "vatLine": "VAT 13009430961",
+    "home": "Home",
+    "about": "About",
+    "apartments": "Apartments",
+    "contact": "Contact",
+    "gestione": "Management",
+    "linksTitle": "Quick Links"
   },
   "apartments": {
     "header": {

@@ -38,7 +38,12 @@
     "preferences": "Preferenze",
     "companyLine": "Habitabio",
     "addressLine": "Sede Via Matteo Bandello 14 - 20123 Milano",
-    "vatLine": "P.Iva 13009430961"
+    "vatLine": "P.Iva 13009430961",
+    "home": "Home",
+    "about": "Chi siamo",
+    "gestione": "Gestione",
+    "apartments": "Appartamenti",
+    "linksTitle": "Link Rapidi"
   },
   "apartments": {
     "header": {

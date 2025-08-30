@@ -128,22 +128,29 @@ export default function ExperiencesSection({ experiences }: Props) {
     >
       <div
         className="container"
-        style={{ width: "100%", margin: 0, padding: 0 }}
+        style={{ padding: 0, margin: "0 auto", width: "100%" }}
       >
-        <div className="row" style={{ width: "100%", margin: 0 }}>
+        <div className="d-flex flex-column mobile-title d-block d-lg-none">
+          <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
+            {locale === "en"
+              ? baseData?.title_en || baseData?.title
+              : baseData?.title ?? "Esperienze a Milano"}
+          </h2>
+        </div>
+
+        <div className="row" style={{ width: "100%", margin: "0 auto", padding: 0, justifyContent: "center", justifyItems: "center", justifySelf: "center" }}>
           {/* images column */}
           <div className="col-12 col-md-5 col-lg-6" style={{ padding: 0 }}>
             <div
               className="row position-relative"
-              id="teamsSlideImagesDesktop"
-              style={{ width: "100%", margin: 0 }}
+              style={{ width: "100%", margin: "auto" }}
             >
               <Swiper
-                dir="rtl"
+                // dir="rtl"
                 className="team-swiper-images"
                 modules={[Controller]}
                 loop={loopEnabled}
-                spaceBetween={15}
+                // spaceBetween={15}
                 slidesPerView={slidesPerView}
                 breakpoints={{
                   0: { slidesPerView: 1 },
@@ -163,9 +170,7 @@ export default function ExperiencesSection({ experiences }: Props) {
                       className="switch-img-wrap swiper-switch-main-img set-background-img"
                       style={{
                         width: "100%",
-                        borderRadius: 8,
                         overflow: "hidden",
-                        // no direct window usage: use CSS clamp for height
                         height: "clamp(160px, 24vw, 240px)",
                         position: "relative",
                       }}
@@ -173,10 +178,15 @@ export default function ExperiencesSection({ experiences }: Props) {
                       <Image
                         src={item.imgUrl}
                         alt={item.titleText || ""}
-                        fill
-                        priority={idx === 0} // help LCP for first visible image
+                        priority={idx === 0}
+                        width={800}
+                        height={500}
                         sizes="(min-width: 992px) 50vw, 100vw"
-                        style={{ objectFit: "cover" }}
+                        style={{
+                          width: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                        }}
                       />
                     </div>
                   </SwiperSlide>
@@ -188,7 +198,7 @@ export default function ExperiencesSection({ experiences }: Props) {
           {/* text + nav column */}
           <div className="d-flex flex-column justify-content-between slider-col-txt col-12 col-md-7 col-lg-6">
             <div className="position-relative team-wrapper">
-              <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
+              <h2 className="main-title-for-slider d-sm-none mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
                 {locale === "en"
                   ? baseData?.title_en || baseData?.title
                   : baseData?.title ?? "Esperienze a Milano"}
@@ -203,8 +213,8 @@ export default function ExperiencesSection({ experiences }: Props) {
                   tabIndex={0}
                   role="button"
                   aria-label="Previous slide"
-                  onClick={handlePrev}
-                  onKeyDown={keyActivate(handlePrev)}
+                  onClick={handleNext}
+                  onKeyDown={keyActivate(handleNext)}
                   disabled={!canSlide}
                   style={{
                     cursor: canSlide ? "pointer" : "not-allowed",
@@ -223,13 +233,13 @@ export default function ExperiencesSection({ experiences }: Props) {
                   tabIndex={0}
                   role="button"
                   aria-label="Next slide"
-                  onClick={handleNext}
-                  onKeyDown={keyActivate(handleNext)}
-                  disabled={!canSlide}
                   style={{
                     cursor: canSlide ? "pointer" : "not-allowed",
                     opacity: canSlide ? 1 : 0.5,
                   }}
+                  onClick={handlePrev}
+                  onKeyDown={keyActivate(handlePrev)}
+                  disabled={!canSlide}
                 >
                   <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
                     <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden>

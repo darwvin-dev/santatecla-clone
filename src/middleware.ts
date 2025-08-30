@@ -105,10 +105,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/apartments")) {
-    return NextResponse.next();
-  }
-
   if (isAdminApi) {
     if (ALLOW_NO_AUTH.has(req.method)) return NextResponse.next();
     const session = await verifySession(req.cookies.get(ADMIN_COOKIE)?.value);
@@ -132,6 +128,7 @@ export const config = {
     "/((?!api|admin|trpc|_next|_vercel|.*\\..*).*)",
     "/apartments/:slug*",
     "/admin/:path*",
+    "/apartments",
     "/api/:path*",
   ],
 };
