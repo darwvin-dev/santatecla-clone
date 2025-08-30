@@ -128,29 +128,34 @@ export default function ExperiencesSection({ experiences }: Props) {
     >
       <div
         className="container"
-        style={{ padding: 0, margin: "0 auto", width: "100%" }}
+        style={{ width: "100%", margin: 0, padding: 0, maxWidth: "unset" }}
       >
-        <div className="d-flex flex-column mobile-title d-block d-lg-none">
-          <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
-            {locale === "en"
-              ? baseData?.title_en || baseData?.title
-              : baseData?.title ?? "Esperienze a Milano"}
-          </h2>
-        </div>
-
-        <div className="row" style={{ width: "100%", margin: "0 auto", padding: 0, justifyContent: "center", justifyItems: "center", justifySelf: "center" }}>
+        <div className="row" style={{ width: "100%", margin: 0 }}>
           {/* images column */}
-          <div className="col-12 col-md-5 col-lg-6" style={{ padding: 0 }}>
+          <div
+            className="col-12 col-md-5 col-lg-6"
+            style={{
+              width: isDesktop ? "50vw" : "",
+              padding: 0,
+            }}
+          >
             <div
               className="row position-relative"
-              style={{ width: "100%", margin: "auto" }}
+              id="teamsSlideImagesDesktop"
+              style={{ width: "100%", margin: 0 }}
             >
+              <div className="d-flex flex-column justify-content-between mobile-title ml-3 d-block d-lg-none">
+                <h2 className="main-title-for-slider mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
+                  {locale === "en"
+                    ? baseData?.title_en || baseData?.title
+                    : baseData?.title ?? "Esperienze a Milano"}
+                </h2>
+              </div>
               <Swiper
-                // dir="rtl"
                 className="team-swiper-images"
                 modules={[Controller]}
                 loop={loopEnabled}
-                // spaceBetween={15}
+                spaceBetween={15}
                 slidesPerView={slidesPerView}
                 breakpoints={{
                   0: { slidesPerView: 1 },
@@ -171,23 +176,36 @@ export default function ExperiencesSection({ experiences }: Props) {
                       style={{
                         width: "100%",
                         overflow: "hidden",
-                        height: "clamp(160px, 24vw, 240px)",
+                        height: isDesktop ? "60vh" : "240px",
+                        minHeight: isDesktop ? "400px" : "240px",
+                        maxHeight: isDesktop ? "80vh" : "240px",
                         position: "relative",
                       }}
                     >
-                      <Image
-                        src={item.imgUrl}
-                        alt={item.titleText || ""}
-                        priority={idx === 0}
-                        width={800}
-                        height={500}
-                        sizes="(min-width: 992px) 50vw, 100vw"
-                        style={{
-                          width: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                        }}
-                      />
+                      {isDesktop ? (
+                        <Image
+                          src={item.imgUrl}
+                          alt={item.titleText || ""}
+                          fill
+                          loading={idx === 0 ? "eager" : "lazy"}
+                          priority={idx === 0}
+                          sizes="(min-width: 992px) 50vw, 100vw"
+                          style={{ objectFit: "cover" }}
+                        />
+                      ) : (
+                        <Image
+                          src={item.imgUrl}
+                          alt={item.titleText || ""}
+                          width={800}
+                          height={500}
+                          loading={idx === 0 ? "eager" : "lazy"}
+                          priority={idx === 0}
+                          style={{
+                            objectFit: "cover",
+                            width: "100%",
+                          }}
+                        />
+                      )}
                     </div>
                   </SwiperSlide>
                 ))}
@@ -195,7 +213,6 @@ export default function ExperiencesSection({ experiences }: Props) {
             </div>
           </div>
 
-          {/* text + nav column */}
           <div className="d-flex flex-column justify-content-between slider-col-txt col-12 col-md-7 col-lg-6">
             <div className="position-relative team-wrapper">
               <h2 className="main-title-for-slider d-sm-none mb-0 padding-y-0-40 ff-sans fw-400 fz-32 color-black lh-sm">
@@ -203,7 +220,6 @@ export default function ExperiencesSection({ experiences }: Props) {
                   ? baseData?.title_en || baseData?.title
                   : baseData?.title ?? "Esperienze a Milano"}
               </h2>
-
               <div
                 className="swiper-button-wrap pos-nav-change-first-slider"
                 style={{ display: "flex", gap: 12 }}
@@ -213,8 +229,8 @@ export default function ExperiencesSection({ experiences }: Props) {
                   tabIndex={0}
                   role="button"
                   aria-label="Previous slide"
-                  onClick={handleNext}
-                  onKeyDown={keyActivate(handleNext)}
+                  onClick={handlePrev}
+                  onKeyDown={keyActivate(handlePrev)}
                   disabled={!canSlide}
                   style={{
                     cursor: canSlide ? "pointer" : "not-allowed",
@@ -233,13 +249,13 @@ export default function ExperiencesSection({ experiences }: Props) {
                   tabIndex={0}
                   role="button"
                   aria-label="Next slide"
+                  onClick={handleNext}
+                  onKeyDown={keyActivate(handleNext)}
+                  disabled={!canSlide}
                   style={{
                     cursor: canSlide ? "pointer" : "not-allowed",
                     opacity: canSlide ? 1 : 0.5,
                   }}
-                  onClick={handlePrev}
-                  onKeyDown={keyActivate(handlePrev)}
-                  disabled={!canSlide}
                 >
                   <div className="btn-arrow btn-black btn-white-hover d-flex align-items-center">
                     <svg viewBox="0 0 27 27" width="27" height="27" aria-hidden>
@@ -248,7 +264,6 @@ export default function ExperiencesSection({ experiences }: Props) {
                   </div>
                 </button>
               </div>
-
               <Swiper
                 className="team-swiper swiper-fade"
                 modules={[EffectFade, Controller]}

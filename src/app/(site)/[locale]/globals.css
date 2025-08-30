@@ -9186,10 +9186,6 @@ button.bg-dark:hover {
 }
 
 @media (min-width: 576px) {
-  .d-sm-none {
-    display: none !important;
-  }
-
   .d-sm-inline {
     display: inline !important;
   }
@@ -17094,7 +17090,6 @@ nav.navigation.pagination .nav-links > .next {
   .swiper-button-wrap .swiper-button-prev {
     width: 44px;
     height: 44px;
-    /* right: -3%; */
   }
 }
 
@@ -22201,7 +22196,7 @@ footer.site-footer {
 
 @media (max-width: 767.98px) {
   .gallery-prop-wrap {
-    margin-bottom: 30px;
+    margin-bottom: 3rem;
   }
 }
 
@@ -22945,10 +22940,14 @@ div.ui-datepicker#ui-datepicker-div-octorate {
   }
 }
 
+.swiper-button-prev,
+.swiper-button-next {
+  background-color: white;
+}
+
 @media (max-width: 767.98px) {
   .prop-section-immobile .swiper-button-prev,
   #slider-invertito .swiper-button-prev {
-    background-color: white;
     right: 52% !important;
     left: auto !important;
   }
@@ -22956,7 +22955,6 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 @media (max-width: 767.98px) {
   .prop-section-immobile .swiper-button-next,
   #slider-invertito .swiper-button-next {
-    background-color: white !important;
     right: auto !important;
     left: 52% !important;
   }
@@ -22986,16 +22984,15 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 }
 
 .footer-quick-links li {
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
 }
 
 .footer-quick-links a {
-  color: #ffffff; 
+  color: #ffffff;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .footer-quick-links a:hover {
-  color: #a0e1e0; 
+  color: #a0e1e0;
 }
-
