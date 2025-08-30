@@ -46,8 +46,6 @@ export default function PropertyIntro() {
     return decodeURIComponent(raw);
   }, [params]);
 
-  console.log(slug)
-
   const [data, setData] = useState<Apartment | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -75,6 +73,7 @@ export default function PropertyIntro() {
               ...(Array.isArray(json.gallery) ? json.gallery : []),
             ].filter((x): x is string => typeof x === "string" && !!x)
           );
+          document.title = `${json?.title} - Habitabio`;
         }
       } catch (e: unknown) {
         if (!cancelled) setErr(e instanceof Error ? e.message : "Fetch failed");
@@ -88,7 +87,7 @@ export default function PropertyIntro() {
   }, [slug]);
 
   if (loading || !data) {
-    return
+    return;
   }
 
   if (err) {

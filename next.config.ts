@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "habitabio.it" },
-      { protocol: "https", hostname: "habitabio.it" },
     ],
   },
   experimental: {

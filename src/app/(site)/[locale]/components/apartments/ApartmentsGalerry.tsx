@@ -12,20 +12,27 @@ type Props = {
   images: string[];
 };
 
-export default function ApartmentsGalerry({ images, name }: Props) {
+export default function ApartmentsGallery({ images, name }: Props) {
   const prevRef = useRef<HTMLDivElement>(null);
   const nextRef = useRef<HTMLDivElement>(null);
   const [navReady, setNavReady] = useState(false);
 
   const items = useMemo(() => (images ?? []).filter(Boolean), [images]);
 
-  useEffect(() => setNavReady(true), []);
+  useEffect(() => {
+    if (navReady) {
+      setNavReady(true); // Ensures swiper navigation is initialized once
+    }
+  }, [navReady]);
 
   if (!items.length) return null;
 
   const SwiperItems = useMemo(
     () =>
-      items.map((src, i) => (
+      items.map((src, i) => {
+        console.log(`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`);
+
+        return(
         <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
           <div className="switch-img-wrap swiper-switch-main-img">
             <a
@@ -50,7 +57,8 @@ export default function ApartmentsGalerry({ images, name }: Props) {
             </a>
           </div>
         </SwiperSlide>
-      )),
+      )}
+    ),
     [items, name]
   );
 
@@ -64,7 +72,7 @@ export default function ApartmentsGalerry({ images, name }: Props) {
             </h1>
           </div>
 
-          {/* گالری */}
+          {/* Gallery */}
           <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div className="row gallery-prop-wrap">
               <Swiper
@@ -94,7 +102,7 @@ export default function ApartmentsGalerry({ images, name }: Props) {
                   992: { slidesPerView: 2 },
                 }}
               >
-                  {SwiperItems}
+                {SwiperItems}
               </Swiper>
             </div>
 

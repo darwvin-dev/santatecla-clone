@@ -1,5 +1,6 @@
 import { NextIntlClientProvider } from "next-intl";
 import { Manrope } from "next/font/google";
+import Head from "next/head";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -15,72 +16,44 @@ export function generateStaticParams() {
 
 async function getMessages(locale: string) {
   try {
-    return (await import(`../../../messages/${locale}.json`)).default;
-  } catch {
+    const messages = await import(`../../../messages/${locale}.json`);
+    return messages.default;
+  } catch (error) {
+    console.error("Error loading messages:", error);
     return null;
   }
 }
 
-export default async function RootLayout(
-  props: {
-    children: React.ReactNode;
-    params: Promise<{ locale: "it" | "en" }>;
-  }
-) {
+export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: "it" | "en" }> }) {
   const { children, params } = props;
-  const { locale } = await params; 
+  const { locale } = await params;
 
   const messages = await getMessages(locale);
   if (!messages) notFound();
 
   return (
     <html lang={locale}>
-      <head>
+      <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
+        <meta charSet="UTF-8" />
+        <meta name="description" content="Your website description" />
+        <meta name="robots" content="index, follow" />
+        <meta name="theme-color" content="#000000" />
+
+        {/* Favicon Links */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
+        {/* External stylesheets */}
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css" />
         <link
           rel="stylesheet"
-          href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Google+Sans:wght@400;500;700&display=swap"
         />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400,500,700&lang=en"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Google+Sans+Text:400&text=%E2%86%90%E2%86%92%E2%86%91%E2%86%93&lang=en"
-        />
-        <link
-          rel="stylesheet"
-          href="https://code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400,500,700&lang=en"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Google+Sans+Text:400&text=%E2%86%90%E2%86%92%E2%86%91%E2%86%93&lang=en"
-        />
-      </head>
+
+      </Head>
       <body className={`archive post-type-archive post-type-archive-apartment ${manrope.variable}`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}

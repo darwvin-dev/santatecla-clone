@@ -21070,21 +21070,6 @@ nav.site-navigation li.menu-item.show a.dropdown-toggle:after {
   transform-origin: right;
 }
 
-@media (max-width: 767.98px) {
-  nav.site-navigation .nav-link {
-    padding-top: 15px;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-  }
-}
-
-@media (min-width: 768px) {
-  nav.site-navigation .nav-link {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-}
-
 nav.site-navigation .current-menu-item > a.nav-link {
   position: relative;
 }
@@ -22995,4 +22980,29 @@ div.ui-datepicker#ui-datepicker-div-octorate {
 
 .footer-quick-links a:hover {
   color: #a0e1e0;
+}
+
+
+@media (max-width: 767.98px) {
+  .pos-nav-change-first-slider {
+    padding: 20px 0;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .pos-nav-change-first-slider > div {
+    position: relative;
+    margin-left: 20px;
+  }
+
+  .pos-nav-change-first-slider > div:first-child {
+    margin-left: 0;
+  }
+
+  .nav-icn-lang .wpml-ls-legacy-dropdown-click ul a,
+  .nav-icn-lang .wpml-ls-legacy-dropdown-click ul a:hover {
+    text-transform: uppercase;
+  }
 }
