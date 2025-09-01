@@ -20,11 +20,12 @@ export function LocationFields({
   onPick,
 }: {
   address: string;
-  lat: string;
-  lng: string;
+  lat: number;
+  lng: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPick: (lat: number, lng: number) => void;
 }) {
+  console.log(address, lat, lng)
   return (
     <Section
       title="Posizione"
@@ -32,7 +33,7 @@ export function LocationFields({
     >
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <MapPicker initialAddress={address} onPick={onPick} />
+          <MapPicker onPick={onPick} initialLat={lat} initialLng={lng} />
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div>

@@ -20,8 +20,7 @@ const markerIcon = L.icon({
 });
 
 type Props = {
-  initialAddress?: string; // اختیاری
-  initialLat?: number;     // اگر داری بده؛ در غیر اینصورت مرکز پیش‌فرض
+  initialLat?: number;     
   initialLng?: number;
   onPick: (lat: number, lng: number) => void;
 };
@@ -44,12 +43,10 @@ function ClickToPick({
 }
 
 export default function MapPicker({
-  initialAddress,
   initialLat,
   initialLng,
   onPick,
 }: Props) {
-  // مرکز پیش‌فرض: میلان
   const defaultCenter = useMemo<LatLngLiteral>(
     () => ({
       lat: initialLat ?? 45.4642,

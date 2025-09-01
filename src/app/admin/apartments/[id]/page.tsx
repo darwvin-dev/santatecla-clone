@@ -97,8 +97,8 @@ export default function EditApartmentPage() {
           addressDetail: a.addressDetail ?? "",
           description: a.description ?? "",
           details: a.details ?? "",
-          lat: a.location?.lat ? String(a.location.lat) : "",
-          lng: a.location?.lng ? String(a.location.lng) : "",
+          lat: a?.lat ? a?.lat : "",
+          lng: a?.lng ? a?.lng : "",
           cin: a.cin ?? "",
           cir: a.cir ?? "",
           address_en: a.address_en,
@@ -610,8 +610,8 @@ export default function EditApartmentPage() {
           {/* Posizione */}
           <LocationFields
             address={form.address}
-            lat={form.lat}
-            lng={form.lng}
+            lat={Number(form.lat)}
+            lng={Number(form.lng)}
             onChange={handleChange}
             onPick={(lat, lng) =>
               setForm((f) => ({ ...f, lat: String(lat), lng: String(lng) }))
