@@ -651,7 +651,8 @@ export default function NewApartmentPage() {
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
                 <MapPicker
-                  initialAddress={form.address}
+                  initialLat={Number(form.lat)}
+                  initialLng={Number(form.lng)}
                   onPick={(lat: number, lng: number) => {
                     setForm((f) => ({
                       ...f,

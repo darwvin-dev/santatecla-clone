@@ -69,7 +69,7 @@ export default function Footer() {
               </h3>
               <ul className="list-unstyled ff-sans fw-200 fz-16 color-white lh-sm">
                 <li className="mb-1"><Link href="/">{t("home")}</Link></li>
-                <li className="mb-1"><Link href="/about">{t("about")}</Link></li>
+                {/* <li className="mb-1"><Link href="/about">{t("about")}</Link></li> */}
                 <li className="mb-1"><Link href="/apartments">{t("apartments")}</Link></li>
                 <li className="mb-1"><Link href="/gestione">{t("gestione")}</Link></li>
               </ul>
