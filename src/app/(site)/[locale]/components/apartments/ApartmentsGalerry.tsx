@@ -97,7 +97,7 @@ export default function ApartmentsGallery({ images, name }: Props) {
             {items.length > 1 && (
               <div className="swiper-button-wrap">
                 <div
-                  ref={setPrevEl} // callback ref
+                  ref={setPrevEl} 
                   className="swiper-button-prev btn-only-arrow only-arrow-black"
                   tabIndex={0}
                   role="button"
