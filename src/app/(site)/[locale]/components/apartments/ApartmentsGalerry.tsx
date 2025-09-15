@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -13,54 +14,29 @@ type Props = {
 };
 
 export default function ApartmentsGallery({ images, name }: Props) {
-  const prevRef = useRef<HTMLDivElement>(null);
-  const nextRef = useRef<HTMLDivElement>(null);
-  const [navReady, setNavReady] = useState(false);
+  const [prevEl, setPrevEl] = useState<HTMLDivElement | null>(null);
+  const [nextEl, setNextEl] = useState<HTMLDivElement | null>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   const items = useMemo(() => (images ?? []).filter(Boolean), [images]);
 
+  // وقتی هر دو دکمه حاضر شدند، ناوبری رو دوباره bind و init کن
   useEffect(() => {
-    if (navReady) {
-      setNavReady(true); // Ensures swiper navigation is initialized once
-    }
-  }, [navReady]);
+    if (!swiperRef.current || !prevEl || !nextEl) return;
+
+    swiperRef.current.params.navigation = {
+      ...(swiperRef.current.params.navigation as any),
+      prevEl,
+      nextEl,
+    };
+
+    // برای اطمینان، destroy -> init -> update
+    swiperRef.current.navigation.destroy();
+    swiperRef.current.navigation.init();
+    swiperRef.current.navigation.update();
+  }, [prevEl, nextEl]);
 
   if (!items.length) return null;
-
-  const SwiperItems = useMemo(
-    () =>
-      items.map((src, i) => {
-        console.log(`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`);
-
-        return(
-        <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
-          <div className="switch-img-wrap swiper-switch-main-img">
-            <a
-              data-fancybox="single-property"
-              href={src}
-              className="d-block w-100 property-hidden-link"
-              aria-label={`Apri immagine ${i + 1}`}
-            >
-              <figure
-                className="mb-0 position-relative overflow-hidden"
-                style={{ width: "100%", aspectRatio: "3/2" }}
-              >
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
-                  alt={`${name} – immagine ${i + 1}`}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  priority={i === 0}
-                  loading={i === 0 ? "eager" : "lazy"}
-                />
-              </figure>
-            </a>
-          </div>
-        </SwiperSlide>
-      )}
-    ),
-    [items, name]
-  );
 
   return (
     <section className="row padding-y-190-190 single-property-intro">
@@ -76,40 +52,52 @@ export default function ApartmentsGallery({ images, name }: Props) {
           <div className="offset-md-1 gallery-single-prop position-relative w-125">
             <div className="row gallery-prop-wrap">
               <Swiper
+                key={prevEl && nextEl ? "with-nav" : "no-nav"} // کمک می‌کند Swiper بعد از آماده‌شدن دکمه‌ها رندر شود
                 modules={[Navigation]}
                 className="property-swiper-images"
                 loop={items.length > 2}
                 spaceBetween={15}
-                navigation={{
-                  prevEl: prevRef.current!,
-                  nextEl: nextRef.current!,
-                }}
-                onBeforeInit={(swiper) => {
-                  // @ts-ignore
-                  swiper.params.navigation.prevEl = prevRef.current;
-                  // @ts-ignore
-                  swiper.params.navigation.nextEl = nextRef.current;
-                }}
-                onInit={(swiper) => {
-                  if (navReady) {
-                    swiper.navigation.init();
-                    swiper.navigation.update();
-                  }
-                }}
+                navigation={{ prevEl, nextEl }} // مقدار اولیه؛ binding نهایی در useEffect
+                onSwiper={(swiper) => (swiperRef.current = swiper)}
                 breakpoints={{
                   0: { slidesPerView: 1, autoHeight: true },
                   768: { autoHeight: false },
                   992: { slidesPerView: 2 },
                 }}
               >
-                {SwiperItems}
+                {items.map((src, i) => (
+                  <SwiperSlide key={`${src}-${i}`} style={{ height: "auto" }}>
+                    <div className="switch-img-wrap swiper-switch-main-img">
+                      <a
+                        data-fancybox="single-property"
+                        href={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
+                        className="d-block w-100 property-hidden-link"
+                        aria-label={`Apri immagine ${i + 1}`}
+                      >
+                        <figure
+                          className="mb-0 position-relative overflow-hidden"
+                          style={{ width: "100%", aspectRatio: "3/2" }}
+                        >
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_DOMAIN_ADDRESS}${src}`}
+                            alt={`${name} – immagine ${i + 1}`}
+                            fill
+                            style={{ objectFit: "cover" }}
+                            priority={i === 0}
+                            loading={i === 0 ? "eager" : "lazy"}
+                          />
+                        </figure>
+                      </a>
+                    </div>
+                  </SwiperSlide>
+                ))}
               </Swiper>
             </div>
 
             {items.length > 1 && (
               <div className="swiper-button-wrap">
                 <div
-                  ref={prevRef}
+                  ref={setPrevEl} // callback ref
                   className="swiper-button-prev btn-only-arrow only-arrow-black"
                   tabIndex={0}
                   role="button"
@@ -122,7 +110,7 @@ export default function ApartmentsGallery({ images, name }: Props) {
                   </div>
                 </div>
                 <div
-                  ref={nextRef}
+                  ref={setNextEl} // callback ref
                   className="swiper-button-next btn-only-arrow only-arrow-black"
                   tabIndex={0}
                   role="button"
