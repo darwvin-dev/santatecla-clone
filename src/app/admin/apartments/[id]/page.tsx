@@ -43,7 +43,7 @@ export default function EditApartmentPage() {
     lng: "",
     cir: "",
     cin: "",
-    orderShow: ""
+    orderShow: "",
   });
 
   const [amenities, setAmenities] = useState<Amenity[]>([]);
@@ -107,7 +107,7 @@ export default function EditApartmentPage() {
           details_en: a.details_en,
           description_en: a.description_en,
           floor_en: a.floor_en,
-          orderShow: String(a.orderShow)
+          orderShow: String(a.orderShow),
         });
 
         setAmenities(a.amenities ?? []);
@@ -224,21 +224,22 @@ export default function EditApartmentPage() {
           ...galleryNew.map((file) => ({ kind: "new" as const, file })),
         ];
 
-    const newFilesInOrder = final
-      .filter((x) => x.kind === "new")
-      .map((x: any) => x.file as File);
-    newFilesInOrder.forEach((file) => fd.append("galleryNew[]", file));
-
-    let n = 0;
-    const orderTokens = final.map((x) =>
-      x.kind === "existing" ? (x as any).url : `new:${n++}`
-    );
+    let newIndex = 0;
+    const orderTokens: string[] = [];
+    for (const item of final) {
+      if (item.kind === "existing") {
+        orderTokens.push(item.url);
+      } else {
+        orderTokens.push(`new:${newIndex}`);
+        fd.append("galleryNew[]", item.file);
+        newIndex++;
+      }
+    }
     fd.append("galleryOrder", JSON.stringify(orderTokens));
-
     fd.append(
       "keepGallery",
       JSON.stringify(
-        final.filter((x) => x.kind === "existing").map((x: any) => x.url)
+        final.filter((x) => x.kind === "existing").map((x) => x.url)
       )
     );
     galleryNew.forEach((file) => fd.append("galleryNew[]", file));
