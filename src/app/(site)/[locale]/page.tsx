@@ -10,6 +10,16 @@ import ExperiencesSection from "./components/Home/ExperiencesSection";
 import { Apartment } from "@/types/Apartment";
 import { DynamicPart } from "@/types/DynamicPart";
 import Head from "next/head";
+import dynamic from "next/dynamic";
+
+const IndexMap = dynamic(() => import("@/app/(site)/[locale]/components/Home/IndexMap"), {
+  ssr: false, 
+  loading: () => (
+    <div style={{ height: 560, width: "75%", margin: "24px auto" }}>
+      Loading map…
+    </div>
+  ),
+});
 
 export default function Home() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
@@ -90,7 +100,10 @@ export default function Home() {
         />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={title} />
-        <meta property="og:description" content="Habitabio - Trova appartamenti da sogno in affitto per le tue vacanze o soggiorni." />
+        <meta
+          property="og:description"
+          content="Habitabio - Trova appartamenti da sogno in affitto per le tue vacanze o soggiorni."
+        />
         <meta property="og:image" content="/path-to-image.jpg" />
         <meta property="og:url" content="https://habitabio.it" />
       </Head>
@@ -102,6 +115,7 @@ export default function Home() {
         <ApartmentsSection apartments={apartments} />
         <ServicesSection />
         <ExperiencesSection experiences={experiences} />
+        <IndexMap apartments={apartments} />
       </ClientLayoutWrapper>
     </>
   );

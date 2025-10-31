@@ -98,7 +98,9 @@ export default function Footer() {
                 {t("addressLine")}
                 <br className="d-sm-none" />
                 <span className="px-1 d-none d-sm-inline">|</span>
-                {t("vatLine")}
+                <span className="d-block">
+                  {t("vatLine")}
+                </span>
               </p>
             </div>
           </div>
