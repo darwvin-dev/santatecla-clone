@@ -91,6 +91,7 @@ export default function BannerBook({
                     target="_blank"
                     rel="nofollow noopener"
                     className="w-100 position-relative d-inline-flex align-items-center btn-rounded btn-with-arrow btn-black ff-sans fw-300 fz-20 color-black color-white-hover lh-xs txt-no-underline"
+                    style={{minWidth: "max-content" }}
                   >
                     <span>{t("contactUs")}</span>
                     <span className="btn-filter d-flex align-items-center justify-content-center">

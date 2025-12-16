@@ -83,26 +83,62 @@ function getCoordsFromApartment(a: Apartment): [number, number] | null {
   return typeof lat === "number" && typeof lng === "number" ? [lat, lng] : null;
 }
 
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width:${breakpoint}px)`);
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, [breakpoint]);
+  return isMobile;
+}
+
+/**
+ * Responsive height: on mobile the map is compact but sizeable; on desktop accept given height.
+ * If a number is provided, it will be used as px on desktop.
+ */
+function useResponsiveHeight(defaultHeight: number | string) {
+  const isMobile = useIsMobile();
+  const [h, setH] = useState<string | number>(defaultHeight);
+  useEffect(() => {
+    if (!isMobile) {
+      setH(defaultHeight);
+      return;
+    }
+    const vw = Math.max(320, Math.min(window.innerWidth, 768));
+    const px = Math.round(Math.max(240, Math.min(vw * 0.6, 400)));
+    setH(px);
+  }, [isMobile, defaultHeight]);
+  return h;
+}
+
+/* ====== Fit bounds smartly ====== */
 function FitToMarkers({
   coordsList,
   fallbackCenter,
   fallbackZoom,
+  padding,
 }: {
   coordsList: [number, number][];
   fallbackCenter: [number, number];
   fallbackZoom: number;
+  padding?: [number, number];
 }) {
   const map = useMap();
+  const isMobile = useIsMobile();
   useEffect(() => {
     if (coordsList.length > 1) {
       const bounds = L.latLngBounds(coordsList.map(([la, ln]) => L.latLng(la, ln)));
-      map.fitBounds(bounds, { padding: [48, 48] });
+      map.fitBounds(bounds, { padding: padding ?? (isMobile ? [16, 16] : [48, 48]) });
     } else if (coordsList.length === 1) {
+      // Respect current zoom if it's already tighter
       map.setView(coordsList[0], Math.max(map.getZoom(), 14), { animate: true });
     } else {
       map.setView(fallbackCenter, fallbackZoom, { animate: false });
     }
-  }, [coordsList, fallbackCenter, fallbackZoom, map]);
+  }, [coordsList, fallbackCenter, fallbackZoom, map, isMobile, padding]);
   return null;
 }
 
@@ -110,22 +146,22 @@ function FitToMarkers({
 const googleLikeIcon = L.divIcon({
   className: "",
   html: `
-  <svg width="28" height="42" viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg">
+  <svg width="28" height="42" viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <defs><filter id="s" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/></filter></defs>
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/>
+    </filter></defs>
     <g filter="url(#s)">
       <path d="M14 0C6.5 0 0.5 5.9 0.5 13.2C0.5 22.1 10.4 34.7 13.2 38.2C13.6 38.7 14.4 38.7 14.8 38.2C17.6 34.7 27.5 22.1 27.5 13.2C27.5 5.9 21.5 0 14 0Z" fill="#EA4335"/>
       <circle cx="14" cy="13" r="5.2" fill="#fff"/>
     </g>
-  </svg>`,
+  </svg>` ,
   iconSize: [28, 42],
   iconAnchor: [14, 42],
   popupAnchor: [0, -38],
 });
 
 /* ====== Wheel zoom controller ====== */
-type WheelMode = "off" | "on" | "hover" | "ctrl";
-
+export type WheelMode = "off" | "on" | "hover" | "ctrl";
 function WheelZoomController({
   mode,
   setCtrlActive,
@@ -134,18 +170,14 @@ function WheelZoomController({
   setCtrlActive?: (v: boolean) => void;
 }) {
   const map = useMap();
-
   useEffect(() => {
-    // پایه: همیشه با wheel خاموش شروع کن
     map.scrollWheelZoom.disable();
-
     const container = map.getContainer();
 
     if (mode === "on") {
       map.scrollWheelZoom.enable();
       return;
     }
-
     if (mode === "hover") {
       const onEnter = () => map.scrollWheelZoom.enable();
       const onLeave = () => map.scrollWheelZoom.disable();
@@ -157,7 +189,6 @@ function WheelZoomController({
         map.scrollWheelZoom.disable();
       };
     }
-
     if (mode === "ctrl") {
       const onWheel = (e: WheelEvent) => {
         const allow = e.ctrlKey || e.metaKey;
@@ -180,30 +211,29 @@ function WheelZoomController({
         map.scrollWheelZoom.disable();
       };
     }
-
-    // mode === "off"
     return () => {
       map.scrollWheelZoom.disable();
     };
   }, [mode, map, setCtrlActive]);
-
   return null;
 }
 
 /* ====== Props ====== */
-type IndexMapProps = {
+export type IndexMapProps = {
   apartments: Apartment[];
+  /** Desktop height (px or CSS). Mobile height is auto-compacted. */
   height?: number | string;
+  /** Desktop width. On mobile it will always be 100%. */
   width?: string | number;
   className?: string;
   fallbackCenter?: [number, number];
   fallbackZoom?: number;
   showLayersSwitch?: boolean;
   showScale?: boolean;
-  /** کنترل اسکرول→زوم (پیش‌فرض: ctrl) */
   wheelMode?: WheelMode;
-  /** نمایش هینت Ctrl */
   showWheelHint?: boolean;
+  /** Extra padding when fitting markers */
+  fitPadding?: [number, number];
 };
 
 /* ====== Component ====== */
@@ -218,8 +248,11 @@ export default function IndexMap({
   showScale = true,
   wheelMode = "ctrl",
   showWheelHint = true,
+  fitPadding,
 }: IndexMapProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const responsiveHeight = useResponsiveHeight(height);
 
   const withCoords = useMemo(
     () =>
@@ -233,7 +266,6 @@ export default function IndexMap({
   );
 
   const mkKey = (a: Apartment, idx: number) => `${a._id || a.slug || idx}`;
-
   const [ctrlActive, setCtrlActive] = useState(false);
 
   return (
@@ -241,30 +273,63 @@ export default function IndexMap({
       ref={wrapperRef}
       className={className}
       style={{
-        height: typeof height === "number" ? `${height}px` : height,
-        width,
+        height: typeof responsiveHeight === "number" ? `${responsiveHeight}px` : responsiveHeight,
+        width: isMobile ? "100%" : width,
         borderRadius: 16,
         overflow: "hidden",
         boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
-        margin: "24px auto",
+        margin: isMobile ? "12px auto" : "24px auto",
         position: "relative",
+        background: "#f6f6f6",
       }}
     >
+      {/* Wheel hint (desktop only) */}
+      {showWheelHint && !isMobile && wheelMode === "ctrl" && (
+        <div
+          role="note"
+          aria-live="polite"
+          style={{
+            position: "absolute",
+            right: 12,
+            bottom: 12,
+            zIndex: 1000,
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            padding: "6px 10px",
+            borderRadius: 8,
+            fontSize: 12,
+            pointerEvents: "none",
+            display: "flex",
+            gap: 6,
+            alignItems: "center",
+            opacity: ctrlActive ? 0.2 : 1,
+            transition: "opacity .2s ease",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 2h6a2 2 0 0 1 2 2v4h-2V4H9v16h6v-4h2v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="currentColor"/>
+          </svg>
+          Hold <b style={{ marginInline: 4 }}>Ctrl</b> to zoom
+        </div>
+      )}
+
       <MapContainer
         center={fallbackCenter}
         zoom={fallbackZoom}
-        // خیلی مهم: همیشه false شروع بشه، کنترل را ما می‌دهیم
         scrollWheelZoom={false}
         zoomControl={false}
         style={{ height: "100%", width: "100%" }}
         minZoom={3}
         maxZoom={19}
+        preferCanvas
       >
-        <ZoomControl position="topleft" />
-        {showScale && <ScaleControl imperial={false} position="bottomleft" />}
+        <ZoomControl position={isMobile ? "bottomright" : "topleft"} />
+        {showScale && (
+          <ScaleControl imperial={false} position={isMobile ? "bottomleft" : "bottomleft"} />
+        )}
 
         {showLayersSwitch ? (
-          <LayersControl position="topright">
+          <LayersControl position={isMobile ? "topright" : "topright"}>
             <LayersControl.BaseLayer checked name="Streets (Carto Light)">
               <TileLayer
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -316,38 +381,57 @@ export default function IndexMap({
           />
         )}
 
-        {/* کنترل رفتار اسکرول-زوم */}
         <WheelZoomController mode={wheelMode} setCtrlActive={setCtrlActive} />
 
-        {/* Fit به مارکرها */}
         <FitToMarkers
           coordsList={withCoords.map((x) => x.coords)}
           fallbackCenter={fallbackCenter}
           fallbackZoom={fallbackZoom}
+          padding={fitPadding}
         />
 
-        {/* مارکرها */}
         {withCoords.map(({ a, coords }, idx) => (
           <Marker key={mkKey(a, idx)} position={coords} icon={googleLikeIcon}>
-            <Popup maxWidth={320} minWidth={220}>
-              <div style={{ display: "grid", gap: 8 }}>
-                <div style={{ fontWeight: 700 }}>{a.title}</div>
+            <Popup maxWidth={isMobile ? 280 : 340} minWidth={isMobile ? 200 : 240} autoPan>
+              <div
+                style={{
+                  display: "grid",
+                  gap: 8,
+                  lineHeight: 1.25,
+                }}
+              >
+                <div style={{ fontWeight: 800, fontSize: 14 }}>{a.title}</div>
                 <div style={{ fontSize: 12, opacity: 0.85 }}>
                   {a.addressDetail ? `${a.address} — ${a.addressDetail}` : a.address}
                 </div>
-                <div style={{ display: "flex", gap: 12, fontSize: 12 }}>
-                  <span>👥 {a.guests}</span>
-                  <span>🛁 {a.bathrooms}</span>
-                  <span>📐 {a.sizeSqm}</span>
+                <div style={{ display: "flex", gap: 12, fontSize: 12, alignItems: "center" }}>
+                  <span title="Guests">👥 {a.guests}</span>
+                  <span title="Bathrooms">🛁 {a.bathrooms}</span>
+                  <span title="Size">📐 {a.sizeSqm}</span>
                 </div>
                 {a.image ? (
                   <img
                     src={a.image}
                     alt={a.title}
-                    style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8 }}
+                    style={{
+                      width: "100%",
+                      height: isMobile ? 120 : 150,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                    }}
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : null}
-                <a href={`/apartments/${a.slug}`} style={{ marginTop: 4, textDecoration: "none", fontWeight: 600 }}>
+                <a
+                  href={`/apartments/${a.slug}`}
+                  style={{
+                    marginTop: 6,
+                    textDecoration: "none",
+                    fontWeight: 700,
+                    alignSelf: "start",
+                  }}
+                >
                   View details →
                 </a>
               </div>
